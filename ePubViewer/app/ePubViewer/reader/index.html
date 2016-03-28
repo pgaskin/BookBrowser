@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ePubViewer</title>
+    <link rel="stylesheet" href="normalizecss/normalize.css">
+    <link rel="stylesheet" href="material-icons/material-icons.css">
+    <link rel="stylesheet" href="global.css">
+</head>
+<body>
+    <div id="reader">
+        <div id="menu" class="toc">
+            <div id="menutoolbar">
+                <a href="javascript:void(0);" class="material-icons" id="tocpanelbutton">book</a>
+                <a href="javascript:void(0);" class="material-icons" id="bookmarkspanelbutton">bookmark</a>
+            </div>
+            <div id="panels">
+                <div class="panel" id="tocpanel">
+                </div>
+                <div class="panel" id="bookmarkspanel">
+                </div>
+            </div>
+        </div>
+        <div id="book">
+            <div id="nav">
+                <div id="left">
+                    <a href="javascript:void(0);" class="material-icons button" id="menubutton">menu</a>
+                </div>
+                <div id="center">
+                    <span id="meta">ePubViewer</span>
+                </div>
+                <div id="right">
+                    <a href="javascript:void(0);" class="material-icons button" id="bookmarkbutton">bookmark_border</a>
+                </div>
+            </div>
+            <div id="inner">
+                <a href="javascript:void(0);" class="pagecontrol" id="backbutton">&lt;</a>
+                <div id="bookcontent"></div>
+                <a href="javascript:void(0);" class="pagecontrol" id="nextbutton">&gt;</a>
+            </div>
+            <div id="footer">
+                <span id="currentpage"></span>
+            </div>
+        </div>
+    </div>
+    <script src="epubjs/libs/zip.min.js"></script>
+    <script src="epubjs/epub.min.js"></script>
+    <script src="global.js"></script>
+</body>
+</html>
