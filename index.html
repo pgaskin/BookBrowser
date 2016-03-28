@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
+
+<head>
     <meta charset="UTF-8">
     <title>ePubViewer</title>
     <base href="site/">
@@ -9,27 +10,69 @@
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
+</head>
+
+<body>
     <section class="page-header">
-      <h1 class="project-name">ePubViewer</h1>
-      <h2 class="project-tagline">A simple ePub viewer</h2>
-      <a href="https://github.com/geek1011/ePubViewer" class="btn">View on GitHub</a>
-      <a href="https://github.com/geek1011/ePubViewer/zipball/master" class="btn">Download source code .zip</a>
-      <a href="https://github.com/geek1011/ePubViewer/tarball/master" class="btn">Download source code .tar.gz</a>
+        <h1 class="project-name">ePubViewer</h1>
+        <h2 class="project-tagline">A simple ePub viewer</h2>
+        <a href="https://github.com/geek1011/ePubViewer" class="btn">View on GitHub</a>
+        <a href="https://github.com/geek1011/ePubViewer/zipball/master" class="btn">Download source code .zip</a>
+        <a href="https://github.com/geek1011/ePubViewer/tarball/master" class="btn">Download source code .tar.gz</a>
     </section>
 
     <section class="main-content">
-      <h3><a id="coming-soon" class="anchor" href="#coming-soon" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Coming Soon</h3>
-        <p>The binaries for this app are coming soon (around April 5).</p>
+        <h3><a id="coming-soon" class="anchor" href="#coming-soon" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Coming Soon</h3>
+        <p>The binaries for this app are coming soon (around April 5). While you're waiting, why not try out my other app: <a href="http://geek1011.github.io/BookReader">BookReader</a>?</p>
         <h3><a id="online-demo" class="anchor" href="#online-demo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Online Demo</h3>
-        <iframe frameborder="0" style="max-height:800px;max-width:800px;width:100%;height:600px;" src="../ePubViewer/app/ePubViewer/reader/index.html?url=demo-alice-in-wonderland.epub"></iframe>
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/geek1011/ePubViewer">ePubViewer</a> is maintained by <a href="https://github.com/geek1011">geek1011</a>.</span>
-      </footer>
+        <div class="fake-browser-ui">
+            <div class="frame">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div><iframe style="max-height:800px;max-width:800px;width:100%;height:600px;" src="../ePubViewer/app/ePubViewer/reader/index.html?url=demo-alice-in-wonderland.epub" frameborder="0"></iframe>
+            <style>
+                .fake-browser-ui {
+                    padding: 20px 0 0;
+                    border-radius: 3px;
+                    border: 1px solid #ddd;
+                    border-bottom: 2px solid #ccc;
+                    background: #ddd;
+                    display: inline-block;
+                    position: relative;
+                    line-height: 0;
+                    max-height: 800px;
+                    max-width: 800px;
+                    width: 100%;
+                    height: 600px
+                }
+                
+                .fake-browser-ui .frame {
+                    display: block;
+                    height: 15px;
+                    position: absolute;
+                    top: 5px;
+                    left: 1px;
+                }
+                
+                .fake-browser-ui span {
+                    height: 10px;
+                    width: 10px;
+                    border-radius: 10px;
+                    background-color: #eee;
+                    border: 1px solid #dadada;
+                    float: left;
+                    margin: 0 0 0 4px;
+                }
+            </style>
+        </div>
+        <footer class="site-footer">
+            <span class="site-footer-owner"><a href="https://github.com/geek1011/ePubViewer">ePubViewer</a> is maintained by <a href="https://github.com/geek1011">geek1011</a>.</span>
+        </footer>
 
     </section>
 
-  
-  </body>
+
+</body>
+
 </html>
