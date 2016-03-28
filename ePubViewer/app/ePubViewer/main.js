@@ -13,7 +13,7 @@ function createWindow() {
         nodeIntegration: true
     });
     //mainWindow.setMenu(null); // Remove this line to show the default menubar
-    mainWindow.toggleDevTools();
+    //mainWindow.toggleDevTools();
     mainWindow.loadURL('file://' + __dirname + '/main.html'); // If your app is hosted online, then replace this with the url
     mainWindow.on('closed', function() {
         mainWindow = null;
