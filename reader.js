@@ -282,7 +282,7 @@ doAllReset = function() {
 doUpdateProgressIndicators = function() {
     document.getElementById("curpercent").innerText = String(Book.locations.percentageFromCfi(Book.getCurrentLocationCfi()).toFixed(2) * 100) + "%";
 }
-
+document.getElementById("book").innerHTML = "<div class=\"message info\">Please click the middle button on the toolbar below or <a href=\"javascript:void(0);\" onclick=\"document.getElementById('bookChooser').click()\">click here</a> to open a book.</div>";
 if (checkCompatibility()) {
 
 } else {
@@ -291,7 +291,7 @@ if (checkCompatibility()) {
     document.querySelector("nav").style.display = "none";
 }
 document.body.classList.add("not-loaded")
-document.getElementById("book").innerHTML = "<div class=\"message info\">Please click the middle button on the toolbar below or <a href=\"javascript:void(0);\" onclick=\"document.getElementById('bookChooser').click()\">click here</a> to open a book.</div>";
+
 initSettings();
 doHandleFileInput();
 doSidebar();
