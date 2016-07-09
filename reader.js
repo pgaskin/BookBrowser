@@ -136,7 +136,17 @@ doBook = function(url) {
 doFileFromFileObject = function(fileObj) {
     var reader = new FileReader();
     reader.addEventListener("load", function() {
-        doBook(reader.result);
+        var arr = (new Uint8Array(reader.result)).subarray(0, 2);
+        var header = "";
+        for(var i = 0; i < arr.length; i++) {
+         header += arr[i].toString(16);
+        }
+        console.log(header);
+        if (header == "504b") {
+            doBook(reader.result);
+        } else {
+            document.getElementById("book").innerHTML = "<div class=\"message error\">The file you chose is not a valid ePub ebook. Please try choosing a new file.</div>";
+        }
     }, false);
     if (fileObj) {
         reader.readAsArrayBuffer(fileObj);
@@ -277,7 +287,8 @@ if (checkCompatibility()) {
 
 } else {
     alert("You are using an incompatible browser. Try using a modern browser such as Google Chrome or Mozilla Firefox.");
-    document.getElementById("book").innerHTML = "<div class=\"messageerror\">You are using an incompatible browser. Try using a modern browser such as Google Chrome or Mozilla Firefox.</div>";
+    document.getElementById("book").innerHTML = "<div class=\"message error\">You are using an incompatible browser. Try using a modern browser such as Google Chrome or Mozilla Firefox. If you think this was a mistake, then you can <a href=\"http://github.com/geek1011/ePubViewer/issues\">report an issue</a>.</div>";
+    document.querySelector("nav").style.display = "none";
 }
 document.body.classList.add("not-loaded")
 document.getElementById("book").innerHTML = "<div class=\"message info\">Please click the middle button on the toolbar below or <a href=\"javascript:void(0);\" onclick=\"document.getElementById('bookChooser').click()\">click here</a> to open a book.</div>";
