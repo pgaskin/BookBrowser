@@ -5,6 +5,25 @@ EPUBJS.Hooks.register("beforeChapterDisplay").wgxpath = function(callback, rende
     if (callback) callback();
 };
 
+EPUBJS.Hooks.register('beforeChapterDisplay').swipeDetection = function(callback, renderer) {
+  function detectSwipe() {
+    var script = renderer.doc.createElement('script');
+    script.text = "\
+      var swiper = new Hammer(document);\
+      swiper.on('swipeleft', function() {\
+        parent.Book.nextPage();\
+      });\
+      swiper.on('swiperight', function() {\
+        parent.Book.prevPage();\
+      });";
+    renderer.doc.head.appendChild(script);
+  }
+  EPUBJS.core.addScript('http://geek1011.github.io/ePubViewer/epubjs/libs/hammer.min.js', detectSwipe, renderer.doc.head);
+  if (callback) {
+    callback();
+  }
+};
+
 wgxpath.install(window);
 
 EPUBJS.Hooks.register("beforeChapterDisplay").pageTurns = function(callback, renderer) {
