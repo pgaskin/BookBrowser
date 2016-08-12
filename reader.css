@@ -114,20 +114,24 @@ body {
 .reader> nav {
     flex: 0 0 2em;
     line-height: 2em;
-    border-top: 1px solid #F5F5F5;
     display: flex;
     justify-content: space-between;
     color: navy;
+    box-shadow: inset 0 1px 0 #f5f4f5;
+    background-color: #e8e6e8;
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#e8e6e8),color-stop(100%,#d1cfd1));
+    background-image: -webkit-linear-gradient(top,#e8e6e8 0,#d1cfd1 100%);
+    background-image: linear-gradient(to bottom,#e8e6e8 0,#d1cfd1 100%);
 }
 .reader> nav> div {
     flex: 0 0 auto;
 }
-.reader> nav> div> a, .reader> nav> div> a:link, .reader> nav> div> a:visited, .reader> nav> div>button {
+.reader> nav> div> a, .reader> nav> div> a:link, .reader> nav> div> a:visited, .reader> nav> div> button {
     display: inline-block;
     vertical-align: middle;
     padding: 5px;
     color: inherit;
-    background: white;
+    background: transparent;
     border: none;
     line-height: 1;
     outline: 0;
