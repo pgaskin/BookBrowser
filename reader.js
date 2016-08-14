@@ -405,3 +405,17 @@ document.body.classList.add("not-loaded")
 initSettings();
 doHandleFileInput();
 doSidebar();
+
+
+(function nwjsfunctions() {
+    if (nw) {
+        var gui = require('nw.gui');
+        var fs = require('fs');
+        var uto = gui.App.argv[0];
+        fs.stat(uto, function(err, stat) {
+            if (err == null) {
+                doBook("file://" + uto);
+            } else if (err.code == 'ENOENT') {} else {}
+        });
+    }
+})();
