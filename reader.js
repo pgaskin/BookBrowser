@@ -58,6 +58,7 @@ EPUBJS.Hooks.register("beforeChapterDisplay").pageTurns = function(callback, ren
 
 Book = null;
 BookID = "";
+BookToc = null;
 appid = "ePubViewer"
 initSettingsDone = false;
 
@@ -172,6 +173,7 @@ doBook = function(url) {
     });
 
     Book.getToc().then(function(toc) {
+        BookToc = toc;
         var containerel = document.getElementById("toc-container");
         for (var i = 0; i < toc.length; i++) {
             var entryel = document.createElement("a");
@@ -334,7 +336,12 @@ doAllReset = function() {
 }
 
 doUpdateProgressIndicators = function() {
-    document.getElementById("curpercent").innerText = String(Book.locations.percentageFromCfi(Book.getCurrentLocationCfi()).toFixed(2) * 100) + "%";
+    var progressint = Math.round(Book.locations.percentageFromCfi(Book.getCurrentLocationCfi()).toFixed(2) * 100);
+    document.getElementById("curpercent").innerText = String(progressint) + "%";
+    document.getElementById("bookprogresstext").innerText = String(progressint) + "% read";
+    document.getElementById("bookprogressbar").setAttribute("value", String(progressint));
+    document.getElementById("bookcurrentcfi").innerText = "Current cfi: " + Book.getCurrentLocationCfi();
+    document.getElementById("currentchapter").innerText = "Chapter: " + BookToc[Book.currentChapter.spinePos].label;
 }
 document.getElementById("book").innerHTML = "<div class=\"message info\">Please click the middle button on the toolbar below or <a href=\"javascript:void(0);\" onclick=\"document.getElementById('bookChooser').click()\">click here</a> to open a book.</div>";
 if (checkCompatibility()) {

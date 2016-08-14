@@ -119,6 +119,25 @@ body {
 .reader>main>aside#sidebar-info>div.content .bookinfo>.right #bookauthor {
     font-size: 10pt;
 }
+.reader>main>aside#sidebar-info>div.content .stats {
+    display: flex;
+    flex-direction: column;
+}
+.reader>main>aside#sidebar-info>div.content .stats div {
+    flex: 1;
+    margin: 4px 0;
+}
+.reader>main>aside#sidebar-info>div.content #bookprogress {
+    display: flex;
+}
+.reader>main>aside#sidebar-info>div.content #bookprogress #bookprogresstext {
+    flex: 0;
+    padding: 0 4px;
+    white-space: nowrap;
+}
+.reader>main>aside#sidebar-info>div.content #bookprogress #bookprogressbar {
+    flex: 1;
+}
 .reader> main> aside> header> a.close:hover, .reader> main> aside> header> a.close:active {
     opacity: 0.6;
 }
