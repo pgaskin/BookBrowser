@@ -96,8 +96,8 @@ body {
     outline: 0;
     padding: 2px 10px 2px 25px;
 }
-.reader>main>aside#sidebar-toc>div.content#toc-container a.toc-entry:active, .reader>main>aside#sidebar-toc>div.content#toc-container a.toc-entry:hover {
-    background: #c6c6c6;
+.reader>main>aside#sidebar-toc>div.content#toc-container a.toc-entry:active, .reader>main>aside#sidebar-toc>div.content#toc-container a.toc-entry.active, .reader>main>aside#sidebar-toc>div.content#toc-container a.toc-entry:hover {
+    background: #dcdfe1;
 }
 .reader> main> aside> header> a.close:hover, .reader> main> aside> header> a.close:active {
     opacity: 0.6;

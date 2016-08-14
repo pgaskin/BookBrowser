@@ -119,6 +119,7 @@ doBook = function(url) {
         if (curpostmp) {
             Book.goto(curpostmp)
         }
+
         Book.on('renderer:locationChanged', function(locationCfi) {
             localStorage.setItem(appid + "|" + BookID + "|curPosCfi", Book.getCurrentLocationCfi())
         });
@@ -128,6 +129,17 @@ doBook = function(url) {
             Book.on('renderer:locationChanged', function(locationCfi) {
                 doUpdateProgressIndicators();
             });
+        });
+
+        Book.on('renderer:locationChanged', function(locationCfi) {
+            var toclist = document.getElementById("toc-container").getElementsByClassName("toc-entry");
+            for (var e = 0; e < toclist.length; e++) {
+                if (toclist[e].getAttribute("data-cfi") == "epubcfi(" + Book.currentChapter.cfiBase + ")") {
+                    toclist[e].classList.add("active");
+                } else {
+                    toclist[e].classList.remove("active");
+                }
+            }
         });
 
         bookel.innerHTML = "";
