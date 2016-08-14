@@ -1,4 +1,7 @@
 {
   "name": "ePubViewer",
-  "main": "index.html"
+  "main": "index.html",
+  "window": {
+     "icon": "icon.png"
+  }
 }
