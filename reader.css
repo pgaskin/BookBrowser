@@ -66,10 +66,11 @@ body {
 }
 .reader> main> aside> header> h1 {
     flex: 1;
-    font-size: 12pt;
+    font-size: 9pt;
     display: inline-block;
     white-space: nowrap;
     overflow: hidden;
+    line-height: 2;
 }
 .reader> main> aside> header> a.close, .reader> main> aside> header> a.close:link, .reader> main> aside> header> a.close:visited {
     flex: 0 0 2em;
