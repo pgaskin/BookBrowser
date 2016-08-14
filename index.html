@@ -106,13 +106,24 @@
                     </fieldset>
                 </div>
             </aside>
-            <aside id="sidebar-goto" class="hidden">
+            <aside id="sidebar-info" class="hidden">
                 <header>
-                    <h1 class="title">Go To</h1>
+                    <h1 class="title">Book Info</h1>
                     <a href="javascript:void(0);" onclick="doSidebar('goto')" class="close"><i class="material-icons">close</i></a>
                 </header>
                 <div class="content">
-                    Coming soon
+                    <fieldset>
+                        <legend>Book</legend>
+                        <div class="bookinfo">
+                            <div class="left">
+                                <img src="" alt="cover" id="bookcover">
+                            </div>
+                            <div class="right">
+                                <div id="booktitle"></div>
+                                <div id="bookauthor"></div>
+                            </div>
+                        </div>
+                    </fieldset>
                 </div>
             </aside>
             <div id="bookwrap">
@@ -126,7 +137,7 @@
             <div class="left">
                 <a href="javascript:void(0);" class="button" title="Table of Contents" onclick="doSidebar('toc')"><i class="material-icons">list</i></a>
                 <a href="javascript:void(0);" class="button" title="Settings" onclick="doSidebar('settings')"><i class="material-icons">settings</i></a>
-                <a href="javascript:void(0);" class="button" title="Go To" onclick="doSidebar('goto')"><i class="material-icons">search</i></a>
+                <a href="javascript:void(0);" class="button" title="Book Info" onclick="doSidebar('info')"><i class="material-icons">info</i></a>
             </div>
             <div>
                 <input type="file" accept="application/epub+zip" id="bookChooser" style="display: none;" onchange="doHandleFileInput(this)">

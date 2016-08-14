@@ -100,6 +100,25 @@ body {
 .reader>main>aside#sidebar-toc>div.content#toc-container a.toc-entry:active, .reader>main>aside#sidebar-toc>div.content#toc-container a.toc-entry.active, .reader>main>aside#sidebar-toc>div.content#toc-container a.toc-entry:hover {
     background: #dcdfe1;
 }
+.reader>main>aside#sidebar-info>div.content .bookinfo {
+    display: flex;
+}
+.reader>main>aside#sidebar-info>div.content .bookinfo>.left {
+    flex: 0 0 50px;
+    margin-right: 10px;
+}
+.reader>main>aside#sidebar-info>div.content .bookinfo>.left #bookcover {
+    width: 100%;
+}
+.reader>main>aside#sidebar-info>div.content .bookinfo>.right {
+    flex: 1;
+}
+.reader>main>aside#sidebar-info>div.content .bookinfo>.right #booktitle {
+    font-size: 12pt;
+}
+.reader>main>aside#sidebar-info>div.content .bookinfo>.right #bookauthor {
+    font-size: 10pt;
+}
 .reader> main> aside> header> a.close:hover, .reader> main> aside> header> a.close:active {
     opacity: 0.6;
 }

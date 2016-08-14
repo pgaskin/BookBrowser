@@ -6,9 +6,9 @@ EPUBJS.Hooks.register("beforeChapterDisplay").wgxpath = function(callback, rende
 };
 
 EPUBJS.Hooks.register('beforeChapterDisplay').swipeDetection = function(callback, renderer) {
-  function detectSwipe() {
-    var script = renderer.doc.createElement('script');
-    script.text = "\
+    function detectSwipe() {
+        var script = renderer.doc.createElement('script');
+        script.text = "\
       var swiper = new Hammer(document);\
       swiper.on('swipeleft', function() {\
         parent.Book.nextPage();\
@@ -16,12 +16,12 @@ EPUBJS.Hooks.register('beforeChapterDisplay').swipeDetection = function(callback
       swiper.on('swiperight', function() {\
         parent.Book.prevPage();\
       });";
-    renderer.doc.head.appendChild(script);
-  }
-  EPUBJS.core.addScript('http://geek1011.github.io/ePubViewer/epubjs/libs/hammer.min.js', detectSwipe, renderer.doc.head);
-  if (callback) {
-    callback();
-  }
+        renderer.doc.head.appendChild(script);
+    }
+    EPUBJS.core.addScript('http://geek1011.github.io/ePubViewer/epubjs/libs/hammer.min.js', detectSwipe, renderer.doc.head);
+    if (callback) {
+        callback();
+    }
 };
 
 wgxpath.install(window);
@@ -96,6 +96,24 @@ doCfi = function(cfi) {
 doChapter = function(chaptercfi) {
     Book.displayChapter(chaptercfi);
 }
+getCoverAsDataURL = function(book, callback) {
+    book.coverUrl().then(function(blobUrl) {
+        console.log(blobUrl);
+        var xhr = new XMLHttpRequest;
+        xhr.responseType = 'blob';
+        xhr.onload = function() {
+            var recoveredBlob = xhr.response;
+            var reader = new FileReader;
+            reader.onload = function() {
+                callback(reader.result);
+            };
+            reader.readAsDataURL(recoveredBlob);
+        };
+        xhr.open('GET', blobUrl);
+        xhr.send();
+    });
+}
+
 
 doBook = function(url) {
     var bookel = document.getElementById("book");
@@ -114,6 +132,11 @@ doBook = function(url) {
 
     Book.getMetadata().then(function(meta) {
         document.title = meta.bookTitle + " – " + meta.creator;
+        document.getElementById("booktitle").innerHTML = meta.bookTitle;
+        document.getElementById("bookauthor").innerHTML = meta.creator;
+        try {
+            getCoverAsDataURL(Book, function(u){document.getElementById("bookcover").src = u;})
+        } catch (e) {}
         BookID = [meta.bookTitle, meta.creator, meta.identifier, meta.publisher].join(":");
         var curpostmp = localStorage.getItem(appid + "|" + BookID + "|curPosCfi");
         if (curpostmp) {
@@ -169,8 +192,8 @@ doFileFromFileObject = function(fileObj) {
     reader.addEventListener("load", function() {
         var arr = (new Uint8Array(reader.result)).subarray(0, 2);
         var header = "";
-        for(var i = 0; i < arr.length; i++) {
-         header += arr[i].toString(16);
+        for (var i = 0; i < arr.length; i++) {
+            header += arr[i].toString(16);
         }
         console.log(header);
         if (header == "504b") {
