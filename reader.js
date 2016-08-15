@@ -158,14 +158,16 @@ doBook = function(url) {
         });
 
         Book.on('renderer:locationChanged', function(locationCfi) {
-            var toclist = document.getElementById("toc-container").getElementsByClassName("toc-entry");
-            for (var e = 0; e < toclist.length; e++) {
-                if (toclist[e].getAttribute("data-cfi") == "epubcfi(" + Book.currentChapter.cfiBase + ")") {
-                    toclist[e].classList.add("active");
-                } else {
-                    toclist[e].classList.remove("active");
+            try {
+                var toclist = document.getElementById("toc-container").getElementsByClassName("toc-entry");
+                for (var e = 0; e < toclist.length; e++) {
+                    if (toclist[e].getAttribute("data-cfi") == "epubcfi(" + Book.currentChapter.cfiBase + ")") {
+                        toclist[e].classList.add("active");
+                    } else {
+                        toclist[e].classList.remove("active");
+                    }
                 }
-            }
+            } catch (e) {}
         });
 
         bookel.innerHTML = "";
@@ -390,7 +392,9 @@ doUpdateProgressIndicators = function() {
     document.getElementById("bookprogresstext").innerText = String(progressint) + "% read";
     document.getElementById("bookprogressbar").setAttribute("value", String(progressint));
     document.getElementById("bookcurrentcfi").innerText = "Current cfi: " + Book.getCurrentLocationCfi();
-    document.getElementById("currentchapter").innerText = "Chapter: " + BookToc[Book.currentChapter.spinePos].label;
+    try {
+        document.getElementById("currentchapter").innerText = "Chapter: " + BookToc[Book.currentChapter.spinePos].label;
+    } catch (e) {}
 }
 document.getElementById("book").innerHTML = "<div class=\"message info\">Please click the middle button on the toolbar below or <a href=\"javascript:void(0);\" onclick=\"document.getElementById('bookChooser').click()\">click here</a> to open a book.</div>";
 if (checkCompatibility()) {
