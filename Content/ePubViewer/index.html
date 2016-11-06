@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>eBook Reader</title>
+    <meta name="description" content="">
+    <link rel="stylesheet" href="reader.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="icon.png" />
+
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+</head>
+
+<body>
+    <div class="reader">
+        <main>
+            <aside id="sidebar-toc" class="hidden">
+                <header>
+                    <h1 class="title">Table of Contents</h1>
+                    <a href="javascript:void(0);" onclick="doSidebar('toc')" class="close"><i class="material-icons">close</i></a>
+                </header>
+                <div class="content" id="toc-container">
+
+                </div>
+            </aside>
+            <aside id="sidebar-settings" class="hidden">
+                <header>
+                    <h1 class="title">Settings</h1>
+                    <a href="javascript:void(0);" onclick="doSidebar('settings')" class="close"><i class="material-icons">close</i></a>
+                </header>
+                <div class="content">
+                    <fieldset>
+                        <legend>Text</legend>
+                        <div>
+                            <label for="family">Font: </label>
+                            <select autocomplete="off" name="family" id="family" onchange="updateSettings()">
+                                <option value="serif">Serif</option>
+                                <option selected value="Georgia, serif">Georgia</option>
+                                <option value="'Palatino Linotype', 'Book Antiqua', Palatino, serif">Palatino Linotype</option>
+                                <option value="'Times New Roman', Times, 'Roboto Slab', serif">Times New Roman</option>
+                                <option value="sans-serif">Sans-serif</option>
+                                <option value="Arial, Helvetica, sans-serif">Arial</option>
+                                <option value="monospace">monospace</option>
+                                <option value="'Courier New', Courier, monospace">Courier</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="size">Font Size: </label>
+                            <select autocomplete="off" name="size" id="size" onchange="updateSettings()">
+                                <option value="xx-small">Smallest</option>
+                                <option value="x-small">Smaller</option>
+                                <option value="small">Small</option>
+                                <option selected value="medium">Medium</option>
+                                <option value="large">Large</option>
+                                <option value="x-large">Larger</option>
+                                <option value="xx-large">Largest</option>
+                            </select>
+                        </div>
+
+
+                        <div>
+                            <label for="theme">Theme: </label>
+                            <select name="theme" id="theme" onchange="updateSettings()">
+                                                <option value="white">White</option>
+                                                <option value="black">Black</option>
+                                                <option value="darkgray">Dark Gray</option>
+                                                <option value="sepia" >Sepia</option>
+                                                <option value="solarizedLight" selected>Solarized Light</option>
+                                                <option value="solarizedDark">Solarized Dark</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="lineheight">Line Spacing: </label>
+                            <select autocomplete="off" name="lineheight" id="lineheight" onchange="updateSettings()">
+                                <option value="1">1</option>
+                                <option value="2" selected>2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="margin">Margin: </label>
+                            <select autocomplete="off" name="margin" id="margin" onchange="updateSettings()">
+                                <option selected value="1em">1</option>
+                                <option value="2em">2</option>
+                                <option value="3em">3</option>
+                                <option value="4em">4</option>
+                            </select>
+                        </div>
+
+                        <div style="display:none;">
+                            <label for="spreads">Allow 2 page view: </label>
+                            <input autocomplete="off" type="checkbox" name="spreads" id="spreads" onchange="updateSettings()" checked>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Other</legend>
+                        <button onclick="doBookReset()">Reset Book Position</button>
+                        <button onclick="doSettingsReset()">Reset Settings</button>
+                        <button onclick="doAllReset()">Reset All</button>
+                    </fieldset>
+                    <fieldset>
+                        <legend>About</legend>
+                        <a href="http://geek1011.github.io" target="_blank">Copyright 2016 Patrick G</a><br>
+                        <a href="http://github.com/geek1011/ePubViewer" target="_blank">Source Code</a><br>
+                        <a href="http://github.com/geek1011/ePubViewer/issues" target="_blank">Report a bug</a><br>
+                        <a href="http://github.com/geek1011/ePubViewer/issues" target="_blank">Feature requests</a><br>
+                    </fieldset>
+                </div>
+            </aside>
+            <aside id="sidebar-info" class="hidden">
+                <header>
+                    <h1 class="title">Book Info</h1>
+                    <a href="javascript:void(0);" onclick="doSidebar('info')" class="close"><i class="material-icons">close</i></a>
+                </header>
+                <div class="content">
+                    <fieldset>
+                        <legend>Book</legend>
+                        <div class="bookinfo">
+                            <div class="left">
+                                <img src="" alt="cover" id="bookcover">
+                            </div>
+                            <div class="right">
+                                <div id="booktitle"></div>
+                                <div id="bookauthor"></div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Stats</legend>
+                        <div class="stats">
+                            <div id="currentchapter"></div>
+                            <div id="bookprogress"><span id="bookprogresstext"></span>
+                                <progress value="0" max="100" id="bookprogressbar"></progress>
+                            </div>
+                            <div id="bookcurrentcfi"></div>
+                        </div>
+                    </fieldset>
+                </div>
+            </aside>
+            <div id="bookwrap">
+                <div id="book">
+                    <div class="message error">There has been an error<span id="detailerror"></span></div>
+                </div>
+            </div>
+        </main>
+        <nav>
+            <!-- a.button[href="javascript:void(0);"][onclick=""]>i.material-icons{iconname} -->
+            <div class="left">
+                <a href="javascript:void(0);" class="button" title="Table of Contents" onclick="doSidebar('toc')"><i class="material-icons">list</i></a>
+                <a href="javascript:void(0);" class="button" title="Settings" onclick="doSidebar('settings')"><i class="material-icons">settings</i></a>
+                <a href="javascript:void(0);" class="button" title="Book Info" onclick="doSidebar('info')"><i class="material-icons">info</i></a>
+            </div>
+            <div>
+                <input type="file" accept="application/epub+zip" id="bookChooser" style="display: none;" onchange="doHandleFileInput(this)">
+                <a href="javascript:void(0)" class="button" title="Open" onclick="document.getElementById('bookChooser').click()"><i class="material-icons" style="display: none">cloud_upload</i></a>
+            </div>
+            <div class="right">
+                <span class="percent" id="curpercent"></span>
+                <a href="javascript:void(0);" class="button" title="Previous Page" onclick="doPrev()"><i class="material-icons">arrow_backward</i></a>
+                <a href="javascript:void(0);" class="button" title="Next Page" onclick="doNext()"><i class="material-icons">arrow_forward</i></a>
+            </div>
+        </nav>
+    </div>
+    <script src="epubjs/libs/classlist.min.js"></script>
+    <script src="epubjs/libs/wgxpath.install.js"></script>
+    <script src="epubjs/libs/zip.min.js"></script>
+    <script src="epubjs/libs/localforage.min.js"></script>
+    <script src="epubjs/epub.js"></script>
+
+    <script src="reader.js"></script>
+    <!-- Google Analytics -->
+    <script>
+        (function(i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function() {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-66226417-1', 'auto');
+        ga('send', 'pageview', {
+            'page': '/',
+            'title': ''
+        });
+    </script>
+    <!-- End Google Analytics -->
+</body>
+
+</html>

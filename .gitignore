@@ -1,0 +1,3 @@
+Content/Books/**
+Content/index.html
+!Content/**/index.html
