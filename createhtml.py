@@ -122,13 +122,15 @@ html = '''
             body {
                 margin: 3em auto
             }
+            body .header {   
+                margin-bottom: 1em;
+            }
         }
         body .header {
             display: block;
             padding: 1em 0;
             text-align: center;
             font-size: 200%;
-            margin-bottom: 1em;
         }
         img {
             max-width: 100%;
