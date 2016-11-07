@@ -2,7 +2,7 @@
 
 A tool to generate a web-based epub book browser.
 
-This works on Linux with Python 2.7 and lxml. This also works on Windows if you install lxml and Python. It is a little harder to get this to run on Windows because of the lxml dependency.
+This works on Linux and Windows with Python 2.7 and [elementtree](http://effbot.org/downloads#elementtree).
 
 ## Usage
 
