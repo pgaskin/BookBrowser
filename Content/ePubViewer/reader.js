@@ -452,7 +452,7 @@ document.body.classList.add("not-loaded")
 
 initSettings();
 
-var ufn = location.search.replace("?", "");
+var ufn = location.search.replace("?", "") || location.hash.replace("#","");
 if (ufn) {
     doBook(ufn);
 } else {
