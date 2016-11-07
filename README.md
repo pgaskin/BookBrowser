@@ -2,7 +2,7 @@
 
 A tool to generate a web-based epub book browser.
 
-This works on Linux and Windows with Python 2.7 and [elementtree](http://effbot.org/downloads#elementtree).
+This works on Linux and Windows with Python 2.7.
 
 ## Usage
 

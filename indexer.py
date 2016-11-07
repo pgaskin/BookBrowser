@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.7
-import os, zipfile, lxml
-import elementtree.ElementTree as etree
+import os, zipfile
+import xml.etree.ElementTree as etree
 
 sdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Content");
 if not os.path.exists(sdir):
