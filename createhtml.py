@@ -73,7 +73,7 @@ booktemplate = '''
                         <a href="{filename}" title="Download" class="downloadbook">
                             <i class="icon-download"></i>
                         </a><br>
-                        <a href="ePubViewer/?../{filename}" title="Read" class="readbook">
+                        <a href="ePubViewer/#../{filename}" title="Read" class="readbook">
                             <i class="icon-book-open"></i>
                         </a>
                     </div>
