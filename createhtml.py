@@ -215,7 +215,7 @@ html = '''
 for bookinfo in bookinfos:
     gbooktemplate = booktemplate;
     for k in ["filename", "coverurl", "title", "author"]:
-        gbooktemplate = gbooktemplate.replace("{" + k + "}", bookinfo[k] or "undefined");
+        gbooktemplate = gbooktemplate.replace("{" + k + "}", bookinfo[k].replace("\\", "/") or "undefined");
     html = html + gbooktemplate;
 
 html = html + '''
