@@ -479,6 +479,7 @@ html = html + '''
                 authorsEl.appendChild(el);
                 authorsEl.classList.add("loaded");
             }
+            authors.sort();
             authorsEl.addEventListener("change", function(e) {
                 window.location.hash = "/books/author/" + encodeURIComponent(document.getElementById("authors").value);
             });
