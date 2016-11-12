@@ -416,7 +416,7 @@ html = html + '''
                 try {
                     switch(hashpath[1]) {
                         case "search":
-                            var q = decodeURIComponent(hashpath[2] || "").trim();
+                            var q = decodeURIComponent((hashpath[2] || "").trim());
                             console.log("Searching for: " + q);
                             if (q == "") {
                                 location.hash = "/books/";
@@ -424,7 +424,7 @@ html = html + '''
                             setState(q, true, true, false, true, "Search - Books");
                             break;
                         case "author":
-                            var q = decodeURIComponent(hashpath[2] || "").trim();
+                            var q = decodeURIComponent((hashpath[2] || "").trim());
                             console.log("Showing author: " + q);
                             if (q == "") {
                                 location.hash = "/books/";
