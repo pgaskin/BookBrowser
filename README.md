@@ -9,6 +9,8 @@ The web interface works with full search, filters, online reader, state storing 
 
 ## Usage
 
+First, [download](https://github.com/geek1011/BookBrowser/archive/master.zip) and extract or clone this repository. Then install python 2.7 if you haven't already. Then:
+
 1. Put epub books in the `Content/Books` folder
 2. Run `indexer.py` in python2.7
 3. Run `createhtml.py` in python2.7
