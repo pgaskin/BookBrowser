@@ -336,7 +336,7 @@ html = html + '''
 
     <script>
         var sel = document.createElement("style");
-        sel.innerText = ".bookcard {order: 1;} .bookcard.nomatch {overflow:hidden;height: 0;width: 0;opacity: 0.2;order: 2;}";
+        sel.innerText = ".bookcard {order: 1;} .bookcard.nomatch {-ms-transform: scale(0, 0);-webkit-transform: scale(0, 0);transform: scale(0,0);opacity: 0.2;order: 2;}";
         document.body.appendChild(sel);
 
         if (!String.prototype.includes) {
