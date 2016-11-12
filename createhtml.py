@@ -240,6 +240,9 @@ html = '''
         .top .authors.loaded {
             display: block;
         }
+        .top .clearfilter {
+            flex: 1;
+        }
         select {
             display: block;
             -webkit-appearance: none;
@@ -288,11 +291,11 @@ html = '''
             Books
         </div>
         <input autocomplete="off" name="search" id="search" type="text" class="search item" placeholder="Search..." />
-        <button id="clearfilter" class="clearfilter item" onclick="window.location.hash = '/books/'">Clear Filter</button>
         <select autocomplete="off" name="authors" id="authors" class="authors item">
             <option disabled selected value="">Authors</option>
             <option value="" style="font-weight: bold">All</option>
         </select>
+        <button id="clearfilter" class="clearfilter item" onclick="window.location.hash = '/books/'">Clear Filter</button>
     </div>
     <div class="box">
         <div class="booklist">
@@ -411,6 +414,7 @@ html = html + '''
                             document.getElementById("search").value = q;
                             document.getElementById("search").style.display = "block";
                             document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
+                            document.getElementById("authors").style.display = "none";
                             document.getElementById("clearfilter").style.display = "block";
                             break;
                         case "author":
@@ -424,6 +428,7 @@ html = html + '''
                             document.getElementById("search").value = q;
                             document.getElementById("search").style.display = "none";
                             document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
+                            document.getElementById("authors").style.display = "block";
                             document.getElementById("clearfilter").style.display = "block";
                             break;
                         default:
@@ -432,6 +437,7 @@ html = html + '''
                             document.getElementById("search").value = "";
                             document.getElementById("search").style.display = "block";
                             document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
+                            document.getElementById("authors").style.display = "block";
                             document.getElementById("clearfilter").style.display = "none";
                             break;
                     }
@@ -441,6 +447,7 @@ html = html + '''
                     document.getElementById("search").value = "";
                     document.getElementById("search").style.display = "block";
                     document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
+                    document.getElementById("authors").style.display = "block";
                     document.getElementById("clearfilter").style.display = "none";
                 }
             } else {
