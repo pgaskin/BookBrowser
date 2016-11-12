@@ -73,7 +73,7 @@ booktemplate = '''
                         <a href="{filename}" title="Download" class="downloadbook">
                             <i class="icon-download"></i>
                         </a><br>
-                        <a href="ePubViewer/#../{filename}" title="Read" class="readbook">
+                        <a href="ePubViewer/#../{filename}" title="Read" class="readbook" target="_blank">
                             <i class="icon-book-open"></i>
                         </a>
                     </div>
@@ -107,31 +107,17 @@ html = '''
         }
         html {
             background-color: #bfa26d;
-            background-url: http://api.thumbr.it/whitenoise-361x370.png?background=bfa26dff&noise=424242&density=16&opacity=18 ;
+            background-image: url(/wood.png);
+            background-attachment: fixed;
+            -webkit-background-size: 100% auto;
+            -moz-background-size: 100% auto;
+            -o-background-size: 100% auto;
+            background-size: 100% auto;
         }
         .box {
-            max-width: 600px;
             margin: 0 auto;
-            background-color: #F5DEB3;
-            -webkit-box-shadow: 0px 0px 18px -5px rgba(0,0,0,0.75);
-            -moz-box-shadow: 0px 0px 18px -5px rgba(0,0,0,0.75);
-            box-shadow: 0px 0px 18px -5px rgba(0,0,0,0.75);
-            font-family: 'Century Schoolbook', 'Century Schoolbook L', 'PT Serif', Georgia, 'DejaVu Serif', Cambria, sans-serif;
         }
-        @media only screen and (min-width: 600px) {
-            body {
-                margin: 3em auto
-            }
-            body .header {   
-                margin-bottom: 1em;
-            }
-        }
-        body .header {
-            display: block;
-            padding: 1em 0;
-            text-align: center;
-            font-size: 200%;
-        }
+
         img {
             max-width: 100%;
         }
@@ -145,7 +131,8 @@ html = '''
             transition: all .25s;
         }
         .bookcard {
-            background: white;
+            background-color: white;
+            background-color: rgba(255,255,255,0.7);
             flex: 0 0 10em;
             width: 10em;
             -moz-user-select: none;
@@ -153,8 +140,6 @@ html = '''
             -ms-user-select: none;
             user-select: none;
             max-width: 40%;
-            border: 1px solid #cccccc;
-            border-radius: 4px;
             position: relative;
             display: inline-block;
             vertical-align: top;
@@ -176,39 +161,139 @@ html = '''
             flex: 1;
             font-size: 11pt;
         }
-        .bookcard .buttom .buttons {
+        .bookcard .bottom .title {
+            font-size: 11pt;
+        }
+        .bookcard .bottom .author {
+            font-size: 10pt;
+            opacity: 0.7;
+        }
+        .bookcard .bottom .buttons {
             flex: 0 0;
         }
-        .bookcard .buttom .buttons a:link, .bookcard .buttom .buttons a, .bookcard .buttom .buttons a:visited {
-            color: #999999;
+        .bookcard .bottom .buttons a:link, .bookcard .bottom .buttons a, .bookcard .bottom .buttons a:visited {
+            color: #222222;
             text-decoration: none;
             cursor: pointer;
             display: inline-block;
+            -webkit-box-shadow: inset 0px 0px 8px 0px rgba(0,0,0,0.75);
+            -moz-box-shadow: inset 0px 0px 8px 0px rgba(0,0,0,0.75);
+            box-shadow: inset 0px 0px 8px 0px rgba(0,0,0,0.75);
+            margin: 2px;
+            border-radius: 3px;
+            padding: 3px 0;
         }
 
-        #search {
+        .top {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3em;
+            line-height: 3em;
+            background: white;
+            z-index: 100000;
+            overflow: hidden;
+            box-sizing: border-box;
+            display: flex;
+            -webkit-box-shadow: 0px 0px 26px -5px rgba(0,0,0,0.75);
+            -moz-box-shadow: 0px 0px 26px -5px rgba(0,0,0,0.75);
+            box-shadow: 0px 0px 26px -5px rgba(0,0,0,0.75);
+        }
+        .top+.box {
+            margin-top: 4em;
+        }
+        .top .item {
+            border-left: 1px solid black !important;
+            flex: 0;
+            box-sizing: border-box;
+            height: inherit;
+            line-height: inherit;
+        }
+        .top .item:nth-child(1) {
+            border-left: none !important;
+        }
+        .top .search {
             display: block;
+            flex: 1;
             background: inherit;
             border: none;
-            border-bottom: 1px solid black;
-            width: 100%;
-            padding: .5em;
+            text-align: left;
+            outline: 0;
             box-sizing: border-box;
-            text-align: center;
-            margin-bottom: 1em;
+            height: inherit;
+            line-height: inherit;
+            padding: 0 1em;
+        }
+        .top .header {
+            flex: 0;
+            padding: 0 1em;
+        }
+        .top .authors {
+            flex: 1;
+            max-width: 8em;
+            text-align-last: center; text-align: center;
+            -ms-text-align-last: center;
+            -moz-text-align-last: center; text-align-last: center;
+            display: none;
+        }
+        .top .authors.loaded {
+            display: block;
+        }
+        select {
+            display: block;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -webkit-padding-end: 20px;
+            -moz-padding-end: 20px;
+            -webkit-padding-start: 2px;
+            -moz-padding-start: 2px;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            color: black;
+            font-size: inherit;
+            margin: 0;
+            overflow: hidden;
+            padding: 0;
+            padding-top: 2px;
+            padding-bottom: 2px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            outline: 0;
+            background-color: #FFF;
+        }
+        select:hover,
+        select:active {
+            background-color: #EEE;
+        }
+        select:focus {
+            border: 1px solid #EEE;
+        }
+        @media only screen and (max-width: 600px) {
+            .top .header {
+                display: none;
+            }
+            .top .item:nth-child(2) {
+                border-left: none;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="box">
-        <div class="header">
+    <div class="top">
+        <div class="header item">
             Books
         </div>
+        <input autocomplete="off" name="search" id="search" type="text" class="search item" placeholder="Search..." />
+        <select autocomplete="off" name="authors" id="authors" class="authors item">
+            <option disabled selected value="">Authors</option>
+            <option value="" style="font-weight: bold;">Clear Filter</option>
+        </select>
     </div>
     <div class="box">
-        <div class="search">
-            <input autocomplete="off" name="search" id="search" type="text" placeholder="Search..." />
-        </div>
         <div class="booklist">
 '''
 
@@ -266,7 +351,7 @@ html = html + '''
                 };
             }
 
-            var filterSearch = function(f) {
+            window.filterSearch = function(f) {
                 var sbt = (f || "").toLowerCase();
                 var els = booklist.getElementsByClassName("bookcard");
                 for (var i = 0; i < els.length; i++) {
@@ -294,6 +379,8 @@ html = html + '''
                     }
                 }
 
+                window.scroll(0,0);
+
                 try {
                     /* Load visible images */
                     lazyloader.load(booklist.getElementsByClassName("bookcard"), false);
@@ -302,19 +389,56 @@ html = html + '''
 
             var sb = document.getElementById("search");
             sb.value = "";
-            sb.addEventListener("keyup", function(e) {
+            window.handleSearch = function(e) {
                 window.location.hash = "/books/search/" + sb.value;
-                if (e.keyCode == 13) {
+                var keyCode = (e || { "keyCode": 0 }).keyCode;
+                if (keyCode == 13) {
                     /* ENTER KEY */
                 } else {
-                    filterSearch(sb.value);
+                    window.filterSearch(sb.value);
                 }
-            });
+            }
+            window.searchFor = function(q) {
+                document.getElementById("search").value = q;
+                handleSearch();
+            }
+            sb.addEventListener("keyup", handleSearch);
 
             sb.value = window.location.hash.replace("#", "").replace("/books/search/", "").replace("/books/", "");
 
             filterSearch(sb.value);
         })(window, document, document.getElementById("search"), document.getElementsByClassName("booklist")[0]);
+    </script>
+
+    <script>
+        (function populateAuthors(window, document, booklist) {
+            var els = booklist.getElementsByClassName("bookcard");
+            var authors = [];
+            var authorsEl = document.getElementById("authors");
+            for (var i = 0; i < els.length; i++) {
+                try {
+                    var author = els[i].getElementsByClassName("author")[0].innerText;
+                    if (authors.indexOf(author) === -1) {
+                        authors.push(author);
+                    }  
+                } catch (e) {}
+            }
+            for (var i = 0; i < authors.length; i++) {
+                var el = document.createElement("option");
+                el.value = authors[i];
+                el.innerText = authors[i];
+                authorsEl.appendChild(el);
+                authorsEl.classList.add("loaded");
+            }
+            authorsEl.addEventListener("change", function(e) {
+                window.searchFor(document.getElementById("authors").value);
+                document.getElementById("search").style.display = "none";
+                if (document.getElementById("authors").value == "") {
+                    document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
+                    document.getElementById("search").style.display = "block";
+                }
+            });
+        })(window, document, document.getElementsByClassName("booklist")[0]);
     </script>
 
     <script>
