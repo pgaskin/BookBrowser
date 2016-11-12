@@ -4,6 +4,9 @@ A tool to generate a web-based epub book browser.
 
 This works on Linux and Windows with Python 2.7.
 
+The web interface works with basic book browsing support on IE 8+, Edge, Chrome, Safari, Opera, Android Browser, and other browsers made after 2000.
+The web interface works with full search, filters, online reader, state storing in url, and animations on IE 10+, Edge, Firefox 28+, Chrome 21+, Safari 9+, Opera 17+, and Android browser 4.4+.
+
 ## Usage
 
 1. Put epub books in the `Content/Books` folder
