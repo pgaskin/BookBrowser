@@ -402,6 +402,7 @@ html = html + '''
 
             function setState(searchValue, searchDisplay, resetAuthorDropdown, authorsDisplay, clearfilterDisplay) {
                 document.getElementById("search").value = searchValue;
+                window.filterSearch(q);
                 document.getElementById("search").style.display = searchDisplay?"block":"none";
                 if (resetAuthorDropdown) {
                     document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
@@ -418,8 +419,6 @@ html = html + '''
                             console.log("Searching for: " + q);
                             if (q == "") {
                                 location.hash = "/books/";
-                            } else {
-                                window.filterSearch(q);
                             }
                             setState(q, true, true, false, true);
                             break;
@@ -428,20 +427,16 @@ html = html + '''
                             console.log("Showing author: " + q);
                             if (q == "") {
                                 location.hash = "/books/";
-                            } else {
-                                window.filterSearch(q);
                             }
-                            setState(q, true, true, true, true);
+                            setState(q, false, true, true, true);
                             break;
                         default:
                             console.log("Browsing");
-                            filterSearch("");
                             setState("", true, true, true, false);
                             break;
                     }
                 } catch (e) {
                     console.log("Browsing");
-                    filterSearch("");
                     setState("", true, true, true, false);
                 }
             } else {
