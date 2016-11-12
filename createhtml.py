@@ -400,7 +400,8 @@ html = html + '''
             hashpath.push(""); /* Prevent errors later on */
             console.log("hashpath", hashpath);
 
-            function setState(searchValue, searchDisplay, resetAuthorDropdown, authorsDisplay, clearfilterDisplay) {
+            function setState(searchValue, searchDisplay, resetAuthorDropdown, authorsDisplay, clearfilterDisplay, windowTitle) {
+                document.title = windowTitle || "Books";
                 document.getElementById("search").value = searchValue;
                 window.filterSearch(q);
                 document.getElementById("search").style.display = searchDisplay?"block":"none";
@@ -420,7 +421,7 @@ html = html + '''
                             if (q == "") {
                                 location.hash = "/books/";
                             }
-                            setState(q, true, true, false, true);
+                            setState(q, true, true, false, true, "Search - Books");
                             break;
                         case "author":
                             var q = decodeURIComponent(hashpath[2] || "").trim();
@@ -428,16 +429,16 @@ html = html + '''
                             if (q == "") {
                                 location.hash = "/books/";
                             }
-                            setState(q, false, true, true, true);
+                            setState(q, false, true, true, true, q + " - Books");
                             break;
                         default:
                             console.log("Browsing");
-                            setState("", true, true, true, false);
+                            setState("", true, true, true, false, "Books");
                             break;
                     }
                 } catch (e) {
                     console.log("Browsing");
-                    setState("", true, true, true, false);
+                    setState("", true, true, true, false, "Books");
                 }
             } else {
                 window.location.hash = "/books/";
