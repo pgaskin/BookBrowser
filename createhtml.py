@@ -288,9 +288,10 @@ html = '''
             Books
         </div>
         <input autocomplete="off" name="search" id="search" type="text" class="search item" placeholder="Search..." />
+        <button id="clearfilter" class="clearfilter item" onclick="window.location.hash = '/books/'">Clear Filter</button>
         <select autocomplete="off" name="authors" id="authors" class="authors item">
             <option disabled selected value="">Authors</option>
-            <option value="" style="font-weight: bold;">Clear Filter</option>
+            <option value="" style="font-weight: bold">All</option>
         </select>
     </div>
     <div class="box">
@@ -331,83 +332,124 @@ html = html + '''
     </script>
 
     <script>
-        (function initSearch(window, document, sb, booklist) {
-            var sel = document.createElement("style");
-            sel.innerText = ".bookcard {order: 1;} .bookcard.nomatch {opacity: 0.2;order: 2;}";
-            document.body.appendChild(sel);
+        var sel = document.createElement("style");
+        sel.innerText = ".bookcard {order: 1;} .bookcard.nomatch {opacity: 0.2;order: 2;}";
+        document.body.appendChild(sel);
 
-            if (!String.prototype.includes) {
-                String.prototype.includes = function(search, start) {
-                    'use strict';
-                    if (typeof start !== 'number') {
-                        start = 0;
-                    }
-                    
-                    if (start + search.length > this.length) {
-                        return false;
-                    } else {
-                        return this.indexOf(search, start) !== -1;
-                    }
-                };
-            }
-
-            window.filterSearch = function(f) {
-                var sbt = (f || "").toLowerCase();
-                var els = booklist.getElementsByClassName("bookcard");
-                for (var i = 0; i < els.length; i++) {
-                    var sbtmatch = false;
-
-                    var toMatch = ["title", "author"];
-                    for (var j = 0; j < toMatch.length; j++) {
-                        try {
-                            var mt = els[i].getElementsByClassName(toMatch[j])[0].innerText.toLowerCase();
-                            if (mt.trim().includes(sbt.trim())) {
-                                sbtmatch = true;
-                            }
-                        } catch (e) {}
-                    }
-
-                    if (!sbt || sbt.trim() == "") {
-                        sbtmatch = true;
-                        window.location.hash = "/books/";
-                    }
-
-                    if (sbtmatch) {
-                        els[i].classList.remove("nomatch");
-                    } else {
-                        els[i].classList.add("nomatch");
-                    }
+        if (!String.prototype.includes) {
+            String.prototype.includes = function(search, start) {
+                'use strict';
+                if (typeof start !== 'number') {
+                    start = 0;
                 }
-
-                window.scroll(0,0);
-
-                try {
-                    /* Load visible images */
-                    lazyloader.load(booklist.getElementsByClassName("bookcard"), false);
-                } catch (e) {}
-            }
-
-            var sb = document.getElementById("search");
-            sb.value = "";
-            window.handleSearch = function(e) {
-                window.location.hash = "/books/search/" + sb.value;
-                var keyCode = (e || { "keyCode": 0 }).keyCode;
-                if (keyCode == 13) {
-                    /* ENTER KEY */
+                
+                if (start + search.length > this.length) {
+                    return false;
                 } else {
-                    window.filterSearch(sb.value);
+                    return this.indexOf(search, start) !== -1;
+                }
+            };
+        }
+
+        window.filterSearch = function(f) {
+            var booklist = document.getElementsByClassName("booklist")[0];
+            var sbt = (f || "").toLowerCase();
+            var els = booklist.getElementsByClassName("bookcard");
+            for (var i = 0; i < els.length; i++) {
+                var sbtmatch = false;
+
+                var toMatch = ["title", "author"];
+                for (var j = 0; j < toMatch.length; j++) {
+                    try {
+                        var mt = els[i].getElementsByClassName(toMatch[j])[0].innerText.toLowerCase();
+                        if (mt.trim().includes(sbt.trim())) {
+                            sbtmatch = true;
+                        }
+                    } catch (e) {}
+                }
+
+                if (!sbt || sbt.trim() == "") {
+                    sbtmatch = true;
+                    window.location.hash = "/books/";
+                }
+
+                if (sbtmatch) {
+                    els[i].classList.remove("nomatch");
+                } else {
+                    els[i].classList.add("nomatch");
                 }
             }
-            window.searchFor = function(q) {
-                document.getElementById("search").value = q;
-                handleSearch();
+
+            window.scroll(0,0);
+
+            try {
+                /* Load visible images */
+                lazyloader.load(booklist.getElementsByClassName("bookcard"), false);
+            } catch (e) {}
+        }
+
+        document.getElementById("search").addEventListener("keyup", function() {
+            window.location.hash = "/books/search/" + encodeURIComponent(document.getElementById("search").value)
+        });
+
+        handleHashPath = function() {
+            var hashpath = window.location.hash.replace("#/", "").replace("#", "").split("/");
+            hashpath.push(""); /* Prevent errors later on */
+            console.log("hashpath", hashpath);
+
+            if (hashpath[0] == "books") {
+                try {
+                    switch(hashpath[1]) {
+                        case "search":
+                            var q = decodeURIComponent(hashpath[2] || "").trim();
+                            console.log("Searching for: " + q);
+                            if (q == "") {
+                                location.hash = "/books/";
+                            } else {
+                                window.filterSearch(q);
+                            }
+                            document.getElementById("search").value = q;
+                            document.getElementById("search").style.display = "block";
+                            document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
+                            document.getElementById("clearfilter").style.display = "block";
+                            break;
+                        case "author":
+                            var q = decodeURIComponent(hashpath[2] || "").trim();
+                            console.log("Showing author: " + q);
+                            if (q == "") {
+                                location.hash = "/books/";
+                            } else {
+                                window.filterSearch(q);
+                            }
+                            document.getElementById("search").value = q;
+                            document.getElementById("search").style.display = "none";
+                            document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
+                            document.getElementById("clearfilter").style.display = "block";
+                            break;
+                        default:
+                            console.log("Browsing");
+                            filterSearch("");
+                            document.getElementById("search").value = "";
+                            document.getElementById("search").style.display = "block";
+                            document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
+                            document.getElementById("clearfilter").style.display = "none";
+                            break;
+                    }
+                } catch (e) {
+                    console.log("Browsing");
+                    filterSearch("");
+                    document.getElementById("search").value = "";
+                    document.getElementById("search").style.display = "block";
+                    document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
+                    document.getElementById("clearfilter").style.display = "none";
+                }
+            } else {
+                window.location.hash = "/books/";
             }
-            sb.addEventListener("keyup", handleSearch);
+        }
 
-            sb.value = window.location.hash.replace("#", "").replace("/books/search/", "").replace("/books/", "");
-
-            filterSearch(sb.value);
-        })(window, document, document.getElementById("search"), document.getElementsByClassName("booklist")[0]);
+        window.addEventListener("hashchange", handleHashPath);
+        handleHashPath();
     </script>
 
     <script>
@@ -431,12 +473,7 @@ html = html + '''
                 authorsEl.classList.add("loaded");
             }
             authorsEl.addEventListener("change", function(e) {
-                window.searchFor(document.getElementById("authors").value);
-                document.getElementById("search").style.display = "none";
-                if (document.getElementById("authors").value == "") {
-                    document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
-                    document.getElementById("search").style.display = "block";
-                }
+                window.location.hash = "/books/author/" + encodeURIComponent(document.getElementById("authors").value);
             });
         })(window, document, document.getElementsByClassName("booklist")[0]);
     </script>
