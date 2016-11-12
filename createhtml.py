@@ -400,6 +400,16 @@ html = html + '''
             hashpath.push(""); /* Prevent errors later on */
             console.log("hashpath", hashpath);
 
+            function setState(searchValue, searchDisplay, resetAuthorDropdown, authorsDisplay, clearfilterDisplay) {
+                document.getElementById("search").value = searchValue;
+                document.getElementById("search").style.display = searchDisplay?"block":"none";
+                if (resetAuthorDropdown) {
+                    document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
+                }
+                document.getElementById("authors").style.display = authorsDisplay?"block":"none";
+                document.getElementById("clearfilter").style.display = clearfilterDisplay?"block":"none";
+            }
+
             if (hashpath[0] == "books") {
                 try {
                     switch(hashpath[1]) {
@@ -411,11 +421,7 @@ html = html + '''
                             } else {
                                 window.filterSearch(q);
                             }
-                            document.getElementById("search").value = q;
-                            document.getElementById("search").style.display = "block";
-                            document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
-                            document.getElementById("authors").style.display = "none";
-                            document.getElementById("clearfilter").style.display = "block";
+                            setState(q, true, true, false, true);
                             break;
                         case "author":
                             var q = decodeURIComponent(hashpath[2] || "").trim();
@@ -425,30 +431,18 @@ html = html + '''
                             } else {
                                 window.filterSearch(q);
                             }
-                            document.getElementById("search").value = q;
-                            document.getElementById("search").style.display = "none";
-                            document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
-                            document.getElementById("authors").style.display = "block";
-                            document.getElementById("clearfilter").style.display = "block";
+                            setState(q, true, true, true, true);
                             break;
                         default:
                             console.log("Browsing");
                             filterSearch("");
-                            document.getElementById("search").value = "";
-                            document.getElementById("search").style.display = "block";
-                            document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
-                            document.getElementById("authors").style.display = "block";
-                            document.getElementById("clearfilter").style.display = "none";
+                            setState("", true, true, true, false);
                             break;
                     }
                 } catch (e) {
                     console.log("Browsing");
                     filterSearch("");
-                    document.getElementById("search").value = "";
-                    document.getElementById("search").style.display = "block";
-                    document.getElementById("authors").getElementsByTagName("option")[0].selected = "true";
-                    document.getElementById("authors").style.display = "block";
-                    document.getElementById("clearfilter").style.display = "none";
+                    setState("", true, true, true, false);
                 }
             } else {
                 window.location.hash = "/books/";
