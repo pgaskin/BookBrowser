@@ -148,7 +148,7 @@ html = '''
             background: white;
             flex: 0 0 10em;
             width: 10em;
-            -moz-user-select: noen;
+            -moz-user-select: none;
             -webkit-user-select: none;
             -ms-user-select: none;
             user-select: none;
