@@ -107,7 +107,7 @@ html = '''
         }
         html {
             background-color: #bfa26d;
-            background-image: url(/wood.png);
+            background-image: url(wood.png);
             background-attachment: fixed;
             -webkit-background-size: 100% auto;
             -moz-background-size: 100% auto;
