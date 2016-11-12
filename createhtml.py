@@ -472,6 +472,7 @@ html = html + '''
                     }  
                 } catch (e) {}
             }
+            authors.sort();
             for (var i = 0; i < authors.length; i++) {
                 var el = document.createElement("option");
                 el.value = authors[i];
@@ -479,7 +480,6 @@ html = html + '''
                 authorsEl.appendChild(el);
                 authorsEl.classList.add("loaded");
             }
-            authors.sort();
             authorsEl.addEventListener("change", function(e) {
                 window.location.hash = "/books/author/" + encodeURIComponent(document.getElementById("authors").value);
             });
