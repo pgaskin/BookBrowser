@@ -492,7 +492,7 @@ html = html + '''
         (function removeReaderLinksIfRunningLocally(window, document) {
             if (window.location.protocol == "file:") {
                 var sel = document.createElement("style");
-                sel.innerText = ".bookcard .readbook {display:none;}";
+                sel.innerText = ".bookcard .readbook {display:none !important;}";
                 document.body.appendChild(sel);
                 console.log("Removed read book links because it only works if you use server.py");
             }
