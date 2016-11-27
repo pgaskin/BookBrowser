@@ -1,0 +1,416 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Books</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <link rel="icon" type="image/png" href="icon.png" />
+
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <style>
+        /* Normalize.css */
+        @import url(data:text/css;charset=utf-8;base64,YnV0dG9uLGhyLGlucHV0e292ZXJmbG93OnZpc2libGV9YXVkaW8sY2FudmFzLHByb2dyZXNzLHZpZGVve2Rpc3BsYXk6aW5saW5lLWJsb2NrfXByb2dyZXNzLHN1YixzdXB7dmVydGljYWwtYWxpZ246YmFzZWxpbmV9aHRtbHtmb250LWZhbWlseTpzYW5zLXNlcmlmO2xpbmUtaGVpZ2h0OjEuMTU7LW1zLXRleHQtc2l6ZS1hZGp1c3Q6MTAwJTstd2Via2l0LXRleHQtc2l6ZS1hZGp1c3Q6MTAwJX1ib2R5e21hcmdpbjowfW1lbnUsYXJ0aWNsZSxhc2lkZSxkZXRhaWxzLGZvb3RlcixoZWFkZXIsbmF2LHNlY3Rpb257ZGlzcGxheTpibG9ja31oMXtmb250LXNpemU6MmVtO21hcmdpbjouNjdlbSAwfWZpZ2NhcHRpb24sZmlndXJlLG1haW57ZGlzcGxheTpibG9ja31maWd1cmV7bWFyZ2luOjFlbSA0MHB4fWhye2JveC1zaXppbmc6Y29udGVudC1ib3g7aGVpZ2h0OjB9Y29kZSxrYmQscHJlLHNhbXB7Zm9udC1mYW1pbHk6bW9ub3NwYWNlLG1vbm9zcGFjZTtmb250LXNpemU6MWVtfWF7YmFja2dyb3VuZC1jb2xvcjp0cmFuc3BhcmVudDstd2Via2l0LXRleHQtZGVjb3JhdGlvbi1za2lwOm9iamVjdHN9YTphY3RpdmUsYTpob3ZlcntvdXRsaW5lLXdpZHRoOjB9YWJiclt0aXRsZV17Ym9yZGVyLWJvdHRvbTpub25lO3RleHQtZGVjb3JhdGlvbjp1bmRlcmxpbmU7dGV4dC1kZWNvcmF0aW9uOnVuZGVybGluZSBkb3R0ZWR9YixzdHJvbmd7Zm9udC13ZWlnaHQ6Ym9sZGVyfWRmbntmb250LXN0eWxlOml0YWxpY31tYXJre2JhY2tncm91bmQtY29sb3I6I2ZmMDtjb2xvcjojMDAwfXNtYWxse2ZvbnQtc2l6ZTo4MCV9c3ViLHN1cHtmb250LXNpemU6NzUlO2xpbmUtaGVpZ2h0OjA7cG9zaXRpb246cmVsYXRpdmV9c3Vie2JvdHRvbTotLjI1ZW19c3Vwe3RvcDotLjVlbX1hdWRpbzpub3QoW2NvbnRyb2xzXSl7ZGlzcGxheTpub25lO2hlaWdodDowfWltZ3tib3JkZXItc3R5bGU6bm9uZX1zdmc6bm90KDpyb290KXtvdmVyZmxvdzpoaWRkZW59YnV0dG9uLGlucHV0LG9wdGdyb3VwLHNlbGVjdCx0ZXh0YXJlYXtmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZToxMDAlO2xpbmUtaGVpZ2h0OjEuMTU7bWFyZ2luOjB9YnV0dG9uLGlucHV0e31idXR0b24sc2VsZWN0e3RleHQtdHJhbnNmb3JtOm5vbmV9W3R5cGU9c3VibWl0XSxbdHlwZT1yZXNldF0sYnV0dG9uLGh0bWwgW3R5cGU9YnV0dG9uXXstd2Via2l0LWFwcGVhcmFuY2U6YnV0dG9ufVt0eXBlPWJ1dHRvbl06Oi1tb3otZm9jdXMtaW5uZXIsW3R5cGU9cmVzZXRdOjotbW96LWZvY3VzLWlubmVyLFt0eXBlPXN1Ym1pdF06Oi1tb3otZm9jdXMtaW5uZXIsYnV0dG9uOjotbW96LWZvY3VzLWlubmVye2JvcmRlci1zdHlsZTpub25lO3BhZGRpbmc6MH1bdHlwZT1idXR0b25dOi1tb3otZm9jdXNyaW5nLFt0eXBlPXJlc2V0XTotbW96LWZvY3VzcmluZyxbdHlwZT1zdWJtaXRdOi1tb3otZm9jdXNyaW5nLGJ1dHRvbjotbW96LWZvY3VzcmluZ3tvdXRsaW5lOkJ1dHRvblRleHQgZG90dGVkIDFweH1maWVsZHNldHtib3JkZXI6MXB4IHNvbGlkIHNpbHZlcjttYXJnaW46MCAycHg7cGFkZGluZzouMzVlbSAuNjI1ZW0gLjc1ZW19bGVnZW5ke2JveC1zaXppbmc6Ym9yZGVyLWJveDtjb2xvcjppbmhlcml0O2Rpc3BsYXk6dGFibGU7bWF4LXdpZHRoOjEwMCU7cGFkZGluZzowO3doaXRlLXNwYWNlOm5vcm1hbH1wcm9ncmVzc3t9dGV4dGFyZWF7b3ZlcmZsb3c6YXV0b31bdHlwZT1jaGVja2JveF0sW3R5cGU9cmFkaW9de2JveC1zaXppbmc6Ym9yZGVyLWJveDtwYWRkaW5nOjB9W3R5cGU9bnVtYmVyXTo6LXdlYmtpdC1pbm5lci1zcGluLWJ1dHRvbixbdHlwZT1udW1iZXJdOjotd2Via2l0LW91dGVyLXNwaW4tYnV0dG9ue2hlaWdodDphdXRvfVt0eXBlPXNlYXJjaF17LXdlYmtpdC1hcHBlYXJhbmNlOnRleHRmaWVsZDtvdXRsaW5lLW9mZnNldDotMnB4fVt0eXBlPXNlYXJjaF06Oi13ZWJraXQtc2VhcmNoLWNhbmNlbC1idXR0b24sW3R5cGU9c2VhcmNoXTo6LXdlYmtpdC1zZWFyY2gtZGVjb3JhdGlvbnstd2Via2l0LWFwcGVhcmFuY2U6bm9uZX06Oi13ZWJraXQtZmlsZS11cGxvYWQtYnV0dG9uey13ZWJraXQtYXBwZWFyYW5jZTpidXR0b247Zm9udDppbmhlcml0fXN1bW1hcnl7ZGlzcGxheTpsaXN0LWl0ZW19W2hpZGRlbl0sdGVtcGxhdGV7ZGlzcGxheTpub25lfS8qIyBzb3VyY2VNYXBwaW5nVVJMPW5vcm1hbGl6ZS5taW4uY3NzLm1hcCAqLw==);
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            background-color: #bfa26d;
+            background-image: url(wood.png);
+            background-attachment: fixed;
+            -webkit-background-size: 100% auto;
+            -moz-background-size: 100% auto;
+            -o-background-size: 100% auto;
+            background-size: 100% auto;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .list .book {
+            background-color: rgba(255,255,255,0.7);
+            display: block;
+            position: relative;
+            height: 4em;
+            padding: .5em;
+            overflow: hidden;
+            width: 100%;
+            border-bottom: 1px solid #666;
+        }
+        .list .book:hover {
+            background-color: rgba(255,255,255,0.8);
+        }
+        .list .book .cover {
+            height: 100%;
+            display: inline-block;
+            vertical-align: top;
+            margin-right: 1em;
+        }
+        .list .book .info {
+            display: inline-block;
+            vertical-align: top;
+            max-width: 85%;
+        }
+        .list .book .info .title {
+            display: block;
+            line-height: 1.5em;
+            color: #000;
+        }
+        .list .book .info .author {
+            display: block;
+            line-height: 1.5em;
+            color: #333;
+        }
+        .list .book .info .description {
+            display: none;
+        }
+        .list .book .buttons-container {
+            height: 100%;
+            display: table;
+            vertical-align: top;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+        }
+        .list .book .buttons-container .buttons {
+            display: table-cell;
+            vertical-align: middle;
+        }
+        .list .book .buttons-container .buttons .button {
+            display: inline-block;
+        }
+        .list .book.expanded {
+            height: 18em;
+            overflow-y: auto;
+        }
+        .list .book.expanded .cover {
+            height: 100px;
+            max-height: 50%;
+        }
+        .list .book.expanded .info .description {
+            display: block;
+        }
+
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .grid .book {
+            background-color: rgba(255,255,255,0.7);
+            display: inline-block;
+            vertical-align: top;
+            position: relative;
+            width: 8em;
+            overflow: hidden;
+            margin: .5em;
+        }
+        .grid .book:hover {
+            background-color: rgba(255,255,255,0.8);
+        }
+        .grid .book .cover {
+            width: 100%;
+            display: block;
+            vertical-align: top;
+        }
+        .grid .book .info {
+            padding: 0.5em;
+            display: inline-block;
+            vertical-align: top;
+        }
+        .grid .book .info .title {
+            display: block;
+            line-height: 1.5em;
+            font-size: 90%;
+            color: #000;
+        }
+        .grid .book .info .author {
+            display: block;
+            line-height: 1.5em;
+            font-size: 80%;
+            color: #333;
+        }
+        .grid .book .info .description {
+            display: none;
+        }
+        .grid .book .buttons-container {
+            width: 100%;
+            display: block;
+            position: absolute;
+            bottom: 0;
+            text-align: right;
+        }
+        .grid .book .buttons-container .buttons .button {
+            display: inline-block;
+        }
+        .grid .book.expanded {
+            width: 76%;
+            margin: 0 12%;
+        }
+        .grid .book.expanded .cover {
+            display: inline-block;
+            max-width: 24%;
+        }
+        .grid .book.expanded .info {
+            float: right;
+            max-width: 75%;
+        }
+        .grid .book.expanded .info .description {
+            display: block;
+        }
+
+        .book.nomatch {
+            display: none;
+        }
+
+        .topbar {
+            display: block;
+            display: flex;
+            justify-content: space-between;
+            background-color: #FFF;
+            height: 3em;
+            line-height: 3em;
+        }
+        .topbar .left {
+            flex: 0;
+            padding-left: .5em;
+            display: inline-block;
+            float: left;
+            text-align: left;
+            height: inherit;
+            line-height: inherit;
+        }
+        .topbar .center {
+            flex: 1;
+            padding-left: .5em;
+            display: inline-block;
+            text-align: center;
+            height: inherit;
+            line-height: inherit;
+            overflow: hidden;
+        }
+        .topbar .right {
+            flex: 0;
+            padding-left: .5em;
+            padding-right: .5em;
+            display: inline-block;
+            float: right;
+            text-align: right;
+            height: inherit;
+            line-height: inherit;
+        }
+        .topbar.fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10000;
+        }
+        .topbar.fixed+div {
+            margin-top: 3em;
+        }
+
+        .button {
+            display: inline-block;
+            font-size: 100%;
+            color: #777777;
+            cursor: default;
+            border: 1px solid #CCC;
+            background-color: #EEE;
+            padding: 0 4px;
+            height: 2.1em;
+            line-height: 2.1em;
+        }
+        .button:link, .button:visited {
+            color: #000;
+            cursor: pointer;
+        }
+
+        .button:link:hover, .button:link:active, .button:link:focus {
+            background-color: #DDD;
+        }
+
+        .clearfix {
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+    <div id="topbar" class="fixed topbar">
+        <div class="left">
+            <div class="title item">Books</div>
+        </div>
+        <div class="center">
+            <input type="search" id="search" placeholder="Search..." autocomplete="off" />
+            <select id="authors">
+                <option value="" selectes>All Authors</option>
+            </select>
+        </div>
+        <div class="right">
+            <a href="javascript:void(0);" id="list-button" title="List View" class="button"><i class="fa fa-list"></i></a>
+            <a href="javascript:void(0);" id="grid-button" title="Grid View" class="button"><i class="fa fa-th"></i></a>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div id="books" class="books list">
+    </div>
+
+    <script>
+        /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js*/
+        ;if("document" in self&&!("classList" in document.createElement("_"))){(function(j){"use strict";if(!("Element" in j)){return}var a="classList",f="prototype",m=j.Element[f],b=Object,k=String[f].trim||function(){return this.replace(/^\s+|\s+$/g,"")},c=Array[f].indexOf||function(q){var p=0,o=this.length;for(;p<o;p++){if(p in this&&this[p]===q){return p}}return -1},n=function(o,p){this.name=o;this.code=DOMException[o];this.message=p},g=function(p,o){if(o===""){throw new n("SYNTAX_ERR","An invalid or illegal string was specified")}if(/\s/.test(o)){throw new n("INVALID_CHARACTER_ERR","String contains an invalid character")}return c.call(p,o)},d=function(s){var r=k.call(s.getAttribute("class")||""),q=r?r.split(/\s+/):[],p=0,o=q.length;for(;p<o;p++){this.push(q[p])}this._updateClassName=function(){s.setAttribute("class",this.toString())}},e=d[f]=[],i=function(){return new d(this)};n[f]=Error[f];e.item=function(o){return this[o]||null};e.contains=function(o){o+="";return g(this,o)!==-1};e.add=function(){var s=arguments,r=0,p=s.length,q,o=false;do{q=s[r]+"";if(g(this,q)===-1){this.push(q);o=true}}while(++r<p);if(o){this._updateClassName()}};e.remove=function(){var t=arguments,s=0,p=t.length,r,o=false;do{r=t[s]+"";var q=g(this,r);if(q!==-1){this.splice(q,1);o=true}}while(++s<p);if(o){this._updateClassName()}};e.toggle=function(p,q){p+="";var o=this.contains(p),r=o?q!==true&&"remove":q!==false&&"add";if(r){this[r](p)}return !o};e.toString=function(){return this.join(" ")};if(b.defineProperty){var l={get:i,enumerable:true,configurable:true};try{b.defineProperty(m,a,l)}catch(h){if(h.number===-2146823252){l.enumerable=false;b.defineProperty(m,a,l)}}}else{if(b[f].__defineGetter__){m.__defineGetter__(a,i)}}}(self))};
+    </script>
+
+    <script src="books.js"></script>
+
+    <script>
+        if (typeof String.prototype.contains === 'undefined') { String.prototype.contains = function(it) { return this.indexOf(it) != -1; }; }
+
+        BookBrowser = {};
+        BookBrowser.util = {};
+        BookBrowser.util.findPos = function(obj) {
+            var curtop = 0;
+            if (obj.offsetParent) {
+                do {
+                    curtop += obj.offsetTop;
+                } while (
+                    obj = obj.offsetParent
+                );
+            return curtop;
+            }
+        };
+        BookBrowser.util.scrollTo = function(elem, offset){
+            window.scroll(0, BookBrowser.util.findPos(elem) + offset);
+        };
+        BookBrowser.scrollToExpanded = function(){
+            try {
+                var expandedBook = document.querySelectorAll("#books .expanded")[0];
+                if (expandedBook) {
+                    BookBrowser.util.scrollTo(expandedBook, 0 - document.querySelectorAll("#topbar")[0].offsetHeight);
+                }
+            } catch (e) {}
+        };
+        BookBrowser.addBook = function(bookinfo) {
+            var book = document.createElement("div");
+            book.classList.add("book");
+
+            book.innerHTML = ('<img class="cover" src="' + ( bookinfo.coverurl || "nocover.jpg") + '" /><div class="info"><div class="title">' + bookinfo.title + '</div><div class="author">' + bookinfo.author + '</div><div class="description">' + bookinfo.description + '</div></div><div class="buttons-container"><div class="buttons"><a href="' + bookinfo.filename + '" title="Download" class="button downloadbook"><i class="fa fa-download"></i></a><a href="ePubViewer/#../' + bookinfo.filename + '" title="Read" class="button readbook" target="_blank"><i class="fa fa-book"></i></a></div></div>');
+
+            document.getElementById("books").appendChild(book);
+        };
+        BookBrowser.getBookEls = function(){
+            return document.getElementById("books").querySelectorAll(".book")
+        };
+        BookBrowser.filterSearch = function(q){
+            try {
+                q = q.toLowerCase();
+                q = q.trim();
+            } catch (e) {}
+            var bels = BookBrowser.getBookEls();
+            for (var i = 0; i < bels.length; i++){
+                bels[i].classList.add("nomatch");
+                var bt = bels[i].querySelectorAll(".title")[0].innerHTML.toLowerCase();
+                var ba = bels[i].querySelectorAll(".author")[0].innerHTML.toLowerCase();
+                var bd = bels[i].querySelectorAll(".description")[0].innerHTML.toLowerCase();
+                if (bt.contains(q) || ba.contains(q) || bd.contains(q) || q == "") {
+                    bels[i].classList.remove("nomatch");
+                }
+            }
+        };
+        BookBrowser.init = function() {
+            if (bookList) {
+                for (var i = 0; i < bookList.length; i++) {
+                    this.addBook(bookList[i]);
+                }
+            } else {
+                console.error("Cannot load booklist");
+            }
+
+            var booklistels = this.getBookEls();
+            for (var i = 0; i < booklistels.length; i++) {
+                booklistels[i].addEventListener("click", function(e) {
+                    if (!e.target.classList.contains("button")) {
+                        var alreadyhas = this.classList.contains("expanded");
+                        var booklistels = document.getElementById("books").querySelectorAll(".book");
+                        for (var i = 0; i < booklistels.length; i++) {
+                            booklistels[i].classList.remove("expanded");
+                        }
+                        if (!alreadyhas) {
+                            this.classList.add("expanded");
+                            BookBrowser.scrollToExpanded();
+                        }
+                    }
+                });
+            }
+
+            document.getElementById("books").classList.remove("list");
+            document.getElementById("books").classList.remove("grid");
+
+            document.getElementById("grid-button").addEventListener("click", function() {
+                document.getElementById("books").classList.remove("list");
+                document.getElementById("books").classList.add("grid");
+                document.getElementById("grid-button").style.display = "none";
+                document.getElementById("list-button").style.display = "inline-block";
+                BookBrowser.scrollToExpanded();
+            });
+
+            document.getElementById("list-button").addEventListener("click", function() {
+                document.getElementById("books").classList.add("list");
+                document.getElementById("books").classList.remove("grid");
+                document.getElementById("grid-button").style.display = "inline-block";
+                document.getElementById("list-button").style.display = "none";
+                BookBrowser.scrollToExpanded();
+            });
+
+            document.getElementById("list-button").click();
+
+            document.getElementById("search").addEventListener("keyup", function(){
+                try {
+                    document.getElementById("authors").selectedIndex = 0;
+                } catch (e) {}
+                var q = document.getElementById("search").value;
+                BookBrowser.filterSearch(q);
+            });
+
+            var bels = BookBrowser.getBookEls();
+            var authors = [];
+            for (var i = 0; i < bels.length; i++){
+                var newItem = bels[i].querySelectorAll(".author")[0].innerHTML.trim()
+                if (authors.indexOf(newItem) === -1) {
+                    authors.push(newItem);
+                }
+            }
+            for (var i = 0; i < authors.length; i++) {
+                var o = document.createElement("option");
+                o.value = authors[i];
+                o.innerText = authors[i];
+                document.getElementById("authors").appendChild(o);
+            }
+            document.getElementById("authors").addEventListener("change", function(){
+                document.getElementById("search").value = this.value;
+                BookBrowser.filterSearch(this.value);
+            });
+        }
+
+        BookBrowser.init();
+    </script>
+    
+    <script>
+        (function removeReaderLinksIfRunningLocally(window, document) {
+            if (window.location.protocol == "file:") {
+                var sel = document.createElement("style");
+                sel.innerText = ".book .readbook {display:none !important;}";
+                document.body.appendChild(sel);
+                console.log("Removed read book links because it only works if you use server.py");
+            }
+        })(window, document);
+    </script>
+</body>
+</html>

@@ -75,13 +75,20 @@ for bfile in books:
             fi = open(bfile + ".txt", 'wb');
             nl = "\n";
             try: 
-                btitle = [f for f in metadataelement if f.tag == "{http://purl.org/dc/elements/1.1/}title"][0].text;
+                btitle = [f for f in metadataelement if f.tag == "{http://purl.org/dc/elements/1.1/}title"][0].text.replace('\n', ' ').replace('\r', '');
                 fi.write("title=" + btitle + nl);
             except:
                 errorprint("Error getting title for book " + bfile);
+
+            try: 
+                bdescription = [f for f in metadataelement if f.tag == "{http://purl.org/dc/elements/1.1/}description"][0].text.encode("utf-8").replace('\n', ' ').replace('\r', '');
+                fi.write("description=" + bdescription + nl);
+            except:
+                errorprint("Error getting description for book " + bfile);
+
             
             try:
-                bauthor = [f for f in metadataelement if f.tag == "{http://purl.org/dc/elements/1.1/}creator"][0].text;
+                bauthor = [f for f in metadataelement if f.tag == "{http://purl.org/dc/elements/1.1/}creator"][0].text.replace('\n', ' ').replace('\r', '');
                 fi.write("author=" + bauthor + nl);
             except:
                 errorprint("Error getting author for book " + bfile);

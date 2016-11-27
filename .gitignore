@@ -1,3 +1,4 @@
 Content/Books/**
-Content/index.html
+Content/books.json
+Content/books.js
 !Content/*/**/index.html
