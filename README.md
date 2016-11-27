@@ -20,8 +20,4 @@ First, [download](https://github.com/geek1011/BookBrowser/archive/master.zip) an
 
 To clear the metadata and cover cache, either run resetindex.sh on Linux, or delete the txt, jpg, jpeg, and png files from the Content/Books folder.
 
-## Screenshots
-[![](Screenshots/thumbnails/BookBrowser1.png)](https://raw.githubusercontent.com/geek1011/BookBrowser/master/Screenshots/BookBrowser1.png)
-[![](Screenshots/thumbnails/BookBrowser2.png)](https://raw.githubusercontent.com/geek1011/BookBrowser/master/Screenshots/BookBrowser2.png)
-[![](Screenshots/thumbnails/BookBrowser3.png)](https://raw.githubusercontent.com/geek1011/BookBrowser/master/Screenshots/BookBrowser3.png)
-[![](Screenshots/thumbnails/BookBrowser4.png)](https://raw.githubusercontent.com/geek1011/BookBrowser/master/Screenshots/BookBrowser4.png)
+## [Screenshots](https://geek1011.github.io/BookBrowser/#screenshots)
