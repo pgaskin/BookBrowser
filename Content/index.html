@@ -150,7 +150,12 @@
         }
         .grid .book.expanded {
             width: 50%;
+            min-width: 500px;
+            max-width: 93%;
             flex-direction: row;
+        }
+        .grid .book.expanded .info .description {
+            display: block;
         }
 
         .book.nomatch {
@@ -265,6 +270,7 @@
     </div>
     <div id="books" class="books list">
     </div>
+    <center>Books in the public domain from <a href="https://standardebooks.org">Standard Ebooks</a></center>
 
     <script>
         /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js*/
