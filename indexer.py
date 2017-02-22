@@ -92,11 +92,23 @@ for bfile in books:
                 fi.write("author=" + bauthor + nl);
             except:
                 errorprint("Error getting author for book " + bfile);
+
+
+            try:
+                bseries = [f for f in metadataelement if f.get("name") == "calibre:series"][0].get("content");
+                fi.write("series=" + bseries + nl);
+            except:
+                errorprint("Error getting series for book " + bfile);
+                
+                
+            try:
+                bseriesi = [f for f in metadataelement if f.get("name") == "calibre:series_index"][0].get("content");
+                fi.write("seriesindex=" + bseriesi + nl);
+            except:
+                errorprint("Error getting series index for book " + bfile);
             fi.close();
         except Exception, e:
             errorprint("Error getting metadata for book " + bfile + ": " + str(e));
-
-
 
 print("");
 print("");

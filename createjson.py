@@ -18,7 +18,7 @@ for subdir, dirs, files in os.walk(bdir):
 
 bookinfos = [];
 for bfile in books:
-    bookinfo = {"filename": None, "coverurl": None, "title": None, "author": None};
+    bookinfo = {"filename": None, "coverurl": None, "title": None, "author": None, "series": None, "seriesindex": None};
 
     bookinfo["filename"] = bfile.replace(sdir, "");
     bookinfo["filename"] = bookinfo["filename"].lstrip(os.sep);
@@ -54,11 +54,16 @@ for bfile in books:
     bookinfos.append(bookinfo);
 
 booktemplate = '''{notfirst}{
-    "filename": "{filename}",
-    "coverurl": "{coverurl}",
+    "downloads": [{
+         type: "epub",
+         link: "{filename}"
+    }],
+    "coverURL": "{coverurl}",
     "title": "{title}",
     "author": "{author}",
-    "description": "{description}"
+    "description": "{description}",
+    "series": "{series}",
+    "seriesIndex": "{seriesindex}"
 }'''
 
 json = '''['''
@@ -68,11 +73,11 @@ for bookinfo in bookinfos:
     gbooktemplate = booktemplate;
     notfirst = "" if first else ", ";
     gbooktemplate = gbooktemplate.replace("{notfirst}", notfirst);
-    for k in ["filename", "coverurl", "title", "author", "description"]:
+    for k in ["filename", "coverurl", "title", "author", "description", "series", "seriesindex"]:
         try: 
-            gbooktemplate = gbooktemplate.replace("{" + k + "}", (bookinfo[k] or "undefined").replace("\\", "/").replace('"', '\\"').replace('\n', ' ').replace('\r', ''));
+            gbooktemplate = gbooktemplate.replace("{" + k + "}", (bookinfo[k] or "").replace("\\", "/").replace('"', '\\"').replace('\n', ' ').replace('\r', ''));
         except:
-            pass;
+            gbooktemplate = gbooktemplate.replace("{" + k + "}", ("").replace("\\", "/").replace('"', '\\"').replace('\n', ' ').replace('\r', ''));
     json = json + gbooktemplate;
     first = False;
 
