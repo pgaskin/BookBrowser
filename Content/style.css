@@ -139,7 +139,9 @@ body {
 }
 
 .main .view .booklist {
+  display: -ms-flex;
   display: flex;
+  -ms-flex-wrap: wrap;
   flex-wrap: wrap;
   justify-content: flex-start;
 }
