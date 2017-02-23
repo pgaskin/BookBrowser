@@ -305,7 +305,8 @@ body {
   color: #333;
 }
 
-@media only screen and (max-width: 600px) {
+/* Horizontal nav */
+@media only screen and (max-width: 768px) {
   .main {
     margin: 0;
   }
@@ -326,8 +327,12 @@ body {
     display: inline-block;
     padding: 10px;
   }
+}
+
+/* Single column book view */
+@media only screen and (max-width: 580px) {
   .main .view .bookview {
-	padding: 15px;
+    padding: 15px;
     padding-right: 10px;
   }
   .main .view .bookview .book .book-cover-container {
