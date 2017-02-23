@@ -343,8 +343,8 @@ body {
   }
   .main .view .bookview .book .book-cover-container .book-cover {
     min-width: 30px;
-    max-width: 100%;
-    width: 100%;
+    max-width: 50%;
+    width: 50%;
     padding-right: 15px;
   }
 }
