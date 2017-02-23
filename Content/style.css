@@ -144,6 +144,7 @@ body {
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
   justify-content: flex-start;
+  max-width: 100vw;
 }
 
 .main .view .booklist .book {
