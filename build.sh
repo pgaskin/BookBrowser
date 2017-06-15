@@ -13,8 +13,8 @@ echo
 echo "Installing dependencies"
 echo "--> go-bindata"
 go get -u -v github.com/jteeuwen/go-bindata/...  2>&1 | indent
-echo "--> go-bindata"
-go get -u -v github.com/jteeuwen/go-bindata/...  2>&1 | indent
+echo "--> go-bindata-assetfs"
+go get -u -v github.com/elazarl/go-bindata-assetfs/...  2>&1 | indent
 echo "--> etree"
 go get -u -v github.com/beevik/etree  2>&1 | indent
 echo "--> go-zglob"
