@@ -1,5 +1,5 @@
 # BookBrowser
-A easy-to-use tool to generate a web-based epub book browser. All you need to do is download it into the folder with your ebooks, and start it.
+A easy-to-use tool to generate a web-based epub book browser. All you need to do is [download it](https://github.com/geek1011/BookBrowser/releases/latest) into the folder with your ebooks, and run it.
 
 ## Features
 - Search
