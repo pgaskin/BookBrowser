@@ -40,9 +40,9 @@ env GOOS=windows GOARCH=amd64 go build -o build/BookBrowser-windows-64bit.exe  2
 echo "--> Building BookBrowser for Windows 32bit"
 env GOOS=windows GOARCH=386 go build -o build/BookBrowser-windows-32bit.exe  2>&1 | indent
 echo "--> Building BookBrowser for Darwin 64bit"
-env GOOS=darwin GOARCH=amd64 go build -o build/BookBrowser-darwin-64bit.exe  2>&1 | indent
+env GOOS=darwin GOARCH=amd64 go build -o build/BookBrowser-darwin-64bit  2>&1 | indent
 echo "--> Building BookBrowser for Darwin 32bit"
-env GOOS=darwin GOARCH=386 go build -o build/BookBrowser-darwin-32bit.exe  2>&1 | indent
+env GOOS=darwin GOARCH=386 go build -o build/BookBrowser-darwin-32bit  2>&1 | indent
 fi
 
 echo
