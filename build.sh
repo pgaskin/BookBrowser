@@ -37,7 +37,7 @@ echo "Building"
 echo "--> Creating build directory"
 mkdir -vp build  2>&1 | indent
 
-echo "Generating bindata"
+echo "--> Generating bindata"
 go generate
 
 echo "--> Building BookBrowser for Linux 64bit"
@@ -59,6 +59,21 @@ if [[ "$1" == "all" ]]; then
     echo "--> Building BookBrowser for Darwin 32bit"
     env GOOS=darwin GOARCH=386 go build -o build/BookBrowser-darwin-32bit  2>&1 | indent
 fi
+
+
+echo
+echo "Generating release notes"
+
+echo "--> Changelog"
+echo "## Changes for $(git describe --tags --abbrev=0 HEAD^)" | tee -a build/release-notes.md | indent
+echo "$(git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --oneline)" | tee -a build/release-notes.md | indent
+echo "" | tee -a build/release-notes.md | indent
+echo "--> Usage"
+echo "## Usage" | tee -a build/release-notes.md | indent
+echo "1. Download the binary for your platform below" | tee -a build/release-notes.md | indent
+echo "2. Copy it to the directory with your books" | tee -a build/release-notes.md | indent
+echo "3. Run it" | tee -a build/release-notes.md | indent
+
 
 echo
 
