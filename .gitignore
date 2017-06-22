@@ -1,4 +1,4 @@
-Content/Books/**
-Content/books.json
-Content/books.js
-!Content/*/**/index.html
+build
+build/**
+.vscode
+.vscode/**
