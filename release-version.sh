@@ -22,3 +22,5 @@ esac
 git tag $1
 git push --tags
 ./build.sh
+./scripts/release-notes.sh
+./scripts/publish-release.sh
