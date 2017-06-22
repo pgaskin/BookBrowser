@@ -75,7 +75,11 @@ func main() {
 
 	books, err := indexBooks()
 	if err != nil {
-		log.Fatalf("Error indexing books: %s\n", err)
+		log.Fatalf("Fatal error indexing books: %s\n", err)
+	}
+
+	if len(books) == 0 {
+		log.Fatalln("Fatal error: no books found")
 	}
 
 	runServer(books, *addr)
