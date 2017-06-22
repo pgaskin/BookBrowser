@@ -60,7 +60,8 @@ func pageHTML(title string, content string) string {
 	html.WriteString(`</div>
 <footer class="footer">
 	<div class="container">
-		<p class="text-muted"><a href="https://github.com/geek1011/BookBrowser">BookBrowser</a> Copyright 2017 Patrick G</a></p>
+		<p class="text-muted"><a href="https://github.com/geek1011/BookBrowser">BookBrowser</a> ` + curversion + `</p> 
+		<p class="text-muted">Copyright 2017 <a href="https://geek1011.github.io">Patrick G</a></p>
 	</div>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

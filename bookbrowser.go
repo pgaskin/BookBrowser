@@ -33,6 +33,8 @@ var bookdir *string
 var tempdir *string
 var addr *string
 
+var curversion = "undefined"
+
 func main() {
 	wd, err := os.Getwd()
 	if err != nil {
@@ -43,6 +45,8 @@ func main() {
 	tempdir = flag.String("tempdir", filepath.Join(wd, "_temp"), "The directory to use for storing temporary files such as book cover thumbnails. This directory is create on start and deleted on exit.")
 	addr = flag.String("addr", ":8090", "The address to bind to.")
 	flag.Parse()
+
+	log.Printf("BookBrowser %s\n", curversion)
 
 	if _, err := os.Stat(*bookdir); err != nil {
 		if os.IsNotExist(err) {

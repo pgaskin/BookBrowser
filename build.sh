@@ -31,8 +31,19 @@ go get -u -v github.com/nfnt/resize  2>&1 | indent
 echo "--> zipfs"
 go get -u -v golang.org/x/tools/godoc/vfs/zipfs 2>&1 | indent
 
+echo "--> github-release"
+go get -u -v github.com/aktau/github-release 2>&1 | indent
+
 echo
 echo "Building"
+
+echo "--> Getting version info"
+# Gets current tag, or else previous-tag+commit-hash~dev
+APP_VERSION="$(git name-rev --name-only --tags HEAD | sed "s/undefined/$(git describe --abbrev=0 --tags)+$(git rev-parse --short HEAD)-dev/")"
+echo "APP_VERSION=$APP_VERSION" | indent
+IS_DEV=$(if [[ "$(git name-rev --name-only --tags HEAD)" != "undefine
+d" ]];then echo true;else echo false;fi)
+echo "IS_DEV=$IS_DEV" | indent
 
 echo "--> Creating build directory"
 mkdir -vp build  2>&1 | indent
@@ -41,23 +52,23 @@ echo "--> Generating bindata"
 go generate
 
 echo "--> Building BookBrowser for Linux 64bit"
-env GOOS=linux GOARCH=amd64 go build -o build/BookBrowser-linux-64bit  2>&1 | indent
+env GOOS=linux GOARCH=amd64 go build -ldflags "-X main.curversion=$APP_VERSION" -o build/BookBrowser-$APP_VERSION-linux-64bit  2>&1 | indent
 
 if [[ "$1" == "all" ]]; then
     echo "--> Building BookBrowser for Linux 32bit"
-    env GOOS=linux GOARCH=386 go build -o build/BookBrowser-linux-32bit  2>&1 | indent
+    env GOOS=linux GOARCH=386 go build -ldflags "-X main.curversion=$APP_VERSION" -o build/BookBrowser-$APP_VERSION-linux-32bit  2>&1 | indent
 
     echo "--> Building BookBrowser for Windows 64bit"
-    env GOOS=windows GOARCH=amd64 go build -o build/BookBrowser-windows-64bit.exe  2>&1 | indent
+    env GOOS=windows GOARCH=amd64 go build -ldflags "-X main.curversion=$APP_VERSION" -o build/BookBrowser-$APP_VERSION-windows-64bit.exe  2>&1 | indent
 
     echo "--> Building BookBrowser for Windows 32bit"
-    env GOOS=windows GOARCH=386 go build -o build/BookBrowser-windows-32bit.exe  2>&1 | indent
+    env GOOS=windows GOARCH=386 go build -ldflags "-X main.curversion=$APP_VERSION" -o build/BookBrowser-$APP_VERSION-windows-32bit.exe  2>&1 | indent
 
     echo "--> Building BookBrowser for Darwin 64bit"
-    env GOOS=darwin GOARCH=amd64 go build -o build/BookBrowser-darwin-64bit  2>&1 | indent
+    env GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.curversion=$APP_VERSION" -o build/BookBrowser-$APP_VERSION-darwin-64bit  2>&1 | indent
 
     echo "--> Building BookBrowser for Darwin 32bit"
-    env GOOS=darwin GOARCH=386 go build -o build/BookBrowser-darwin-32bit  2>&1 | indent
+    env GOOS=darwin GOARCH=386 go build -ldflags "-X main.curversion=$APP_VERSION" -o build/BookBrowser-$APP_VERSION-darwin-32bit  2>&1 | indent
 fi
 
 
@@ -65,7 +76,7 @@ echo
 echo "Generating release notes"
 
 echo "--> Changelog"
-echo "## Changes for $(git describe --tags --abbrev=0 HEAD^)" | tee -a build/release-notes.md | indent
+echo "## Changes for $APP_VERSION" | tee -a build/release-notes.md | indent
 echo "$(git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --oneline)" | tee -a build/release-notes.md | indent
 echo "" | tee -a build/release-notes.md | indent
 echo "--> Usage"
@@ -74,6 +85,31 @@ echo "1. Download the binary for your platform below" | tee -a build/release-not
 echo "2. Copy it to the directory with your books" | tee -a build/release-notes.md | indent
 echo "3. Run it" | tee -a build/release-notes.md | indent
 
+
+if [[ "$IS_DEV" == "false" ]]; then
+echo
+echo "Publishing GitHub release"
+
+echo "--> Creating release from current tag"
+github-release release \
+    --user geek1011 \
+    --repo BookBrowser \
+    --tag $APP_VERSION \
+    --name "BookBrowser $APP_VERSION" \
+    --description "$(cat build/release-notes.md)" | indent
+
+echo "--> Uploading files"
+for f in build/BookBrowser-*;do 
+    fn="$(basename $f)"
+    echo "$f > $fn" | indent
+    github-release upload \
+        --user geek1011 \
+        --repo BookBrowser \
+        --tag $APP_VERSION \
+        --name "$fn" \
+        --file "$f" | indent | indent
+done
+fi
 
 echo
 
