@@ -2,8 +2,11 @@
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source common.sh
 
+export GITHUB_TOKEN
+
 echo
 echo "Publishing GitHub release"
+source scripts/common-versioninfo.sh
 
 if [[ "$IS_DEV" == "false" ]]; then
 echo "--> Creating release from current tag"
