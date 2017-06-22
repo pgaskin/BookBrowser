@@ -2,3 +2,4 @@ build
 build/**
 .vscode
 .vscode/**
+bindata_assetfs.go
