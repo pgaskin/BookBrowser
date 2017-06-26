@@ -44,7 +44,20 @@ func sortedBookPropertyList(books []Book, getNameID func(Book) nameID, filterNam
 		}
 	}
 	sort.Slice(filteredItems, func(i, j int) bool {
-		return sortNameID(items[i], items[j])
+		return sortNameID(filteredItems[i], filteredItems[j])
+	})
+	return filteredItems
+}
+
+func sortedBookList(books []Book, filterBook func(Book) bool, sortBook func(Book, Book) bool) []Book {
+	filteredItems := []Book{}
+	for _, book := range books {
+		if filterBook(book) {
+			filteredItems = append(filteredItems, book)
+		}
+	}
+	sort.Slice(filteredItems, func(i, j int) bool {
+		return sortBook(filteredItems[i], filteredItems[j])
 	})
 	return filteredItems
 }
@@ -111,31 +124,26 @@ func AuthorsHandler(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, pageHTML("Authors", listHTML.String()))
 		return
 	}
-
-	found := false
 	w.Header().Set("Content-Type", "text/html")
 	var booksHTML bytes.Buffer
 	booksHTML.WriteString(`<div class="books cards">`)
-	aname := ""
-	matched := []Book{}
-	for _, b := range books {
-		if b.AuthorID == aid {
-			aname = b.Author
-			matched = append(matched, b)
-			found = true
-		}
-	}
-	sort.Slice(matched, func(i, j int) bool {
-		return matched[i].Title < matched[j].Title
+
+	matched := sortedBookList(books, func(book Book) bool {
+		return book.AuthorID == aid
+	}, func(a Book, b Book) bool {
+		return a.Title < b.Title
 	})
+	if len(matched) == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		io.WriteString(w, pageHTML("Not Found", "Could not find author with id "+aid))
+		return
+	}
+	aname := matched[0].Author
 	for _, b := range matched {
 		booksHTML.WriteString(bookHTML(&b, true))
 	}
+
 	booksHTML.WriteString(`</div>`)
-	if found != true {
-		w.WriteHeader(http.StatusNotFound)
-		io.WriteString(w, pageHTML("Not Found", "Could not find author with id "+aid))
-	}
 	io.WriteString(w, pageHTML(aname, booksHTML.String()))
 }
 
@@ -169,30 +177,26 @@ func SeriesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	found := false
 	w.Header().Set("Content-Type", "text/html")
 	var booksHTML bytes.Buffer
 	booksHTML.WriteString(`<div class="books cards">`)
-	sname := ""
-	matched := []Book{}
-	for _, b := range books {
-		if b.Series.ID == sid {
-			sname = b.Series.Name
-			matched = append(matched, b)
-			found = true
-		}
-	}
-	sort.Slice(matched, func(i, j int) bool {
-		return matched[i].Series.Index < matched[j].Series.Index
+
+	matched := sortedBookList(books, func(book Book) bool {
+		return book.Series.ID == sid
+	}, func(a Book, b Book) bool {
+		return a.Series.Index < b.Series.Index
 	})
+	if len(matched) == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		io.WriteString(w, pageHTML("Not Found", "Could not find series with id "+sid))
+		return
+	}
+	sname := matched[0].Series.Name
 	for _, b := range matched {
 		booksHTML.WriteString(bookHTML(&b, true))
 	}
+
 	booksHTML.WriteString(`</div>`)
-	if found != true {
-		w.WriteHeader(http.StatusNotFound)
-		io.WriteString(w, pageHTML("Not Found", "Could not find series with id "+sid))
-	}
 	io.WriteString(w, pageHTML(sname, booksHTML.String()))
 }
 
@@ -204,16 +208,16 @@ func BooksHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
 		var booksHTML bytes.Buffer
 		booksHTML.WriteString(`<div class="books cards">`)
-		matched := []Book{}
-		for _, b := range books {
-			matched = append(matched, b)
-		}
-		sort.Slice(matched, func(i, j int) bool {
-			return matched[i].ModTime.Unix() > matched[j].ModTime.Unix()
+
+		matched := sortedBookList(books, func(book Book) bool {
+			return true
+		}, func(a Book, b Book) bool {
+			return a.ModTime.Unix() > b.ModTime.Unix()
 		})
 		for _, b := range matched {
 			booksHTML.WriteString(bookHTML(&b, true))
 		}
+
 		booksHTML.WriteString(`</div>`)
 		io.WriteString(w, pageHTML("Books", booksHTML.String()))
 		return
