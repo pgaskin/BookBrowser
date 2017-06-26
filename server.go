@@ -4,6 +4,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -211,6 +212,13 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// JSONHandler handles the books.json file
+func JSONHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	b, _ := json.Marshal(books)
+	w.Write(b)
+}
+
 var books []Book
 
 func runServer(bks []Book, addr string) {
@@ -226,6 +234,7 @@ func runServer(bks []Book, addr string) {
 	http.HandleFunc("/series/", SeriesHandler)
 	http.HandleFunc("/books/", BooksHandler)
 	http.HandleFunc("/search/", SearchHandler)
+	http.HandleFunc("/books.json", JSONHandler)
 	http.HandleFunc("/random/", func(w http.ResponseWriter, r *http.Request) {
 		rand.Seed(time.Now().Unix())
 		n := rand.Int() % len(books)
