@@ -23,6 +23,32 @@ type nameID struct {
 	ID   string
 }
 
+func sortedBookPropertyList(books []Book, getNameID func(Book) nameID, filterNameID func(nameID) bool, sortNameID func(nameID, nameID) bool) []nameID {
+	doneItems := map[string]bool{}
+	items := []nameID{}
+	for _, b := range books {
+		nid := getNameID(b)
+		if doneItems[nid.ID] {
+			continue
+		}
+		doneItems[nid.ID] = true
+		items = append(items, nameID{
+			Name: nid.Name,
+			ID:   nid.ID,
+		})
+	}
+	filteredItems := []nameID{}
+	for _, ni := range items {
+		if filterNameID(ni) {
+			filteredItems = append(filteredItems, ni)
+		}
+	}
+	sort.Slice(filteredItems, func(i, j int) bool {
+		return sortNameID(items[i], items[j])
+	})
+	return filteredItems
+}
+
 // DownloadHandler handles file download
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 	bid := filepath.Base(r.URL.Path)
@@ -67,24 +93,21 @@ func AuthorsHandler(w http.ResponseWriter, r *http.Request) {
 	if aid == "authors" {
 		w.Header().Set("Content-Type", "text/html")
 		var listHTML bytes.Buffer
-		doneAuthors := map[string]bool{}
-		authors := []nameID{}
-		for _, b := range books {
-			if doneAuthors[b.AuthorID] {
-				continue
-			}
-			doneAuthors[b.AuthorID] = true
-			authors = append(authors, nameID{
+
+		authors := sortedBookPropertyList(books, func(b Book) nameID {
+			return nameID{
 				Name: b.Author,
 				ID:   b.AuthorID,
-			})
-		}
-		sort.Slice(authors, func(i, j int) bool {
-			return authors[i].Name < authors[j].Name
+			}
+		}, func(ni nameID) bool {
+			return ni.Name != ""
+		}, func(a nameID, b nameID) bool {
+			return a.Name < b.Name
 		})
 		for _, ni := range authors {
 			listHTML.WriteString(itemCardHTML(ni.Name, "", "/authors/"+ni.ID))
 		}
+
 		io.WriteString(w, pageHTML("Authors", listHTML.String()))
 		return
 	}
@@ -123,28 +146,25 @@ func SeriesHandler(w http.ResponseWriter, r *http.Request) {
 	if sid == "series" {
 		w.Header().Set("Content-Type", "text/html")
 		var listHTML bytes.Buffer
-		doneSeries := map[string]bool{}
-		series := []nameID{}
-		for _, b := range books {
-			if b.Series.Name == "" || doneSeries[b.Series.ID] {
-				continue
-			}
-			doneSeries[b.Series.ID] = true
-			series = append(series, nameID{
+
+		series := sortedBookPropertyList(books, func(b Book) nameID {
+			return nameID{
 				Name: b.Series.Name,
 				ID:   b.Series.ID,
-			})
-		}
-		sort.Slice(series, func(i, j int) bool {
-			return series[i].Name < series[j].Name
+			}
+		}, func(ni nameID) bool {
+			return ni.Name != ""
+		}, func(a nameID, b nameID) bool {
+			return a.Name < b.Name
 		})
 		for _, ni := range series {
 			listHTML.WriteString(itemCardHTML(ni.Name, "", "/series/"+ni.ID))
 		}
-		if len(doneSeries) == 0 {
+		if len(series) == 0 {
 			io.WriteString(w, pageHTML("Series", "No series have been found."))
 			return
 		}
+
 		io.WriteString(w, pageHTML("Series", listHTML.String()))
 		return
 	}
