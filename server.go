@@ -18,6 +18,11 @@ import (
 	"time"
 )
 
+type nameID struct {
+	Name string
+	ID   string
+}
+
 // DownloadHandler handles file download
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 	bid := filepath.Base(r.URL.Path)
@@ -109,12 +114,22 @@ func SeriesHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
 		var listHTML bytes.Buffer
 		doneSeries := map[string]bool{}
+		series := []nameID{}
 		for _, b := range books {
 			if b.Series.Name == "" || doneSeries[b.Series.ID] {
 				continue
 			}
 			doneSeries[b.Series.ID] = true
-			listHTML.WriteString(itemCardHTML(b.Series.Name, "", "/series/"+b.Series.ID))
+			series = append(series, nameID{
+				Name: b.Series.Name,
+				ID:   b.Series.ID,
+			})
+		}
+		sort.Slice(series, func(i, j int) bool {
+			return series[i].Name < series[j].Name
+		})
+		for _, ni := range series {
+			listHTML.WriteString(itemCardHTML(ni.Name, "", "/series/"+ni.ID))
 		}
 		if len(doneSeries) == 0 {
 			io.WriteString(w, pageHTML("Series", "No series have been found."))
