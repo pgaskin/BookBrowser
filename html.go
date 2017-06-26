@@ -122,6 +122,21 @@ func bookHTML(b *Book, isCard bool) string {
 	return html.String()
 }
 
+func bookListPageHTML(books []Book, title string, notfoundtext string) (html string, notfound bool) {
+	if len(books) == 0 {
+		return pageHTML("Not Found", notfoundtext), true
+	}
+
+	var booksHTML bytes.Buffer
+	booksHTML.WriteString(`<div class="books cards">`)
+	for _, b := range books {
+		booksHTML.WriteString(bookHTML(&b, true))
+	}
+	booksHTML.WriteString(`</div>`)
+
+	return pageHTML(title, booksHTML.String()), false
+}
+
 func itemCardHTML(title string, description string, link string) string {
 	var html bytes.Buffer
 	html.WriteString(`<a class="item card" href="` + link + `">`)

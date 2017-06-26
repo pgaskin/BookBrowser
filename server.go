@@ -124,27 +124,27 @@ func AuthorsHandler(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, pageHTML("Authors", listHTML.String()))
 		return
 	}
+
 	w.Header().Set("Content-Type", "text/html")
-	var booksHTML bytes.Buffer
-	booksHTML.WriteString(`<div class="books cards">`)
 
 	matched := sortedBookList(books, func(book Book) bool {
 		return book.AuthorID == aid
 	}, func(a Book, b Book) bool {
 		return a.Title < b.Title
 	})
-	if len(matched) == 0 {
-		w.WriteHeader(http.StatusNotFound)
-		io.WriteString(w, pageHTML("Not Found", "Could not find author with id "+aid))
-		return
-	}
-	aname := matched[0].Author
-	for _, b := range matched {
-		booksHTML.WriteString(bookHTML(&b, true))
+
+	aname := ""
+	if len(matched) != 0 {
+		aname = matched[0].Author
 	}
 
-	booksHTML.WriteString(`</div>`)
-	io.WriteString(w, pageHTML(aname, booksHTML.String()))
+	html, notfound := bookListPageHTML(matched, aname, "Author not found")
+
+	if notfound {
+		w.WriteHeader(http.StatusNotFound)
+	}
+
+	io.WriteString(w, html)
 }
 
 // SeriesHandler handles the series page
@@ -178,26 +178,25 @@ func SeriesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html")
-	var booksHTML bytes.Buffer
-	booksHTML.WriteString(`<div class="books cards">`)
 
 	matched := sortedBookList(books, func(book Book) bool {
 		return book.Series.ID == sid
 	}, func(a Book, b Book) bool {
 		return a.Series.Index < b.Series.Index
 	})
-	if len(matched) == 0 {
-		w.WriteHeader(http.StatusNotFound)
-		io.WriteString(w, pageHTML("Not Found", "Could not find series with id "+sid))
-		return
-	}
-	sname := matched[0].Series.Name
-	for _, b := range matched {
-		booksHTML.WriteString(bookHTML(&b, true))
+
+	sname := ""
+	if len(matched) != 0 {
+		sname = matched[0].Series.Name
 	}
 
-	booksHTML.WriteString(`</div>`)
-	io.WriteString(w, pageHTML(sname, booksHTML.String()))
+	html, notfound := bookListPageHTML(matched, sname, "Series not found")
+
+	if notfound {
+		w.WriteHeader(http.StatusNotFound)
+	}
+
+	io.WriteString(w, html)
 }
 
 // BooksHandler handles the books page
@@ -206,20 +205,20 @@ func BooksHandler(w http.ResponseWriter, r *http.Request) {
 
 	if bid == "books" {
 		w.Header().Set("Content-Type", "text/html")
-		var booksHTML bytes.Buffer
-		booksHTML.WriteString(`<div class="books cards">`)
 
 		matched := sortedBookList(books, func(book Book) bool {
 			return true
 		}, func(a Book, b Book) bool {
 			return a.ModTime.Unix() > b.ModTime.Unix()
 		})
-		for _, b := range matched {
-			booksHTML.WriteString(bookHTML(&b, true))
+
+		html, notfound := bookListPageHTML(matched, "Books", "There are no books in your library.")
+
+		if notfound {
+			w.WriteHeader(http.StatusNotFound)
 		}
 
-		booksHTML.WriteString(`</div>`)
-		io.WriteString(w, pageHTML("Books", booksHTML.String()))
+		io.WriteString(w, html)
 		return
 	}
 
