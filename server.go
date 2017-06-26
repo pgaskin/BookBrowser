@@ -68,12 +68,22 @@ func AuthorsHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
 		var listHTML bytes.Buffer
 		doneAuthors := map[string]bool{}
+		authors := []nameID{}
 		for _, b := range books {
 			if doneAuthors[b.AuthorID] {
 				continue
 			}
 			doneAuthors[b.AuthorID] = true
-			listHTML.WriteString(itemCardHTML(b.Author, "", "/authors/"+b.AuthorID))
+			authors = append(authors, nameID{
+				Name: b.Author,
+				ID:   b.AuthorID,
+			})
+		}
+		sort.Slice(authors, func(i, j int) bool {
+			return authors[i].Name < authors[j].Name
+		})
+		for _, ni := range authors {
+			listHTML.WriteString(itemCardHTML(ni.Name, "", "/authors/"+ni.ID))
 		}
 		io.WriteString(w, pageHTML("Authors", listHTML.String()))
 		return
