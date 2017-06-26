@@ -69,8 +69,13 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 
 	if bid == "download" {
 		w.Header().Set("Content-Type", "text/html")
-		for _, b := range books {
-			io.WriteString(w, fmt.Sprintf("<a href=\"/download/%s\">%s</a><br>", b.ID, b.Title))
+		sbl := sortedBookList(books, func(b Book) bool {
+			return true
+		}, func(a Book, b Book) bool {
+			return a.Title < b.Title
+		})
+		for _, b := range sbl {
+			io.WriteString(w, fmt.Sprintf("<a href=\"/download/%s\">%s - %s - %s - %s</a><br>", b.ID, b.Title, b.Author, b.Series.Name, b.Series.Index))
 		}
 		return
 	}
