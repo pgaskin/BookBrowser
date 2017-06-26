@@ -7,6 +7,10 @@ A easy-to-use tool to generate a web-based epub book browser. All you need to do
 - Browse by:
     - Author
     - Series (from calibre metadata)
+- Sorted by:
+    - Last added
+    - Alphabetically
+    - Series
 - Web based reader
     - Custom fonts, colors, sizing, spacing
     - Remembers your position
