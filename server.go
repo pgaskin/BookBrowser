@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 )
@@ -121,12 +122,19 @@ func SeriesHandler(w http.ResponseWriter, r *http.Request) {
 	var booksHTML bytes.Buffer
 	booksHTML.WriteString(`<div class="books cards">`)
 	sname := ""
+	matched := []Book{}
 	for _, b := range books {
 		if b.Series.ID == sid {
 			sname = b.Series.Name
-			booksHTML.WriteString(bookHTML(&b, true))
+			matched = append(matched, b)
 			found = true
 		}
+	}
+	sort.Slice(matched, func(i, j int) bool {
+		return matched[i].Series.Index < matched[j].Series.Index
+	})
+	for _, b := range matched {
+		booksHTML.WriteString(bookHTML(&b, true))
 	}
 	booksHTML.WriteString(`</div>`)
 	if found != true {
