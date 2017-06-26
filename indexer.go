@@ -49,6 +49,10 @@ func getMetadata(epub string) (*Book, error) {
 
 	book := new(Book)
 
+	if file, err := os.Stat(epub); err == nil {
+		book.ModTime = file.ModTime()
+	}
+
 	rrsk, err := zfs.Open("/" + rootfile)
 	if err != nil {
 		return nil, err

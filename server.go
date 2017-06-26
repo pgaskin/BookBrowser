@@ -159,7 +159,14 @@ func BooksHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
 		var booksHTML bytes.Buffer
 		booksHTML.WriteString(`<div class="books cards">`)
+		matched := []Book{}
 		for _, b := range books {
+			matched = append(matched, b)
+		}
+		sort.Slice(matched, func(i, j int) bool {
+			return matched[i].ModTime.Unix() > matched[j].ModTime.Unix()
+		})
+		for _, b := range matched {
 			booksHTML.WriteString(bookHTML(&b, true))
 		}
 		booksHTML.WriteString(`</div>`)

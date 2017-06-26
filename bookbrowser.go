@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"syscall"
+	"time"
 )
 
 // Series represents a book series
@@ -18,15 +19,16 @@ type Series struct {
 
 // Book represents a book
 type Book struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Author      string `json:"author,omitempty"`
-	AuthorID    string `json:"authorid"`
-	Publisher   string `json:"publisher,omitempty"`
-	Description string `json:"description,omitempty"`
-	Series      Series `json:"series,omitempty"`
-	Filepath    string `json:"filepath"`
-	HasCover    bool   `json:"hascover"`
+	ID          string    `json:"id"`
+	Title       string    `json:"title"`
+	Author      string    `json:"author,omitempty"`
+	AuthorID    string    `json:"authorid"`
+	Publisher   string    `json:"publisher,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Series      Series    `json:"series,omitempty"`
+	Filepath    string    `json:"filepath"`
+	HasCover    bool      `json:"hascover"`
+	ModTime     time.Time `json:"modtime,omitempty"`
 }
 
 var bookdir *string
