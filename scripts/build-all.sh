@@ -18,6 +18,9 @@ env GOOS=linux GOARCH=amd64 go build -ldflags "-X main.curversion=$APP_VERSION" 
 echo "--> Building BookBrowser for Linux 32bit"
 env GOOS=linux GOARCH=386 go build -ldflags "-X main.curversion=$APP_VERSION" -o build/BookBrowser-$APP_VERSION-linux-32bit  2>&1 | indent
 
+echo "--> Building BookBrowser for Linux arm"
+env GOOS=linux GOARCH=arm go build -ldflags "-X main.curversion=$APP_VERSION" -o build/BookBrowser-$APP_VERSION-linux-32bit  2>&1 | indent
+
 echo "--> Building BookBrowser for Windows 64bit"
 env GOOS=windows GOARCH=amd64 go build -ldflags "-X main.curversion=$APP_VERSION" -o build/BookBrowser-$APP_VERSION-windows-64bit.exe  2>&1 | indent
 
