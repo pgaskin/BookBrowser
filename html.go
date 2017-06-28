@@ -119,7 +119,7 @@ func bookHTML(b *Book, isCard bool) string {
 		html.WriteString(`</div>`)
 	}
 	html.WriteString(`<a class="download btn btn-default" href="/download/` + b.ID + `.epub">Download EPUB</a>`)
-	html.WriteString(`<a class="reader btn btn-default" href="/static/reader/#/download/` + b.ID + `.epub">Read</a>`)
+	html.WriteString(`<a class="reader btn btn-default" href="/static/reader/#!/download/` + b.ID + `.epub">Read</a>`)
 	html.WriteString(`</div>`)
 
 	html.WriteString(`</div>`)
