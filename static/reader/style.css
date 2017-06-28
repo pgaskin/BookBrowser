@@ -164,7 +164,7 @@
 
 .reader .main .sidebar {
     flex: 0 0 auto;
-    max-width: 200px;
+    max-width: 250px;
     overflow-y: auto;
     border-right: 1px solid rgba(0,0,0,0.1);
 }
