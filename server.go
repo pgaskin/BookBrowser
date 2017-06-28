@@ -75,7 +75,7 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 			return a.Title < b.Title
 		})
 		for _, b := range sbl {
-			io.WriteString(w, fmt.Sprintf("<a href=\"/download/%s\">%s - %s - %s - %s</a><br>", b.ID, b.Title, b.Author, b.Series.Name, b.Series.Index))
+			io.WriteString(w, fmt.Sprintf("<a href=\"/download/%s\">%s - %s - %s (%v)</a><br>", b.ID, b.Title, b.Author, b.Series.Name, b.Series.Index))
 		}
 		return
 	}
