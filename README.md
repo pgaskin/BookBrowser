@@ -27,6 +27,12 @@ A easy-to-use tool to generate a web-based epub book browser. All you need to do
 | --- | --- | --- | --- |
 | ![](screenshots/books-desktop.png) | ![](screenshots/authors-desktop.png) | ![](screenshots/search-desktop.png) | ![](screenshots/book-desktop.png) |
 
+## Reader Screenshots
+
+| Desktop | Mobile |
+| --- | --- |
+| ![](screenshots/reader-desktop.png) | ![](screenshots/reader-mobile.png) |
+
 ## System Requirements
 The server works on all platforms.
 
