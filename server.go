@@ -271,7 +271,6 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 		booksHTML.WriteString(`</div>`)
 		if !matched {
 			booksHTML.WriteString("No books matching your query have been found.")
-			return
 		}
 		io.WriteString(w, pageHTML("Search Results: "+q, booksHTML.String()))
 	} else {
