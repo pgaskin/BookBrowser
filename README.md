@@ -4,6 +4,7 @@ A easy-to-use tool to generate a web-based epub book browser. All you need to do
 ## Features
 - Search
 - Responsive web interface
+- Update notifications
 - Browse by:
     - Author
     - Series (from calibre metadata)
@@ -41,7 +42,7 @@ The web interface works on IE 9+, Edge, Firefox 3+, Chrome, Safari 5.1+, Opera 1
 The web-based reader works on IE 10+, Edge, Firefox 28+, Chrome 21+, Safari 9+, Opera 17+, and Android browser 4.4+.
 
 ## Usage
-Run BookBrowser from the directory with the epub books.
+Run BookBrowser from the directory with the epub books. By default, you can access the web interface at [http://localhost:8090](http://localhost:8090).
 
 You can also use the command line arguments below:
 
@@ -51,5 +52,5 @@ You can also use the command line arguments below:
   -bookdir string
     	The directory to get books from. This directory must exist. (default ".")
   -tempdir string
-    	The directory to use for storing temporary files such as book cover thumbnails. This directory is create on start and deleted on exit. (default "./_temp")
+    	The directory to use for storing temporary files such as book cover thumbnails. This directory is create on start and deleted on exit. (default is a subdirectory in your system's temp directory)
 ````
