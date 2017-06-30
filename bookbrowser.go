@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
@@ -43,8 +44,13 @@ func main() {
 		log.Fatalf("Fatal error: %s\n", err)
 	}
 
+	td, err := ioutil.TempDir("", "bookbrowser")
+	if err != nil {
+		td = filepath.Join(wd, "_temp")
+	}
+
 	bookdir = flag.String("bookdir", wd, "The directory to get books from. This directory must exist.")
-	tempdir = flag.String("tempdir", filepath.Join(wd, "_temp"), "The directory to use for storing temporary files such as book cover thumbnails. This directory is create on start and deleted on exit.")
+	tempdir = flag.String("tempdir", td, "The directory to use for storing temporary files such as book cover thumbnails. This directory is create on start and deleted on exit.")
 	addr = flag.String("addr", ":8090", "The address to bind to.")
 	flag.Parse()
 
