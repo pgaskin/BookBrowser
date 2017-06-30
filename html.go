@@ -138,12 +138,32 @@ func pageHTML(title string, content string) string {
 						if (release["tag_name"] == currentVersion) {
 							break;
 						}
-						releaseNotes += "<b>" + release["tag_name"] + "</b><br><br>" + release.body.split("## Usage")[0].split("\n").filter(function(l) {
+						releaseNotes += "<div class=\"release\"><div class=\"version\">" + release["tag_name"] + "</div><div class=\"changelog\">" + release.body.split("## Usage")[0].split("\n").filter(function(l) {
 							return !(l.indexOf("Changes for")>-1) && (l !== "");
 						}).map(function(l) {
 							return l + "<br>";
-						}).join("\n") + "<br><br><br>";
+						}).join("\n") + "</div></div>";
 					}
+					releaseNotes += [
+						"<style>",
+						".release .changelog {",
+						"    display: block;",
+						"",
+						"}",
+						".release .version {",
+						"    display: block;",
+						"    font-weight: bold;",
+						"}",
+						".release {",
+						"    display: block;",
+						"    margin: 20px 0;",
+						"    padding: 10px;",
+						"    border: 1px solid #CCCCCC;",
+						"    background: #F0F0F0;",
+						"    border-radius: 5px;",
+						"}",
+						"</style>"
+					].join("\n");
 
 					var message = "<b>You are not using the latest version of BookBrowser. Your current version is " + currentVersion + ", but the latest version is " + latestVersion + ".</b><br><br>You can download the latest version <a href=\"https://github.com/geek1011/BookBrowser/releases/latest\" target=\"_blank\">here</a>.<br><br>The release notes for the versions up to " + latestVersion + " are below.<br><br>";
 					message += releaseNotes;
