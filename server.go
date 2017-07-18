@@ -75,7 +75,7 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 			return a.Title < b.Title
 		})
 		for _, b := range sbl {
-			io.WriteString(w, fmt.Sprintf("<a href=\"/download/%s\">%s - %s - %s (%v)</a><br>", b.ID, b.Title, b.Author, b.Series.Name, b.Series.Index))
+			io.WriteString(w, fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s - %s (%v)</a><br>", b.ID, b.FileType, b.Title, b.Author, b.Series.Name, b.Series.Index))
 		}
 		return
 	}
@@ -89,8 +89,15 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 				log.Printf("Error handling request for %s: %s\n", r.URL.Path, err)
 			}
 
-			w.Header().Set("Content-Disposition", "attachment; filename="+url.PathEscape(b.Title)+".epub")
-			w.Header().Set("Content-Type", "application/epub+zip")
+			w.Header().Set("Content-Disposition", "attachment; filename="+url.PathEscape(b.Title)+"."+b.FileType)
+			switch b.FileType {
+			case "epub":
+				w.Header().Set("Content-Type", "application/epub+zip")
+			case "pdf":
+				w.Header().Set("Content-Type", "application/pdf")
+			default:
+				w.Header().Set("Content-Type", "application/octet-stream")
+			}
 			_, err = io.Copy(w, rd)
 			rd.Close()
 			if err != nil {
