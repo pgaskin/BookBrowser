@@ -279,7 +279,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 		if !matched {
 			booksHTML.WriteString("No books matching your query have been found.")
 		}
-		io.WriteString(w, pageHTML("Search Results: "+q, booksHTML.String()))
+		io.WriteString(w, pageHTML("Search Results", booksHTML.String()))
 	} else {
 		w.Header().Set("Content-Type", "text/html")
 		io.WriteString(w, pageHTML("Search", `<form role="search" method="GET" action="/search/">
