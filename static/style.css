@@ -144,15 +144,11 @@ body {
     margin: 10px;
 }
 
-@media only screen and (max-width: 500px) {
-    .book.info {
-        display: block;
-    }
-}
-
 .book.info .cover img {
     display: block;
-    width: 100%;
+    max-height: 300px;
+    max-width: 100%;
+    margin: auto;
     -webkit-box-shadow: 0 5px 8px -6px #777;
     -moz-box-shadow: 0 5px 8px -6px #777;
     box-shadow: 0 5px 8px -6px #777;
@@ -197,6 +193,16 @@ body {
 
 .book.info .meta .series .index {
     display: inline-block;
+}
+
+@media only screen and (max-width: 500px) {
+    .book.info {
+        display: block;
+    }
+    .book.info .meta .author,
+    .book.info .meta .series {
+        text-align: center;
+    }
 }
 
 .book.info .meta .description {
@@ -256,13 +262,10 @@ body {
 }
 
 .book.card, .item.card {
-    -webkit-box-shadow: 0 5px 8px -6px #777;
-    -moz-box-shadow: 0 5px 8px -6px #777;
-    box-shadow: 0 5px 8px -6px #777;
+    border: 1px solid #CCC;
 }
 
 .book.card:hover, .item.card:hover {
-    -webkit-box-shadow: 0 9px 10px -5px #777;
-    -moz-box-shadow: 0 9px 10px -5px #777;
-    box-shadow: 0 9px 10px -5px #777;
+    border: 1px solid #AAA;
+    box-shadow: 0 0 12px -5px black;
 }
