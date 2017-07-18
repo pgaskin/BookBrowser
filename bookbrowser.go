@@ -4,9 +4,11 @@ import (
 	"flag"
 	"io/ioutil"
 	"log"
+	"net"
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"syscall"
 )
 
@@ -15,6 +17,19 @@ var tempdir *string
 var addr *string
 
 var curversion = "undefined"
+
+// GetIP gets the preferred outbound ip of this machine
+func GetIP() net.IP {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		return nil
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+
+	return localAddr.IP
+}
 
 func main() {
 	wd, err := os.Getwd()
@@ -70,6 +85,18 @@ func main() {
 
 	if len(*books) == 0 {
 		log.Fatalln("Fatal error: no books found")
+	}
+
+	if !strings.Contains(*addr, ":") {
+		log.Fatalln("Invalid listening address")
+	}
+
+	sp := strings.SplitN(*addr, ":", 2)
+	if sp[0] == "" {
+		ip := GetIP()
+		if ip != nil {
+			log.Printf("This server can be accessed at http://%s:%s\n", ip.String(), sp[1])
+		}
 	}
 
 	runServer(*books, *addr)
