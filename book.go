@@ -61,6 +61,17 @@ func NewBookFromFile(path, coverpath string) (*Book, error) {
 	processed := false
 
 	switch ft := book.FileType; ft {
+	case "pdf":
+		book.Title = filepath.Base(path)
+
+		id := sha1.New()
+		io.WriteString(id, book.Author)
+		book.AuthorID = hex.EncodeToString(id.Sum(nil))[:10]
+		io.WriteString(id, book.Series.Name)
+		io.WriteString(id, book.Title)
+		book.ID = hex.EncodeToString(id.Sum(nil))[:10]
+
+		processed = true
 	case "epub":
 		zr, err := zip.OpenReader(path)
 		if err != nil {
@@ -223,6 +234,12 @@ func NewBookListFromDir(path, coverdir string, printlog bool) (*BookList, error)
 	if err != nil {
 		return nil, err
 	}
+
+	pdfmatches, err := zglob.Glob(filepath.Join(path, "/**/*.pdf"))
+	if err != nil {
+		return nil, err
+	}
+	matches = append(matches, pdfmatches...)
 
 	var books BookList
 	for i, filename := range matches {
