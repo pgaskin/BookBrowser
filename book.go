@@ -58,8 +58,6 @@ func NewBookFromFile(path, coverpath string) (*Book, error) {
 		book.ModTime = file.ModTime()
 	}
 
-	processed := false
-
 	switch ft := book.FileType; ft {
 	case "pdf":
 		book.Title = filepath.Base(path)
@@ -70,8 +68,6 @@ func NewBookFromFile(path, coverpath string) (*Book, error) {
 		io.WriteString(id, book.Series.Name)
 		io.WriteString(id, book.Title)
 		book.ID = hex.EncodeToString(id.Sum(nil))[:10]
-
-		processed = true
 	case "epub":
 		zr, err := zip.OpenReader(path)
 		if err != nil {
@@ -215,10 +211,7 @@ func NewBookFromFile(path, coverpath string) (*Book, error) {
 				break
 			}
 		}
-		processed = true
-	}
-
-	if !processed {
+	default:
 		return nil, fmt.Errorf("Unknown filetype: %s", book.FileType)
 	}
 
