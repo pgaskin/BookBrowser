@@ -8,29 +8,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"syscall"
-	"time"
 )
-
-// Series represents a book series
-type Series struct {
-	Name  string  `json:"name,omitempty"`
-	ID    string  `json:"id,omitempty"`
-	Index float64 `json:"index,omitempty"`
-}
-
-// Book represents a book
-type Book struct {
-	ID          string    `json:"id"`
-	Title       string    `json:"title"`
-	Author      string    `json:"author,omitempty"`
-	AuthorID    string    `json:"authorid"`
-	Publisher   string    `json:"publisher,omitempty"`
-	Description string    `json:"description,omitempty"`
-	Series      Series    `json:"series,omitempty"`
-	Filepath    string    `json:"filepath"`
-	HasCover    bool      `json:"hascover"`
-	ModTime     time.Time `json:"modtime,omitempty"`
-}
 
 var bookdir *string
 var tempdir *string
@@ -85,14 +63,14 @@ func main() {
 		os.Exit(0)
 	}()
 
-	books, err := indexBooks()
+	books, err := NewBookListFromDir(*bookdir, *tempdir, true)
 	if err != nil {
 		log.Fatalf("Fatal error indexing books: %s\n", err)
 	}
 
-	if len(books) == 0 {
+	if len(*books) == 0 {
 		log.Fatalln("Fatal error: no books found")
 	}
 
-	runServer(books, *addr)
+	runServer(*books, *addr)
 }
