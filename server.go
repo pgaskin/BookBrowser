@@ -129,9 +129,11 @@ func AuthorsHandler(w http.ResponseWriter, r *http.Request) {
 		}, func(a nameID, b nameID) bool {
 			return a.Name < b.Name
 		})
+		listHTML.WriteString(`<div style="text-align:center;">`)
 		for _, ni := range authors {
 			listHTML.WriteString(itemCardHTML(ni.Name, "", "/authors/"+ni.ID))
 		}
+		listHTML.WriteString(`</div>`)
 
 		io.WriteString(w, pageHTML("Authors", listHTML.String()))
 		return
@@ -177,9 +179,11 @@ func SeriesHandler(w http.ResponseWriter, r *http.Request) {
 		}, func(a nameID, b nameID) bool {
 			return a.Name < b.Name
 		})
+		listHTML.WriteString(`<div style="text-align:center;">`)
 		for _, ni := range series {
 			listHTML.WriteString(itemCardHTML(ni.Name, "", "/series/"+ni.ID))
 		}
+		listHTML.WriteString(`</div>`)
 		if len(series) == 0 {
 			io.WriteString(w, pageHTML("Series", "No series have been found."))
 			return
