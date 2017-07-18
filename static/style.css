@@ -29,13 +29,7 @@ body {
 .books.cards {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
-}
-
-@media only screen and (min-width: 570px) {
-    .books.cards {
-        justify-content: space-between;
-    }
+    justify-content: center;
 }
 
 .books.cards .book.card {
