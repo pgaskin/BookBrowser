@@ -237,7 +237,10 @@ func bookHTML(b *Book, isCard bool) string {
 
 	html.WriteString(`<a class="download btn btn-default" href="/download/` + b.ID + `.` + b.FileType + `">Download ` + strings.ToUpper(b.FileType) + `</a>`)
 	if b.FileType == "epub" {
-		html.WriteString(`<a class="reader btn btn-default" href="/static/reader/#!/download/` + b.ID + `.` + b.FileType + `">Read</a>`)
+		html.WriteString(`<a class="reader btn btn-default" href="/static/reader/epub/#!/download/` + b.ID + `.` + b.FileType + `">Read</a>`)
+	}
+	if b.FileType == "pdf" {
+		html.WriteString(`<a class="reader btn btn-default" href="/static/reader/pdf/web/viewer.html?file=/download/` + b.ID + `.` + b.FileType + `">Read</a>`)
 	}
 
 	html.WriteString(`</div>`)
