@@ -6,6 +6,10 @@ A easy-to-use tool to generate a web-based epub book browser. All you need to do
     - epub
     - pdf
 - Search
+- Advanced Search
+    - Search any combination of fields
+    - View all information in the results
+- List view
 - Responsive web interface
 - Update notifications
 - Browse by:
