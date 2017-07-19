@@ -2,6 +2,9 @@
 A easy-to-use tool to generate a web-based epub book browser. All you need to do is [download it](https://github.com/geek1011/BookBrowser/releases/latest) into the folder with your ebooks, and run it.
 
 ## Features
+- Multiple book formats
+    - epub
+    - pdf
 - Search
 - Responsive web interface
 - Update notifications
