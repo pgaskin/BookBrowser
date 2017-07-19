@@ -45,6 +45,7 @@ A easy-to-use tool to generate a web-based ePub and PDF ebook browser. All you n
 
 | ![](screenshots/list-desktop.png) |
 | --- |
+| |
 
 ## System Requirements
 The server works on all platforms.
