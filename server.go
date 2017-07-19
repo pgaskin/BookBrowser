@@ -293,7 +293,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
 </div>
 </div>
-</form>`))
+</form><br><center><a href="/static/list.html">Advanced Search</a></center>`))
 	}
 }
 

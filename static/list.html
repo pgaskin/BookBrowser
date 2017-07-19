@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>BookBrowser</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i" rel="stylesheet">
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: 'Open Sans', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-size: 13px;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        table tr td,
+        table tr th {
+            border: 1px solid #CCC;
+            padding: 5px;
+        }
+
+        table tr:hover {
+            background: #F5F5F5;
+        }
+
+        table tr.header-row th,
+        table tr.header-row td,
+        table tr td.header-col,
+        table tr td.header-cell {
+            font-weight: bold;
+            text-align: center;
+            background: #EEE;
+        }
+
+        table tr td.header-cell {
+            border-top: solid 2px #AAA;
+        }
+
+        table tr td table tr td.header-col {
+            text-align: right;
+        }
+
+        input[type="text"] {
+            width: 100%;
+        }
+
+        td.cover img {
+            max-height: 100%;
+            max-width: 70px;
+        }
+
+        td.title {
+            width: 15%;
+        }
+
+        td.author {
+            width: 10%;
+        }
+
+        td.description {
+            max-width: 50%;
+        }
+
+        td.description div {
+            max-height: 80px;
+            overflow: auto;
+            line-height: 1.5;
+        }
+
+        td[href]:hover {
+            cursor: pointer;
+            background: #EEEEEE;
+        }
+
+        a.back, 
+        a.back:link,
+        a.back:visited {
+            width: 100%;
+            display: block;
+            background: #EEE;
+            padding: 10px 5px;
+            text-decoration: none;
+            color: blue;
+            cursor: pointer;
+        }
+        
+        a.back:hover {
+            background: #CCC;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/books" class="back">&lt;--Bookbrowser</a>
+    <table id="books">
+        <tr><td>Loading</td></tr>
+    </table>
+
+    <script>
+        window.loadRows = function (data) {
+            console.log(data);
+
+            document.getElementById("books").innerHTML = [
+                '<tr class="header-row">',
+                '    <th>Cover</th>',
+                '    <th>ID</th>',
+                '    <th>Title</th>',
+                '    <th>Author</th>',
+                '    <th>Description</th>',
+                '    <th>Series</th>',
+                '    <th>Files</th>',
+                '</tr>',
+                '<tr>',
+                '    <td colspan="7" class="header-cell">Filter</td>',
+                '</tr>',
+                '<tr class="filter-row">',
+                '    <td class="cover"></td>',
+                '    <td class="id">',
+                '        <input type="text" placeholder="ID" onkeyup="window.applyFilter();" />',
+                '    </td>',
+                '    <td class="title">',
+                '        <input type="text" placeholder="Title" onkeyup="window.applyFilter();" />',
+                '    </td>',
+                '    <td class="author">',
+                '        <input type="text" placeholder="Author" onkeyup="window.applyFilter();" />',
+                '    </td>',
+                '    <td class="description">',
+                '        <input type="text" placeholder="Description" onkeyup="window.applyFilter();" />',
+                '    </td>',
+                '    <td class="series">',
+                '        <table>',
+                '            <tr>',
+                '                <td class="header-col">Name</td>',
+                '                <td class="series-name">',
+                '                    <input type="text" placeholder="Name" onkeyup="window.applyFilter();" />',
+                '                </td>',
+                '            </tr>',
+                '            <tr>',
+                '                <td class="header-col">Index</td>',
+                '                <td class="series-index">',
+                '                    <input type="text" placeholder="Index" onkeyup="window.applyFilter();" />',
+                '                </td>',
+                '            </tr>',
+                '        </table>',
+                '    </td>',
+                '    <td class="files">',
+                '        <table>',
+                '            <tr>',
+                '                <td class="header-col">Type</td>',
+                '                <td class="files-type">',
+                '                    <input type="text" placeholder="Type" onkeyup="window.applyFilter();" />',
+                '                </td>',
+                '            </tr>',
+                '        </table>',
+                '    </td>',
+                '</tr>',
+                '<tr>',
+                '    <td colspan="7" class="header-cell">Books</td>',
+                '</tr>'
+            ].join("\n");
+
+            data.sort(function (rowa, rowb) {
+                return new Date(rowa.modtime) > new Date(rowb.modtime);
+            }).forEach(function (row) {
+                var tmp = null;
+
+                var tr = document.createElement("tr");
+                tr.className = "book-row";
+                tr.innerHTML = [
+                    '<td class="cover"></td>',
+                    '<td class="id"></td>',
+                    '<td class="title"></td>',
+                    '<td class="author"></td>',
+                    '<td class="description"></td>',
+                    '<td class="series">',
+                    '   <table>',
+                    '       <tr>',
+                    '           <td class="header-col">Name</td>',
+                    '           <td class="series-name"></td>',
+                    '       </tr>',
+                    '       <tr>',
+                    '           <td class="header-col">Index</td>',
+                    '           <td class="series-index"></td>',
+                    '       </tr>',
+                    '   </table>',
+                    '</td>',
+                    '<td class="files">',
+                    '   <table>',
+                    '       <tr>',
+                    '           <td class="header-col">Type</td>',
+                    '           <td class="files-type"></td>',
+                    '       </tr>',
+                    '       <tr>',
+                    '           <td class="header-col">Read</td>',
+                    '           <td class="files-read"></td>',
+                    '       </tr>',
+                    '       <tr>',
+                    '           <td class="header-col">Download</td>',
+                    '           <td class="files-download"></td>',
+                    '       </tr>',
+                    '   </table>',
+                    '</td>',
+                ].join("\n");
+
+                var cols = {
+                    "cover": tr.querySelector(".cover"),
+                    "id": tr.querySelector(".id"),
+                    "title": tr.querySelector(".title"),
+                    "author": tr.querySelector(".author"),
+                    "description": tr.querySelector(".description"),
+                    "series": tr.querySelector(".series"),
+                    "series-table": tr.querySelector(".series>table"),
+                    "series-name": tr.querySelector(".series .series-name"),
+                    "series-index": tr.querySelector(".series .series-index"),
+                    "files": tr.querySelector(".files"),
+                    "files-type": tr.querySelector(".files .files-type"),
+                    "files-read": tr.querySelector(".files .files-read"),
+                    "files-download": tr.querySelector(".files .files-download")
+                };
+
+                if (row.hascover) {
+                    cols["cover"].appendChild(document.createElement("img")).src = "/covers/id_thumb.jpg".replace(
+                        "id", row.id);
+                    cols["cover"].setAttribute("href", "/covers/id.jpg".replace("id", row.id));
+                }
+                cols["id"].innerHTML = row.id;
+                cols["id"].setAttribute("href", "/books/id".replace("id", row.id));
+                cols["title"].innerHTML = row.title;
+                cols["title"].setAttribute("href", "/books/id".replace("id", row.id));
+                cols["author"].innerHTML = row.author || "";
+                cols["author"].setAttribute("href", "/authors/aid".replace("aid", row.authorid));
+                cols["description"].appendChild(document.createElement("div")).innerText = row.description ||
+                    "";
+                cols["description"].setAttribute("href", "/books/id".replace("id", row.id));
+                if (row.series.name && row.series.name != "") {
+                    cols["series-name"].innerHTML = row.series.name;
+                    cols["series-name"].setAttribute("href", "/series/sid".replace("sid", row.series.id));
+                    cols["series-index"].innerHTML = row.series.index;
+                    cols["series-index"].setAttribute("href", "/series/sid".replace("sid", row.series.id));
+                    cols["series"].setAttribute("href", "/series/sid".replace("sid", row.series.id));
+                } else {
+                    cols["series-table"].style.display = "none";
+                }
+                cols["files-type"].innerHTML = row.filetype || "";
+                if (row.filetype === "epub") {
+                    cols["files-read"].innerHTML =
+                        '<a target="_blank" href="/static/reader/epub/#!/download/id.type">Read</a>'.replace(
+                            "id", row.id).replace(
+                            "type", row.filetype);
+                } else if (row.filetype === "pdf") {
+                    cols["files-read"].innerHTML =
+                        '<a target="_blank" href="/static/reader/pdf/web/viewer.html?file=/download/id.type">Read</a>'
+                        .replace(
+                            "id", row.id).replace("type", row.filetype);
+                }
+                cols["files-download"].innerHTML = '<a href="/download/id.type">Download</a>'.replace("id",
+                    row.id).replace("type", row.filetype);
+
+                tr.addEventListener("click", function (event) {
+                    var href = event.target.getAttribute("href") || "";
+                    if (href != "") {
+                        window.open(href, "_blank");
+                    }
+                });
+
+                document.getElementById("books").appendChild(tr);
+            });
+        };
+
+        window.applyFilter = function () {
+            var fr = document.querySelector("#books .filter-row");
+            var filters = {
+                "id": fr.querySelector(".id input").value.toLowerCase(),
+                "title": fr.querySelector(".title input").value.toLowerCase(),
+                "author": fr.querySelector(".author input").value.toLowerCase(),
+                "description": fr.querySelector(".description input").value.toLowerCase(),
+                "series-name": fr.querySelector(".series .series-name input").value.toLowerCase(),
+                "series-index": fr.querySelector(".series .series-index input").value.toLowerCase(),
+                "files-type": fr.querySelector(".files .files-type input").value.toLowerCase()
+            };
+            var rows = document.querySelectorAll("#books .book-row");
+            rows.forEach(function (tr) {
+                var cols = {
+                    "id": tr.querySelector(".id").innerHTML.toLowerCase(),
+                    "title": tr.querySelector(".title").innerHTML.toLowerCase(),
+                    "author": tr.querySelector(".author").innerHTML.toLowerCase(),
+                    "description": tr.querySelector(".description").innerHTML.toLowerCase(),
+                    "series-name": tr.querySelector(".series .series-name").innerHTML.toLowerCase(),
+                    "series-index": tr.querySelector(".series .series-index").innerHTML.toLowerCase(),
+                    "files-type": tr.querySelector(".files .files-type").innerHTML.toLowerCase()
+                };
+                var matches = true;
+                for (key in filters) {
+                    if (filters.hasOwnProperty(key)) {
+                        if (filters[key] !== "") {
+                            if ((cols[key].indexOf(filters[key]) > -1) || (filters[key].indexOf(cols[key]) >
+                                    -1)) {} else {
+                                matches = false;
+                            }
+                            if (cols[key] === "") {
+                                matches = false;
+                            }
+                        }
+                    }
+                }
+                tr.style.display = matches ? "table-row" : "none";
+            });
+        };
+
+        var getJSON = function (url, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.responseType = 'json';
+            xhr.onload = function () {
+                var status = xhr.status;
+                if (status == 200) {
+                    callback(null, xhr.response);
+                } else {
+                    callback(status);
+                }
+            };
+            xhr.onerror = callback;
+            xhr.send();
+        };
+
+        getJSON(
+            '/books.json',
+            function (err, data) {
+                if (err != null) {
+                    alert('Error loading book information: ' + err.toString());
+                } else if (data == null) {
+                    alert('Error loading book information')
+                } else {
+                    window.loadRows(data);
+                }
+            });
+    </script>
+</body>
+
+</html>

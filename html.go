@@ -40,7 +40,8 @@ func pageHTML(title string, content string) string {
 			<li><a href="/books/">Books</a></li>
 			<li><a href="/authors/">Authors</a></li>
 			<li><a href="/series/">Series</a></li>
-			<li><a href="/random/">Random Book</a></li>
+			<li><a href="/static/list.html">List</a></li>
+			<li><a href="/random/">Random</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right" style="padding-right:20px">
 				<form class="navbar-form" role="search" method="GET" action="/search/">
