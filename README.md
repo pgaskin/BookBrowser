@@ -31,19 +31,19 @@ A easy-to-use tool to generate a web-based ePub and PDF ebook browser. All you n
 
 ## Screenshots
 
-| ![](screenshots/books-mobile.png) | ![](screenshots/authors-mobile.png) | ![](screenshots/search-mobile.png) | ![](screenshots/book-mobile.png) |
+| ![](doc/screenshots/books-mobile.png) | ![](doc/screenshots/authors-mobile.png) | ![](doc/screenshots/search-mobile.png) | ![](doc/screenshots/book-mobile.png) |
 | --- | --- | --- | --- |
-| ![](screenshots/books-desktop.png) | ![](screenshots/authors-desktop.png) | ![](screenshots/search-desktop.png) | ![](screenshots/book-desktop.png) |
+| ![](doc/screenshots/books-desktop.png) | ![](doc/screenshots/authors-desktop.png) | ![](doc/screenshots/search-desktop.png) | ![](doc/screenshots/book-desktop.png) |
 
 ## Reader Screenshots
 
 | Desktop | Mobile |
 | --- | --- |
-| ![](screenshots/reader-desktop.png) | ![](screenshots/reader-mobile.png) |
+| ![](doc/screenshots/reader-desktop.png) | ![](doc/screenshots/reader-mobile.png) |
 
 ## Advanced Search
 
-| ![](screenshots/list-desktop.png) |
+| ![](doc/screenshots/list-desktop.png) |
 | --- |
 | |
 
