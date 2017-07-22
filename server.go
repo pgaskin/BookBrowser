@@ -69,14 +69,55 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 
 	if bid == "download" {
 		w.Header().Set("Content-Type", "text/html")
+		var buf bytes.Buffer
+		buf.WriteString(`
+<!DOCTYPE html>
+<html>
+<head>
+<title>BookBrowser</title>
+<style>
+a,
+a:link,
+a:visited {
+    display:  block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: inherit;
+    text-decoration: none;
+    font-family: sans-serif;
+    padding: 5px 7px;
+    background:  #FAFAFA;
+    border-bottom: 1px solid #DDDDDD;
+    cursor: pointer;
+}
+
+a:hover,
+a:active {
+    background: #EEEEEE;
+}
+
+html, body {
+    background: #FAFAFA;
+    margin: 0;
+    padding: 0;
+}
+</style>
+</head>
+<body>
+		`)
 		sbl := sortedBookList(books, func(b Book) bool {
 			return true
 		}, func(a Book, b Book) bool {
 			return a.Title < b.Title
 		})
 		for _, b := range sbl {
-			io.WriteString(w, fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s - %s (%v)</a><br>", b.ID, b.FileType, b.Title, b.Author, b.Series.Name, b.Series.Index))
+			buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s - %s (%v)</a>", b.ID, b.FileType, b.Title, b.Author, b.Series.Name, b.Series.Index))
 		}
+		buf.WriteString(`
+</body>
+</html>
+		`)
+		io.WriteString(w, buf.String())
 		return
 	}
 
