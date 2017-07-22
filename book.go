@@ -48,7 +48,14 @@ type Book struct {
 }
 
 // NewBookFromFile creates a book object from a file
-func NewBookFromFile(path, coverpath string) (*Book, error) {
+func NewBookFromFile(path, coverpath string) (bk *Book, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			bk = nil
+			err = fmt.Errorf("Unknown error parsing book. Skipping. Error: %s", r)
+		}
+	}()
+
 	book := new(Book)
 	book.Title = filepath.Base(path)
 	book.Filepath = path
