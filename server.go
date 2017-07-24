@@ -149,7 +149,7 @@ html, body {
 	}
 
 	w.WriteHeader(http.StatusNotFound)
-	io.WriteString(w, pageHTML("Not Found", "Could not find book with id "+bid))
+	io.WriteString(w, pageHTML("Not Found", "Could not find book with id "+bid, false, false))
 }
 
 // AuthorsHandler handles the authors page
@@ -170,13 +170,13 @@ func AuthorsHandler(w http.ResponseWriter, r *http.Request) {
 		}, func(a nameID, b nameID) bool {
 			return a.Name < b.Name
 		})
-		listHTML.WriteString(`<div style="text-align:center;">`)
+		listHTML.WriteString(`<div class="items view cards">`)
 		for _, ni := range authors {
-			listHTML.WriteString(itemCardHTML(ni.Name, "", "/authors/"+ni.ID))
+			listHTML.WriteString(itemCardHTML(ni.Name, "/authors/"+ni.ID))
 		}
 		listHTML.WriteString(`</div>`)
 
-		io.WriteString(w, pageHTML("Authors", listHTML.String()))
+		io.WriteString(w, pageHTML("Authors", listHTML.String(), true, false))
 		return
 	}
 
@@ -193,7 +193,7 @@ func AuthorsHandler(w http.ResponseWriter, r *http.Request) {
 		aname = matched[0].Author
 	}
 
-	html, notfound := bookListPageHTML(matched, aname, "Author not found")
+	html, notfound := bookListPageHTML(matched, aname, "Author not found", false)
 
 	if notfound {
 		w.WriteHeader(http.StatusNotFound)
@@ -220,17 +220,17 @@ func SeriesHandler(w http.ResponseWriter, r *http.Request) {
 		}, func(a nameID, b nameID) bool {
 			return a.Name < b.Name
 		})
-		listHTML.WriteString(`<div style="text-align:center;">`)
+		listHTML.WriteString(`<div class="items view cards">`)
 		for _, ni := range series {
-			listHTML.WriteString(itemCardHTML(ni.Name, "", "/series/"+ni.ID))
+			listHTML.WriteString(itemCardHTML(ni.Name, "/series/"+ni.ID))
 		}
 		listHTML.WriteString(`</div>`)
 		if len(series) == 0 {
-			io.WriteString(w, pageHTML("Series", "No series have been found."))
+			io.WriteString(w, pageHTML("Series", "No series have been found.", false, false))
 			return
 		}
 
-		io.WriteString(w, pageHTML("Series", listHTML.String()))
+		io.WriteString(w, pageHTML("Series", listHTML.String(), true, false))
 		return
 	}
 
@@ -247,7 +247,7 @@ func SeriesHandler(w http.ResponseWriter, r *http.Request) {
 		sname = matched[0].Series.Name
 	}
 
-	html, notfound := bookListPageHTML(matched, sname, "Series not found")
+	html, notfound := bookListPageHTML(matched, sname, "Series not found", false)
 
 	if notfound {
 		w.WriteHeader(http.StatusNotFound)
@@ -269,7 +269,7 @@ func BooksHandler(w http.ResponseWriter, r *http.Request) {
 			return a.ModTime.Unix() > b.ModTime.Unix()
 		})
 
-		html, notfound := bookListPageHTML(matched, "Books", "There are no books in your library.")
+		html, notfound := bookListPageHTML(matched, "Books", "There are no books in your library.", true)
 
 		if notfound {
 			w.WriteHeader(http.StatusNotFound)
@@ -282,13 +282,13 @@ func BooksHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	for _, b := range books {
 		if b.ID == bid {
-			io.WriteString(w, pageHTML(b.Title, bookHTML(&b, false)))
+			io.WriteString(w, pageHTML(b.Title, bookHTML(&b, true), false, false))
 			return
 		}
 	}
 
 	w.WriteHeader(http.StatusNotFound)
-	io.WriteString(w, pageHTML("Not Found", "Could not find book with id "+bid))
+	io.WriteString(w, pageHTML("Not Found", "Could not find book with id "+bid, false, false))
 }
 
 // SearchHandler handles the search page
@@ -299,15 +299,8 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	if len(q) != 0 {
 		w.Header().Set("Content-Type", "text/html")
 		var booksHTML bytes.Buffer
-		booksHTML.WriteString(`<form role="search" method="GET" action="/search/">
-<div class="input-group">
-<input type="text" class="form-control" placeholder="Search" name="q" id="q" value="` + strings.Replace(q, `"`, "&quot;", -1) + `">
-<div class="input-group-btn">
-<button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
-</div>
-</div>
-</form><br>`)
-		booksHTML.WriteString(`<div class="books cards">`)
+		booksHTML.WriteString(`<script>document.querySelector(".q").value="` + strings.Replace(q, `"`, `\"`, -1) + `";</script>`)
+		booksHTML.WriteString(`<div class="books view cards">`)
 		matched := false
 		for _, b := range books {
 			matches := false
@@ -316,7 +309,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 			matches = matches || strings.Contains(strings.ToLower(b.Series.Name), ql)
 
 			if matches {
-				booksHTML.WriteString(bookHTML(&b, true))
+				booksHTML.WriteString(bookHTML(&b, false))
 				matched = true
 			}
 		}
@@ -324,17 +317,10 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 		if !matched {
 			booksHTML.WriteString("No books matching your query have been found.")
 		}
-		io.WriteString(w, pageHTML("Search Results", booksHTML.String()))
+		io.WriteString(w, pageHTML("Search Results", booksHTML.String(), true, true))
 	} else {
 		w.Header().Set("Content-Type", "text/html")
-		io.WriteString(w, pageHTML("Search", `<form role="search" method="GET" action="/search/">
-<div class="input-group">
-<input type="text" class="form-control" placeholder="Search" name="q" id="q">
-<div class="input-group-btn">
-<button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
-</div>
-</div>
-</form><br><center><a href="/static/list.html">Advanced Search</a></center>`))
+		io.WriteString(w, pageHTML("Search", `<center><a href="/static/list.html">Advanced Search</a></center>`, false, true))
 	}
 }
 

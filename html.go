@@ -6,92 +6,100 @@ import (
 	"strings"
 )
 
-func pageHTML(title string, content string) string {
+func pageHTML(title string, content string, containsview bool, showsearch bool) string {
 	var html bytes.Buffer
 	html.WriteString(`<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>`)
-	html.WriteString(title)
-	html.WriteString(`</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
-<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700" rel="stylesheet">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<title>`)
+	html.WriteString(title)
+	html.WriteString(`</title>
 <link rel="stylesheet" href="/static/style.css">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 </head>
-<body>
-<nav class="navbar navbar-default navbar-fixed-top">
-	<div class="container">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-			<span class="sr-only">Toggle navigation</span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			</button>
-			<a class="navbar-brand" href="/books/">BookBrowser</a>
-		</div>
-		<div id="navbar" class="navbar-collapse collapse">
-			<ul class="nav navbar-nav">
-			<li><a href="/books/">Books</a></li>
-			<li><a href="/authors/">Authors</a></li>
-			<li><a href="/series/">Series</a></li>
-			<li><a href="/static/list.html">List</a></li>
-			<li><a href="/random/">Random</a></li>
-			</ul>
-			<ul class="nav navbar-nav navbar-right" style="padding-right:20px">
-				<form class="navbar-form" role="search" method="GET" action="/search/">
-				<div class="input-group">
-					<input type="text" class="form-control" placeholder="Search" name="q" id="q">
-					<div class="input-group-btn">
-						<button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
-					</div>
-				</div>
-				</form>
-			</ul>
-		</div>
-	</div>
-</nav>
+<body class="light `)
+	if containsview {
+		html.WriteString("contains-view")
+	} else {
+		html.WriteString("no-contains-view")
+	}
+	html.WriteString(`">
 <div class="container">
-<div class="page-header">
-<h1>`)
+<div class="nav">
+<div class="left">
+<div class="title">
+<a href="/books/" class="item">BookBrowser</a>
+</div>
+</div>
+<div class="right">
+<a href="/books/" class="item">Books</a>
+<a href="/authors/" class="item">Authors</a>
+<a href="/series/" class="item">Series</a>
+<a href="/static/list.html" class="item">List</a>
+<a href="/random/" class="item">Random</a>
+<a href="/search/" class="item">Search</a>
+</div>
+</div>
+<div class="section">
+<div class="title">`)
 	html.WriteString(title)
-	html.WriteString(`</h1>
+	html.WriteString(`</div>
+<div class="body">
+<div class="bar">`)
+	if showsearch {
+		html.WriteString(`<div class="search">
+<form action="/search/" method="GET">
+<input class="q" name="q" type="search" placeholder="Search books..." />
+<button class="s" type="submit">
+<i class="fa fa-search"></i>
+</button>
+</form>
+</div>`)
+	} else {
+		html.WriteString(`<div style="flex:1"></div>`)
+	}
+	html.WriteString(`<div class="view-buttons">
+<a href="javascript:void(0);" class="cards view-button" title="Cards">
+<i class="fa fa-th"></i>
+</a>
+<a href="javascript:void(0);" class="list view-button" title="List">
+<i class="fa fa-bars"></i>
+</a>
+</div>
 </div>`)
 	html.WriteString(content)
 	html.WriteString(`</div>
-<footer class="footer">
-	<div class="container">
-		<p class="text-muted"><a href="https://geek1011.github.io/BookBrowser">BookBrowser</a> ` + curversion + `</p> 
-		<p class="text-muted">Copyright 2017 <a href="https://geek1011.github.io">Patrick G</a></p>
-	</div>
-</footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</div>
+<div class="footer section">
+<div>BookBrowser ` + curversion + `</div>
+<div>Copyright 2017 <a href="https://geek1011.github.io">Patrick G</a></div>
+</div>
+<script src="/static/view.js"></script>
 <script>
     BookBrowserVersion = "` + curversion + `";
 </script>
+<script src="/static/picomodal.js"></script>
 <script src="/static/updater.js"></script>
 </body>
 </html>`)
 	return html.String()
 }
 
-func bookHTML(b *Book, isCard bool) string {
+func bookHTML(b *Book, isInfo bool) string {
 	var html bytes.Buffer
-	if isCard {
-		html.WriteString(`<div class="book card">`)
-	} else {
+	if isInfo {
 		html.WriteString(`<div class="book info">`)
+	} else {
+		html.WriteString(`<div class="book">`)
 	}
 
 	html.WriteString(`<a class="cover" href="/books/` + b.ID + `">`)
 	if b.HasCover {
-		if isCard {
+		if !isInfo {
 			html.WriteString(`<img alt="cover" src="/covers/` + b.ID + `_thumb.jpg" />`)
 		} else {
 			html.WriteString(`<img alt="cover" src="/covers/` + b.ID + `.jpg" />`)
@@ -119,7 +127,7 @@ func bookHTML(b *Book, isCard bool) string {
 		html.WriteString(`</span>`)
 		html.WriteString(`</div>`)
 	}
-	if !isCard && b.Description != "" {
+	if isInfo && b.Description != "" {
 		html.WriteString(`<div class="description">`)
 		html.WriteString(b.Description)
 		html.WriteString(`</div>`)
@@ -141,30 +149,25 @@ func bookHTML(b *Book, isCard bool) string {
 	return html.String()
 }
 
-func bookListPageHTML(books []Book, title string, notfoundtext string) (html string, notfound bool) {
+func bookListPageHTML(books []Book, title string, notfoundtext string, showsearch bool) (html string, notfound bool) {
 	if len(books) == 0 {
-		return pageHTML("Not Found", notfoundtext), true
+		return pageHTML("Not Found", notfoundtext, false, false), true
 	}
 
 	var booksHTML bytes.Buffer
-	booksHTML.WriteString(`<div class="books cards">`)
+	booksHTML.WriteString(`<div class="books view cards">`)
 	for _, b := range books {
-		booksHTML.WriteString(bookHTML(&b, true))
+		booksHTML.WriteString(bookHTML(&b, false))
 	}
 	booksHTML.WriteString(`</div>`)
 
-	return pageHTML(title, booksHTML.String()), false
+	return pageHTML(title, booksHTML.String(), true, showsearch), false
 }
 
-func itemCardHTML(title string, description string, link string) string {
+func itemCardHTML(title string, link string) string {
 	var html bytes.Buffer
-	html.WriteString(`<a class="item card" href="` + link + `">`)
-	html.WriteString(`<div class="title">`)
+	html.WriteString(`<a class="item" href="` + link + `">`)
 	html.WriteString(title)
-	html.WriteString(`</div>`)
-	html.WriteString(`<div class="description">`)
-	html.WriteString(description)
-	html.WriteString(`</div>`)
 	html.WriteString(`</a>`)
 	return html.String()
 }

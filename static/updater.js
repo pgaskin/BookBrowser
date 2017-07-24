@@ -97,9 +97,7 @@ window.checkForUpdates = function(version) {
                 console.log(message);
 
                 if (window.location.pathname == "/books/") {
-                    var modalHTML = '<div class="modal fade" id="updateModal" tabindex="-1" role="dialog"> <div class="modal-dialog" role="document"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> <h4 class="modal-title" id="updateModalLabel">BookBrowser Update Available</h4> </div> <div class="modal-body">' + message + '</div> <div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> <a type="button" target="_blank" href="https://github.com/geek1011/BookBrowser/releases/latest" class="btn btn-primary">Update</a> </div> </div> </div> </div>';
-                    document.body.appendChild(document.createElement("div")).innerHTML = modalHTML;
-                    $('#updateModal').modal('show');
+                    picoModal('<h2>BookBrowser Update Available</h2>' + message + '<br><a type="button" target="_blank" href="https://github.com/geek1011/BookBrowser/releases/latest" class="btn btn-primary">Update</a>').show();
                 }
             } catch (err) {
                 console.warn(err);
