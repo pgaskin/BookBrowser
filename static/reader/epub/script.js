@@ -378,11 +378,14 @@ ePubViewer.actions.loadBook = function (urlOrArrayBuffer) {
             ePubViewer.functions.updateIndicators();
         });
 
-        var w = 600;
-        var h = 800;
-        ePubViewer.state.book.generatePagination(w, h).then(function () {
-            ePubViewer.functions.updateIndicators();
-        });
+        var ismobile = ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) );
+        if (!ismobile) {
+            var w = 600;
+            var h = 800;
+            ePubViewer.state.book.generatePagination(w, h).then(function () {
+                ePubViewer.functions.updateIndicators();
+            });
+        }
 
         ePubViewer.state.book.on('renderer:locationChanged', function (locationCfi) {
             ePubViewer.functions.updateIndicators();
