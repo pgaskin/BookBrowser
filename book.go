@@ -14,6 +14,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"strconv"
 	"time"
 
@@ -261,5 +262,6 @@ func NewBookListFromDir(path, coverdir string, printlog bool) (*BookList, error)
 		}
 		books = append(books, *book)
 	}
+	debug.FreeOSMemory()
 	return &books, nil
 }
