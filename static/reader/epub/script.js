@@ -1,3 +1,15 @@
+(function(d){
+  var c = " ", f = "flex", fw = "-webkit-"+f, e = d.createElement('b');
+  try { 
+    e.style.display = fw; 
+    e.style.display = f; 
+    c += (e.style.display == f || e.style.display == fw) ? f : "no-"+f; 
+  } catch(e) { 
+    c += "no-"+f; 
+  }
+  d.documentElement.className += c; 
+})(document);
+
 ePubViewer = {};
 ePubViewer.state = {
     "loaded": false,
@@ -16,35 +28,38 @@ ePubViewer.state = {
 ePubViewer.themes = {
     "SepiaLight": {
         "background-color": "#FBF0D9",
-        "color": "#704214"
-    },
-    "SepiaDark": {
-        "color": "#FBF0D9",
-        "background-color": "#704214"
+        "color": "#704214",
+        "light": true
     },
     "White": {
         "color": "#000000",
-        "background-color": "#FFFFFF"
+        "background-color": "#FFFFFF",
+        "light": true
     },
     "Black": {
         "background-color": "#000000",
-        "color": "#FFFFFF"
+        "color": "#FFFFFF",
+        "light": false
     },
     "Gray": {
         "background-color": "#333333",
-        "color": "#EEEEEE"
+        "color": "#EEEEEE",
+        "light": false
     },
     "Dark": {
         "background-color": "#262c2e",
-        "color": "#f0f2f3"
+        "color": "#f0f2f3",
+        "light": false
     },
     "SolarizedLight": {
         "background-color": "#fdf6e3",
-        "color": "#657b83"
+        "color": "#657b83",
+        "light": true
     },
     "SolarizedDark": {
         "color": "#839496",
-        "background-color": "#002b36"
+        "background-color": "#002b36",
+        "light": false
     },
 };
 ePubViewer.fonts = {
@@ -240,6 +255,16 @@ ePubViewer.functions.saveSettings = function () {
 ePubViewer.functions.applySettings = function () {
     var font = ePubViewer.fonts[ePubViewer.settings.font] || ePubViewer.fonts.ArbutusSlab;
     var theme = ePubViewer.themes[ePubViewer.settings.theme] || ePubViewer.themes.SepiaLight;
+
+    try {
+        if (theme["light"]) {
+            document.body.classList.remove("dark");
+            document.body.classList.add("light");
+        } else {
+            document.body.classList.add("dark");
+            document.body.classList.remove("light");
+        }
+    } catch (ex) {}
 
     try {
         var doc = ePubViewer.state.book.renderer.doc;
@@ -638,5 +663,7 @@ ePubViewer.init = function () {
             });
         }
     })();
+    window.clearTimeout(ePubViewerLoadError);
+    document.body.parentElement.classList.remove("load-error");
 };
 ePubViewer.init();
