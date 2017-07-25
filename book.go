@@ -69,6 +69,12 @@ func NewBookFromFile(path, coverpath string) (bk *Book, err error) {
 	case "pdf":
 		book.Title = filepath.Base(path)
 
+		m, err := GetPDFMeta(path)
+		if err == nil {
+			book.Title = m.Title
+			book.Author = m.Author
+		}
+
 		id := sha1.New()
 		io.WriteString(id, book.Author)
 		book.AuthorID = hex.EncodeToString(id.Sum(nil))[:10]
