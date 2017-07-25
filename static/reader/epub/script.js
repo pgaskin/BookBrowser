@@ -282,7 +282,7 @@ ePubViewer.functions.getCoverURL = function (callback) {
     });
 }
 ePubViewer.actions = {};
-ePubViewer.actions.settingsReset = function() {
+ePubViewer.actions.settingsReset = function () {
     for (k in ePubViewer.settings) {
         if (ePubViewer.settings.hasOwnProperty(k)) {
             try {
@@ -293,9 +293,9 @@ ePubViewer.actions.settingsReset = function() {
     }
     window.location.reload();
 };
-ePubViewer.actions.allReset = function() {
-    if(confirm("Really delete all settings and book progress information?")) {
-        for (var i = 0; i < localStorage.length; i++){
+ePubViewer.actions.allReset = function () {
+    if (confirm("Really delete all settings and book progress information?")) {
+        for (var i = 0; i < localStorage.length; i++) {
             var k = localStorage.key(i);
             if (k.startsWith("ePubViewer|")) {
                 try {
@@ -378,7 +378,7 @@ ePubViewer.actions.loadBook = function (urlOrArrayBuffer) {
             ePubViewer.functions.updateIndicators();
         });
 
-        var ismobile = ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) );
+        var ismobile = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
         if (!ismobile) {
             var w = 600;
             var h = 800;
@@ -468,6 +468,23 @@ ePubViewer.actions.openBook = function () {
     };
     document.body.appendChild(fi);
     fi.click();
+};
+ePubViewer.actions.fullScreen = function () {
+    document.fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen;
+    
+    var requestFullscreen = function (element) {
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+        } else if (element.webkitRequestFullScreen) {
+            element.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+    };
+
+    if (document.fullscreenEnabled) {
+        requestFullscreen(document.documentElement);
+    }
 };
 ePubViewer.init = function () {
     ePubViewer.elements.content = document.querySelector(".reader .content");
