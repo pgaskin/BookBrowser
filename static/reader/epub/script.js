@@ -29,7 +29,23 @@ ePubViewer.themes = {
     "Black": {
         "background-color": "#000000",
         "color": "#FFFFFF"
-    }
+    },
+    "Gray": {
+        "background-color": "#333333",
+        "color": "#EEEEEE"
+    },
+    "Dark": {
+        "background-color": "#262c2e",
+        "color": "#f0f2f3"
+    },
+    "SolarizedLight": {
+        "background-color": "#fdf6e3",
+        "color": "#657b83"
+    },
+    "SolarizedDark": {
+        "color": "#839496",
+        "background-color": "#002b36"
+    },
 };
 ePubViewer.fonts = {
     "ArbutusSlab": {
@@ -43,8 +59,16 @@ ePubViewer.fonts = {
     "OpenSans": {
         "link": "https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700,700i",
         "font-family": "'Open Sans', Ubuntu, Trebuchet, sans-serif"
+    },
+    "SourceCodePro": {
+        "link": "https://fonts.googleapis.com/css?family=Source+Code+Pro:200,300,400,500,600,700,900",
+        "font-family": "'Source Code Pro', 'Open Sans', sans-serif"
+    },
+    "SourceSansPro": {
+        "link": "https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese",
+        "font-family": "'Source Sans Pro', sans-serif"
     }
-}
+};
 ePubViewer.settings = {
     "theme": "White",
     "font": "OpenSans",
