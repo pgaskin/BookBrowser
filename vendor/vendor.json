@@ -1,0 +1,43 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "V8IOVCEbg5n8vBs0x7svZ0sv1P0=",
+			"path": "github.com/beevik/etree",
+			"revision": "09746331a38f3da8c023a85a65c8c152070de725",
+			"revisionTime": "2017-05-11T20:24:51Z"
+		},
+		{
+			"checksumSHA1": "5xzgVm4v/J7VXwtip+KDu96be18=",
+			"path": "github.com/mattn/go-zglob",
+			"revision": "95345c4e1c0ebc9d16a3284177f09360f4d20fab",
+			"revisionTime": "2017-01-24T11:57:57Z"
+		},
+		{
+			"checksumSHA1": "xcAVbwtk3z9gi2Eig6DYgAiMzSc=",
+			"path": "github.com/mattn/go-zglob/fastwalk",
+			"revision": "95345c4e1c0ebc9d16a3284177f09360f4d20fab",
+			"revisionTime": "2017-01-24T11:57:57Z"
+		},
+		{
+			"checksumSHA1": "r5eQHkttko6kxroDEENXbmXKrSs=",
+			"path": "github.com/nfnt/resize",
+			"revision": "891127d8d1b52734debe1b3c3d7e747502b6c366",
+			"revisionTime": "2016-07-24T20:39:20Z"
+		},
+		{
+			"checksumSHA1": "YsJ4cdsl/xvPS2BghZ1ms1BH+2Q=",
+			"path": "golang.org/x/tools/godoc/vfs",
+			"revision": "3da34b1b520a543128e8441cd2ffffc383111d03",
+			"revisionTime": "2017-07-17T21:44:42Z"
+		},
+		{
+			"checksumSHA1": "PNmeEAMPM9nLqYkgmzwfeGIAl7Q=",
+			"path": "golang.org/x/tools/godoc/vfs/zipfs",
+			"revision": "3da34b1b520a543128e8441cd2ffffc383111d03",
+			"revisionTime": "2017-07-17T21:44:42Z"
+		}
+	],
+	"rootPath": "github.com/geek1011/BookBrowser"
+}
