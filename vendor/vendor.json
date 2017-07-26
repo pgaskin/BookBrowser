@@ -9,6 +9,12 @@
 			"revisionTime": "2017-05-11T20:24:51Z"
 		},
 		{
+			"checksumSHA1": "mrz/kicZiUaHxkyfvC/DyQcr8Do=",
+			"path": "github.com/davecgh/go-spew/spew",
+			"revision": "adab96458c51a58dc1783b3335dcce5461522e75",
+			"revisionTime": "2017-07-11T18:34:51Z"
+		},
+		{
 			"checksumSHA1": "5xzgVm4v/J7VXwtip+KDu96be18=",
 			"path": "github.com/mattn/go-zglob",
 			"revision": "95345c4e1c0ebc9d16a3284177f09360f4d20fab",
@@ -25,6 +31,18 @@
 			"path": "github.com/nfnt/resize",
 			"revision": "891127d8d1b52734debe1b3c3d7e747502b6c366",
 			"revisionTime": "2016-07-24T20:39:20Z"
+		},
+		{
+			"checksumSHA1": "LuFv4/jlrmFNnDb/5SCSEPAM9vU=",
+			"path": "github.com/pmezard/go-difflib/difflib",
+			"revision": "792786c7400a136282c1664665ae0a8db921c6c2",
+			"revisionTime": "2016-01-10T10:55:54Z"
+		},
+		{
+			"checksumSHA1": "J+ppEq6nYMKxhB9+c+MD1x9UwSc=",
+			"path": "github.com/stretchr/testify/assert",
+			"revision": "05e8a0eda380579888eb53c394909df027f06991",
+			"revisionTime": "2017-07-13T16:51:06Z"
 		},
 		{
 			"checksumSHA1": "YsJ4cdsl/xvPS2BghZ1ms1BH+2Q=",
