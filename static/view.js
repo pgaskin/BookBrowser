@@ -22,7 +22,7 @@ if (document.body.className.indexOf("no-contains-view")>-1) {
     }
 
     var restoreView = function () {
-        if (localStorage in window) {
+        if (window.localStorage) {
             var v = localStorage.getItem("view");
             if (v !== null) {
                 if (v == "list") {
