@@ -5,67 +5,37 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestEPUBMetadata(t *testing.T) {
 	td, err := ioutil.TempDir("", "bookbrowser")
-	if err != nil {
-		t.Fatalf("Cannot create temp dir: %s", err.Error())
-	}
+	assert.Nil(t, err, "should not error when creating temp dir")
 	defer os.RemoveAll(td)
 
 	book, err := NewBookFromFile("testdata/books/test1.epub", td)
-	if err != nil {
-		t.Fatalf("Could not load book: %s", err.Error())
-	}
+	assert.Nil(t, err, "should not error when loading book")
 
 	coverfile := filepath.Join(td, book.ID+".jpg")
 	if _, err := os.Stat(coverfile); err != nil {
-		if os.IsNotExist(err) {
-			t.Errorf("Cover file %s does not exist\n", coverfile)
-		}
+		assert.Nil(t, err, "cover file should exist")
 	}
 
 	coverthumbfile := filepath.Join(td, book.ID+"_thumb.jpg")
 	if _, err := os.Stat(coverthumbfile); err != nil {
 		if os.IsNotExist(err) {
-			t.Errorf("Cover thumbnail file %s does not exist\n", coverthumbfile)
+			assert.Nil(t, err, "cover thumbnail file should exist")
 		}
 	}
 
-	if book.Title != "BookBrowser Test Book 1" {
-		t.Errorf("Incorrect title: %s", book.Title)
-	}
-
-	if book.Author != "Patrick G" {
-		t.Errorf("Incorrect author: %s", book.Author)
-	}
-
-	if book.Publisher != "Patrick G" {
-		t.Errorf("Incorrect publisher: %s", book.Publisher)
-	}
-
-	if book.Description != "<p>This is a test book for <i>BookBrowser</i>, a ebook content server.</p>" {
-		t.Errorf("Incorrect description: %s", book.Description)
-	}
-
-	if book.FileType != "epub" {
-		t.Errorf("Incorrect filetype: %s", book.FileType)
-	}
-
-	if book.HasCover != true {
-		t.Errorf("Incorrect hascover value: %v", book.HasCover)
-	}
-
-	if book.Series.Name != "Test Series" {
-		t.Errorf("Incorrect series name: %s", book.Series.Name)
-	}
-
-	if book.Series.Index != 1 {
-		t.Errorf("Incorrect series index: %v", book.Series.Index)
-	}
-
-	if book.ID != "a611744562" {
-		t.Errorf("Incorrect book id: %s", book.ID)
-	}
+	assert.Equal(t, "BookBrowser Test Book 1", book.Title, "title")
+	assert.Equal(t, "Patrick G", book.Author, "author")
+	assert.Equal(t, "Patrick G", book.Publisher, "publisher")
+	assert.Equal(t, "<p>This is a test book for <i>BookBrowser</i>, a ebook content server.</p>", book.Description, "description")
+	assert.Equal(t, "epub", book.FileType, "filetype")
+	assert.True(t, book.HasCover, "should have a cover")
+	assert.Equal(t, "Test Series", book.Series.Name, "series name")
+	assert.Equal(t, float64(1), book.Series.Index, "series index")
+	assert.Equal(t, "a611744562", book.ID, "book id")
 }
