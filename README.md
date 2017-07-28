@@ -1,4 +1,6 @@
 # BookBrowser
+[![Build Status](https://travis-ci.org/geek1011/kepubify.svg?branch=master)](https://travis-ci.org/geek1011/kepubify)
+
 A easy-to-use tool to generate a web-based ePub and PDF ebook browser. All you need to do is [download it](https://github.com/geek1011/BookBrowser/releases/latest) into the folder with your ebooks, and run it. There is also a [demo](https://bookbrowser-demo.geek1011.net/books/).
 
 ## Features
