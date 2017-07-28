@@ -16,7 +16,7 @@ var bookdir *string
 var tempdir *string
 var addr *string
 
-var curversion = "undefined"
+var curversion = "dev"
 
 // GetIP gets the preferred outbound ip of this machine
 func GetIP() net.IP {
