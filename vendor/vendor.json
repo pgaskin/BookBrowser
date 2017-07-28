@@ -3,10 +3,28 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "iTyK6+LglXn9zjYGbjMTLxtLXio=",
+			"path": "github.com/PuerkitoBio/goquery",
+			"revision": "8806ada2a4ab225c06e9106f9631be80932db7ce",
+			"revisionTime": "2017-06-23T16:21:02Z"
+		},
+		{
+			"checksumSHA1": "2rWSos1D+xqNSGkvEMOG3pntod8=",
+			"path": "github.com/andybalholm/cascadia",
+			"revision": "349dd0209470eabd9514242c688c403c0926d266",
+			"revisionTime": "2016-12-24T14:14:13Z"
+		},
+		{
 			"checksumSHA1": "V8IOVCEbg5n8vBs0x7svZ0sv1P0=",
 			"path": "github.com/beevik/etree",
 			"revision": "09746331a38f3da8c023a85a65c8c152070de725",
 			"revisionTime": "2017-05-11T20:24:51Z"
+		},
+		{
+			"checksumSHA1": "t8CsjyFayB7tH16Th46OH2zL09I=",
+			"path": "github.com/cheggaaa/pb",
+			"revision": "f6ccf2184de4dd34495277e38dc19b6e7fbe0ea2",
+			"revisionTime": "2017-05-08T13:24:47Z"
 		},
 		{
 			"checksumSHA1": "mrz/kicZiUaHxkyfvC/DyQcr8Do=",
@@ -19,6 +37,18 @@
 			"path": "github.com/elazarl/go-bindata-assetfs",
 			"revision": "30f82fa23fd844bd5bb1e5f216db87fd77b5eb43",
 			"revisionTime": "2017-02-27T21:27:28Z"
+		},
+		{
+			"checksumSHA1": "yJ56/Hi0qhoGPbfRbnMfmeWsj9o=",
+			"path": "github.com/geek1011/kepubify/kepub",
+			"revision": "a7b28c3a0860198e471774e534340d842da3d432",
+			"revisionTime": "2017-07-28T16:06:52Z"
+		},
+		{
+			"checksumSHA1": "cJE7dphDlam/i7PhnsyosNWtbd4=",
+			"path": "github.com/mattn/go-runewidth",
+			"revision": "97311d9f7767e3d6f422ea06661bc2c7a19e8a5d",
+			"revisionTime": "2017-05-10T07:48:58Z"
 		},
 		{
 			"checksumSHA1": "5xzgVm4v/J7VXwtip+KDu96be18=",
@@ -49,6 +79,18 @@
 			"path": "github.com/stretchr/testify/assert",
 			"revision": "05e8a0eda380579888eb53c394909df027f06991",
 			"revisionTime": "2017-07-13T16:51:06Z"
+		},
+		{
+			"checksumSHA1": "vqc3a+oTUGX8PmD0TS+qQ7gmN8I=",
+			"path": "golang.org/x/net/html",
+			"revision": "f5079bd7f6f74e23c4d65efa0f4ce14cbd6a3c0f",
+			"revisionTime": "2017-07-19T21:11:51Z"
+		},
+		{
+			"checksumSHA1": "z79z5msRzgU48FCZxSuxfU8b4rs=",
+			"path": "golang.org/x/net/html/atom",
+			"revision": "f5079bd7f6f74e23c4d65efa0f4ce14cbd6a3c0f",
+			"revisionTime": "2017-07-19T21:11:51Z"
 		},
 		{
 			"checksumSHA1": "YsJ4cdsl/xvPS2BghZ1ms1BH+2Q=",

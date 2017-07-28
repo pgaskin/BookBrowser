@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
@@ -16,6 +17,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/geek1011/kepubify/kepub"
 )
 
 type nameID struct {
@@ -65,7 +68,11 @@ func sortedBookList(books []Book, filterBook func(Book) bool, sortBook func(Book
 // DownloadHandler handles file download
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 	bid := filepath.Base(r.URL.Path)
-	bid = strings.Replace(bid, filepath.Ext(bid), "", 1)
+	bid = strings.Replace(strings.Replace(bid, filepath.Ext(bid), "", 1), ".kepub", "", -1)
+	iskepub := false
+	if strings.HasSuffix(r.URL.Path, ".kepub.epub") {
+		iskepub = true
+	}
 
 	if bid == "download" {
 		w.Header().Set("Content-Type", "text/html")
@@ -123,26 +130,65 @@ html, body {
 
 	for _, b := range books {
 		if b.ID == bid {
-			rd, err := os.Open(b.Filepath)
-			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				io.WriteString(w, "Error handling request")
-				log.Printf("Error handling request for %s: %s\n", r.URL.Path, err)
-			}
+			if !iskepub {
+				rd, err := os.Open(b.Filepath)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					io.WriteString(w, "Error handling request")
+					log.Printf("Error handling request for %s: %s\n", r.URL.Path, err)
+					return
+				}
 
-			w.Header().Set("Content-Disposition", "attachment; filename="+url.PathEscape(b.Title)+"."+b.FileType)
-			switch b.FileType {
-			case "epub":
+				w.Header().Set("Content-Disposition", "attachment; filename="+url.PathEscape(b.Title)+"."+b.FileType)
+				switch b.FileType {
+				case "epub":
+					w.Header().Set("Content-Type", "application/epub+zip")
+				case "pdf":
+					w.Header().Set("Content-Type", "application/pdf")
+				default:
+					w.Header().Set("Content-Type", "application/octet-stream")
+				}
+				_, err = io.Copy(w, rd)
+				rd.Close()
+				if err != nil {
+					log.Printf("Error handling request for %s: %s\n", r.URL.Path, err)
+				}
+			} else {
+				if b.FileType != "epub" {
+					w.WriteHeader(http.StatusNotFound)
+					io.WriteString(w, "Not found")
+					return
+				}
+				td, err := ioutil.TempDir("", "kepubify")
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					log.Printf("Error handling request for %s: %s\n", r.URL.Path, err)
+					io.WriteString(w, "Internal Server Error")
+					return
+				}
+				defer os.RemoveAll(td)
+				kepubf := filepath.Join(td, bid+".kepub.epub")
+				err = kepub.Kepubify(b.Filepath, kepubf, false)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					log.Printf("Error handling request for %s: %s\n", r.URL.Path, err)
+					io.WriteString(w, "Internal Server Error - Error converting book")
+					return
+				}
+				rd, err := os.Open(kepubf)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					io.WriteString(w, "Error handling request")
+					log.Printf("Error handling request for %s: %s\n", r.URL.Path, err)
+					return
+				}
+				w.Header().Set("Content-Disposition", "attachment; filename="+url.PathEscape(b.Title)+".kepub.epub")
 				w.Header().Set("Content-Type", "application/epub+zip")
-			case "pdf":
-				w.Header().Set("Content-Type", "application/pdf")
-			default:
-				w.Header().Set("Content-Type", "application/octet-stream")
-			}
-			_, err = io.Copy(w, rd)
-			rd.Close()
-			if err != nil {
-				log.Printf("Error handling request for %s: %s\n", r.URL.Path, err)
+				_, err = io.Copy(w, rd)
+				rd.Close()
+				if err != nil {
+					log.Printf("Error handling request for %s: %s\n", r.URL.Path, err)
+				}
 			}
 			return
 		}
