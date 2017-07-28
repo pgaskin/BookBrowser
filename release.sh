@@ -33,6 +33,7 @@ if [[ "$NO_TAGS" == "true" ]]; then
 else
     echo "$(git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --oneline)" | tee -a build/release-notes.md
 fi
+echo | tee -a build/release-notes.md
 echo "## Usage" | tee -a build/release-notes.md
 echo "1. Download the binary for your platform below" | tee -a build/release-notes.md
 echo "2. Copy it to the directory with your books" | tee -a build/release-notes.md
@@ -61,7 +62,7 @@ if [[ "$SKIP_UPLOAD" != "true" ]]; then
         --name "BookBrowser $APP_VERSION" \
         --description "$(cat build/release-notes.md)"
 
-    for f in build/kepubify-*;do 
+    for f in build/BookBrowser-*;do 
         fn="$(basename $f)"
         echo "Uploading $fn"
         GITHUB_TOKEN=$GITHUB_TOKEN github-release upload \
