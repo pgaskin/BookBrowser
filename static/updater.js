@@ -45,7 +45,7 @@ window.checkForUpdates = function(version) {
 
                 var currentVersion = version;
 
-                var isDev = (currentVersion.indexOf("+") > -1);
+                var isDev = (currentVersion.indexOf("dev") > -1) || (currentVersion.indexOf("+") > -1);
                 if (isDev) {
                     console.warn("You are using a development version of BookBrowser");
                     return;
