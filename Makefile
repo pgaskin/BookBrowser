@@ -9,6 +9,8 @@ clean:
 build-deps:
 	go get -v "github.com/kardianos/govendor"
 	go get -v "github.com/aktau/github-release"
+	go get -v github.com/jteeuwen/go-bindata/...
+	go get -v github.com/elazarl/go-bindata-assetfs/...
 
 .PHONY: deps
 deps:

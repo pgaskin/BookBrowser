@@ -15,6 +15,12 @@
 			"revisionTime": "2017-07-11T18:34:51Z"
 		},
 		{
+			"checksumSHA1": "7DxViusFRJ7UPH0jZqYatwDrOkY=",
+			"path": "github.com/elazarl/go-bindata-assetfs",
+			"revision": "30f82fa23fd844bd5bb1e5f216db87fd77b5eb43",
+			"revisionTime": "2017-02-27T21:27:28Z"
+		},
+		{
 			"checksumSHA1": "5xzgVm4v/J7VXwtip+KDu96be18=",
 			"path": "github.com/mattn/go-zglob",
 			"revision": "95345c4e1c0ebc9d16a3284177f09360f4d20fab",
