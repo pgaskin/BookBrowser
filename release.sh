@@ -42,7 +42,7 @@ echo "3. Run it" | tee -a build/release-notes.md
 for GOOS in linux windows darwin; do
     for GOARCH in amd64 386; do
         echo "Building BookBrowser $APP_VERSION for $GOOS $GOARCH"
-        GOOS=$GOOS GOARCH=$GOOARCH go build -ldflags "-X main.version=$APP_VERSION" -o "build/BookBrowser-$GOOS-$(echo $GOARCH|sed 's/386/32bit/g'|sed 's/amd64/64bit/g')$(echo $GOOS|sed 's/windows/.exe/g'|sed 's/linux//g'|sed 's/darwin//g')"
+        GOOS=$GOOS GOARCH=$GOOARCH go build -ldflags "-X main.curversion=$APP_VERSION" -o "build/BookBrowser-$GOOS-$(echo $GOARCH|sed 's/386/32bit/g'|sed 's/amd64/64bit/g')$(echo $GOOS|sed 's/windows/.exe/g'|sed 's/linux//g'|sed 's/darwin//g')"
     done
 done
 
