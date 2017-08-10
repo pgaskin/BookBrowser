@@ -24,6 +24,7 @@ A easy-to-use tool to generate a web-based ePub and PDF ebook browser. All you n
 - Web based reader
     - Custom fonts, colors, sizing, spacing
     - Remembers your position
+    - Book search
     - And more
 - Search
 - And more

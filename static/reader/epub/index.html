@@ -25,6 +25,9 @@
                 <a href="javascript:ePubViewer.actions.showSidebar('info');" class="item info-button" data-if="loaded">
                     <span class="material-icons">info</span>
                 </a>
+                <a href="javascript:ePubViewer.actions.showSidebar('search');" class="item search-button" data-if="loaded">
+                    <span class="material-icons">search</span>
+                </a>
             </div>
             <div class="center">
                 <span class="nomobile">
@@ -183,6 +186,20 @@
                                 <a href="https://github.com/geek1011/ePubViewer">ePubViewer</a> Copyright 2017 <a href="https://geek1011.github.io">Patrick G</a>
                             </small>
                         </div>
+                    </div>
+                </div>
+                <div class="search-sidebar sidebar-inner" data-sidebar="search">
+                    <div class="sidebar-header">Search
+                        <a href="javascript:ePubViewer.actions.closeSidebars();" class="x">
+                            <span class="material-icons">close</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-contents">
+                        <form class="search-bar" onsubmit="ePubViewer.actions.handleSearch();return false;">
+                            <input type="text" class="search-box" placeholder="Search..." autocomplete="off" onkeydown="ePubViewer.actions.clearSearch();" />
+                            <button type="submit"><span class="material-icons">search</span></button>
+                        </form>
+                        <div class="search-results"></div>
                     </div>
                 </div>
             </div>
