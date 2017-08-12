@@ -39,7 +39,7 @@ echo "1. Download the binary for your platform below" | tee -a build/release-not
 echo "2. Copy it to the directory with your books" | tee -a build/release-notes.md
 echo "3. Run it" | tee -a build/release-notes.md
 
-for GOOS in linux windows darwin; do
+for GOOS in linux windows darwin freebsd; do
     for GOARCH in amd64 386; do
         echo "Building BookBrowser $APP_VERSION for $GOOS $GOARCH"
         GOOS=$GOOS GOARCH=$GOOARCH go build -ldflags "-X main.curversion=$APP_VERSION" -o "build/BookBrowser-$GOOS-$(echo $GOARCH|sed 's/386/32bit/g'|sed 's/amd64/64bit/g')$(echo $GOOS|sed 's/windows/.exe/g'|sed 's/linux//g'|sed 's/darwin//g')"
