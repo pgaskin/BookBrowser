@@ -384,13 +384,13 @@ func RandomHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 
 var books []Book
 
-func runServer(bks []Book, addr string) {
+func runServer(bks []Book, addr, tempdir string) {
 	books = bks
 
 	router := httprouter.New()
 
 	router.ServeFiles("/static/*filepath", assetFS())
-	router.ServeFiles("/covers/*filepath", http.Dir(*tempdir))
+	router.ServeFiles("/covers/*filepath", http.Dir(tempdir))
 
 	router.GET("/download", DownloadListHandler)
 	router.GET("/download/:filename", DownloadHandler)

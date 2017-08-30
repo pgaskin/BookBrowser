@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"io/ioutil"
 	"log"
 	"net"
@@ -10,11 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
-)
 
-var bookdir *string
-var tempdir *string
-var addr *string
+	"github.com/urfave/cli"
+)
 
 var curversion = "dev"
 
@@ -32,72 +29,96 @@ func GetIP() net.IP {
 }
 
 func main() {
-	wd, err := os.Getwd()
+	workdir, err := os.Getwd()
 	if err != nil {
 		log.Fatalf("Fatal error: %s\n", err)
 	}
 
-	td, err := ioutil.TempDir("", "bookbrowser")
+	tempdir, err := ioutil.TempDir("", "bookbrowser")
 	if err != nil {
-		td = filepath.Join(wd, "_temp")
+		tempdir = filepath.Join(workdir, "_temp")
 	}
 
-	bookdir = flag.String("bookdir", wd, "The directory to get books from. This directory must exist.")
-	tempdir = flag.String("tempdir", td, "The directory to use for storing temporary files such as book cover thumbnails. This directory is create on start and deleted on exit.")
-	addr = flag.String("addr", ":8090", "The address to bind to.")
-	flag.Parse()
+	app := cli.NewApp()
+	app.Name = "BookBrowser"
+	app.Usage = "Web-based eBook server supporting ePub and PDF."
+	app.Version = curversion
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "bookdir, b",
+			Value: workdir,
+			Usage: "Load books from `DIR`. The directory must exist.",
+		},
+		cli.StringFlag{
+			Name:  "tempdir, t",
+			Value: tempdir,
+			Usage: "Use `DIR` as the location for storing temporary files such as cover thumbnails. The directory is created on start and deleted on exit.",
+		},
+		cli.StringFlag{
+			Name:  "addr, a",
+			Value: ":8090",
+			Usage: "`ADDR` is the address to bind the server to. It is in the format IP:PORT. The IP is optional.",
+		},
+	}
+	app.HideHelp = true
+	app.Action = func(c *cli.Context) {
+		bookdir := c.String("bookdir")
+		tempdir := c.String("tempdir")
+		addr := c.String("addr")
 
-	log.Printf("BookBrowser %s\n", curversion)
+		log.Printf("BookBrowser %s\n", curversion)
 
-	if _, err := os.Stat(*bookdir); err != nil {
-		if os.IsNotExist(err) {
-			log.Fatalf("Fatal error: book directory %s does not exist\n", *bookdir)
+		if _, err := os.Stat(bookdir); err != nil {
+			if os.IsNotExist(err) {
+				log.Fatalf("Fatal error: book directory %s does not exist\n", bookdir)
+			}
 		}
-	}
 
-	*bookdir, err = filepath.Abs(*bookdir)
-	if err != nil {
-		log.Fatalf("Fatal error: Could not resolve book directory %s: %s\n", *bookdir, err)
-	}
-
-	if _, err := os.Stat(*tempdir); os.IsNotExist(err) {
-		os.Mkdir(*tempdir, os.ModePerm)
-	}
-
-	*tempdir, err = filepath.Abs(*tempdir)
-	if err != nil {
-		log.Fatalf("Fatal error: Could not resolve temp directory %s: %s\n", *tempdir, err)
-	}
-
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-	go func() {
-		<-sigs
-		log.Println("Cleaning up covers")
-		os.RemoveAll(*tempdir)
-		os.Exit(0)
-	}()
-
-	books, err := NewBookListFromDir(*bookdir, *tempdir, true)
-	if err != nil {
-		log.Fatalf("Fatal error indexing books: %s\n", err)
-	}
-
-	if len(*books) == 0 {
-		log.Fatalln("Fatal error: no books found")
-	}
-
-	if !strings.Contains(*addr, ":") {
-		log.Fatalln("Invalid listening address")
-	}
-
-	sp := strings.SplitN(*addr, ":", 2)
-	if sp[0] == "" {
-		ip := GetIP()
-		if ip != nil {
-			log.Printf("This server can be accessed at http://%s:%s\n", ip.String(), sp[1])
+		bookdir, err = filepath.Abs(bookdir)
+		if err != nil {
+			log.Fatalf("Fatal error: Could not resolve book directory %s: %s\n", bookdir, err)
 		}
-	}
 
-	runServer(*books, *addr)
+		if _, err := os.Stat(tempdir); os.IsNotExist(err) {
+			os.Mkdir(tempdir, os.ModePerm)
+		}
+
+		tempdir, err = filepath.Abs(tempdir)
+		if err != nil {
+			log.Fatalf("Fatal error: Could not resolve temp directory %s: %s\n", tempdir, err)
+		}
+
+		sigs := make(chan os.Signal, 1)
+		signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+		go func() {
+			<-sigs
+			log.Println("Cleaning up covers")
+			os.RemoveAll(tempdir)
+			os.Exit(0)
+		}()
+
+		books, err := NewBookListFromDir(bookdir, tempdir, true)
+		if err != nil {
+			log.Fatalf("Fatal error indexing books: %s\n", err)
+		}
+
+		if len(*books) == 0 {
+			log.Fatalln("Fatal error: no books found")
+		}
+
+		if !strings.Contains(addr, ":") {
+			log.Fatalln("Invalid listening address")
+		}
+
+		sp := strings.SplitN(addr, ":", 2)
+		if sp[0] == "" {
+			ip := GetIP()
+			if ip != nil {
+				log.Printf("This server can be accessed at http://%s:%s\n", ip.String(), sp[1])
+			}
+		}
+
+		runServer(*books, addr, tempdir)
+	}
+	app.Run(os.Args)
 }
