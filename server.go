@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/geek1011/kepubify/kepub"
+	"github.com/julienschmidt/httprouter"
 )
 
 type nameID struct {
@@ -65,19 +66,11 @@ func sortedBookList(books []Book, filterBook func(Book) bool, sortBook func(Book
 	return filteredItems
 }
 
-// DownloadHandler handles file download
-func DownloadHandler(w http.ResponseWriter, r *http.Request) {
-	bid := filepath.Base(r.URL.Path)
-	bid = strings.Replace(strings.Replace(bid, filepath.Ext(bid), "", 1), ".kepub", "", -1)
-	iskepub := false
-	if strings.HasSuffix(r.URL.Path, ".kepub.epub") {
-		iskepub = true
-	}
-
-	if bid == "download" {
-		w.Header().Set("Content-Type", "text/html")
-		var buf bytes.Buffer
-		buf.WriteString(`
+// DownloadListHandler handles the list of downloads
+func DownloadListHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	w.Header().Set("Content-Type", "text/html")
+	var buf bytes.Buffer
+	buf.WriteString(`
 <!DOCTYPE html>
 <html>
 <head>
@@ -86,46 +79,54 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 a,
 a:link,
 a:visited {
-    display:  block;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    color: inherit;
-    text-decoration: none;
-    font-family: sans-serif;
-    padding: 5px 7px;
-    background:  #FAFAFA;
-    border-bottom: 1px solid #DDDDDD;
-    cursor: pointer;
+display:  block;
+white-space: nowrap;
+text-overflow: ellipsis;
+color: inherit;
+text-decoration: none;
+font-family: sans-serif;
+padding: 5px 7px;
+background:  #FAFAFA;
+border-bottom: 1px solid #DDDDDD;
+cursor: pointer;
 }
 
 a:hover,
 a:active {
-    background: #EEEEEE;
+background: #EEEEEE;
 }
 
 html, body {
-    background: #FAFAFA;
-    margin: 0;
-    padding: 0;
+background: #FAFAFA;
+margin: 0;
+padding: 0;
 }
 </style>
 </head>
 <body>
-		`)
-		sbl := sortedBookList(books, func(b Book) bool {
-			return true
-		}, func(a Book, b Book) bool {
-			return a.Title < b.Title
-		})
-		for _, b := range sbl {
-			buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s - %s (%v)</a>", b.ID, b.FileType, b.Title, b.Author, b.Series.Name, b.Series.Index))
-		}
-		buf.WriteString(`
+	`)
+	sbl := sortedBookList(books, func(b Book) bool {
+		return true
+	}, func(a Book, b Book) bool {
+		return a.Title < b.Title
+	})
+	for _, b := range sbl {
+		buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s - %s (%v)</a>", b.ID, b.FileType, b.Title, b.Author, b.Series.Name, b.Series.Index))
+	}
+	buf.WriteString(`
 </body>
 </html>
-		`)
-		io.WriteString(w, buf.String())
-		return
+	`)
+	io.WriteString(w, buf.String())
+}
+
+// DownloadHandler handles a download
+func DownloadHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	bid := p.ByName("filename")
+	bid = strings.Replace(strings.Replace(bid, filepath.Ext(bid), "", 1), ".kepub", "", -1)
+	iskepub := false
+	if strings.HasSuffix(p.ByName("filename"), ".kepub.epub") {
+		iskepub = true
 	}
 
 	for _, b := range books {
@@ -198,33 +199,33 @@ html, body {
 	io.WriteString(w, pageHTML("Not Found", "Could not find book with id "+bid, false, false))
 }
 
-// AuthorsHandler handles the authors page
-func AuthorsHandler(w http.ResponseWriter, r *http.Request) {
-	aid := filepath.Base(r.URL.Path)
+// AuthorListHandler handles the list of series
+func AuthorListHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	w.Header().Set("Content-Type", "text/html")
+	var listHTML bytes.Buffer
 
-	if aid == "authors" {
-		w.Header().Set("Content-Type", "text/html")
-		var listHTML bytes.Buffer
-
-		authors := sortedBookPropertyList(books, func(b Book) nameID {
-			return nameID{
-				Name: b.Author,
-				ID:   b.AuthorID,
-			}
-		}, func(ni nameID) bool {
-			return ni.Name != ""
-		}, func(a nameID, b nameID) bool {
-			return a.Name < b.Name
-		})
-		listHTML.WriteString(`<div class="items view cards">`)
-		for _, ni := range authors {
-			listHTML.WriteString(itemCardHTML(ni.Name, "/authors/"+ni.ID))
+	authors := sortedBookPropertyList(books, func(b Book) nameID {
+		return nameID{
+			Name: b.Author,
+			ID:   b.AuthorID,
 		}
-		listHTML.WriteString(`</div>`)
-
-		io.WriteString(w, pageHTML("Authors", listHTML.String(), true, false))
-		return
+	}, func(ni nameID) bool {
+		return ni.Name != ""
+	}, func(a nameID, b nameID) bool {
+		return a.Name < b.Name
+	})
+	listHTML.WriteString(`<div class="items view cards">`)
+	for _, ni := range authors {
+		listHTML.WriteString(itemCardHTML(ni.Name, "/authors/"+ni.ID))
 	}
+	listHTML.WriteString(`</div>`)
+
+	io.WriteString(w, pageHTML("Authors", listHTML.String(), true, false))
+}
+
+// AuthorHandler handles an author page
+func AuthorHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	aid := p.ByName("id")
 
 	w.Header().Set("Content-Type", "text/html")
 
@@ -248,37 +249,37 @@ func AuthorsHandler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, html)
 }
 
-// SeriesHandler handles the series page
-func SeriesHandler(w http.ResponseWriter, r *http.Request) {
-	sid := filepath.Base(r.URL.Path)
+// SeriesListHandler handles the list of series
+func SeriesListHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	w.Header().Set("Content-Type", "text/html")
+	var listHTML bytes.Buffer
 
-	if sid == "series" {
-		w.Header().Set("Content-Type", "text/html")
-		var listHTML bytes.Buffer
-
-		series := sortedBookPropertyList(books, func(b Book) nameID {
-			return nameID{
-				Name: b.Series.Name,
-				ID:   b.Series.ID,
-			}
-		}, func(ni nameID) bool {
-			return ni.Name != ""
-		}, func(a nameID, b nameID) bool {
-			return a.Name < b.Name
-		})
-		listHTML.WriteString(`<div class="items view cards">`)
-		for _, ni := range series {
-			listHTML.WriteString(itemCardHTML(ni.Name, "/series/"+ni.ID))
+	series := sortedBookPropertyList(books, func(b Book) nameID {
+		return nameID{
+			Name: b.Series.Name,
+			ID:   b.Series.ID,
 		}
-		listHTML.WriteString(`</div>`)
-		if len(series) == 0 {
-			io.WriteString(w, pageHTML("Series", "No series have been found.", false, false))
-			return
-		}
-
-		io.WriteString(w, pageHTML("Series", listHTML.String(), true, false))
+	}, func(ni nameID) bool {
+		return ni.Name != ""
+	}, func(a nameID, b nameID) bool {
+		return a.Name < b.Name
+	})
+	listHTML.WriteString(`<div class="items view cards">`)
+	for _, ni := range series {
+		listHTML.WriteString(itemCardHTML(ni.Name, "/series/"+ni.ID))
+	}
+	listHTML.WriteString(`</div>`)
+	if len(series) == 0 {
+		io.WriteString(w, pageHTML("Series", "No series have been found.", false, false))
 		return
 	}
+
+	io.WriteString(w, pageHTML("Series", listHTML.String(), true, false))
+}
+
+// SeriesHandler handles a series page
+func SeriesHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	sid := p.ByName("id")
 
 	w.Header().Set("Content-Type", "text/html")
 
@@ -302,28 +303,28 @@ func SeriesHandler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, html)
 }
 
-// BooksHandler handles the books page
-func BooksHandler(w http.ResponseWriter, r *http.Request) {
-	bid := filepath.Base(r.URL.Path)
+// BookListHandler handles the list of books
+func BookListHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	w.Header().Set("Content-Type", "text/html")
 
-	if bid == "books" {
-		w.Header().Set("Content-Type", "text/html")
+	matched := sortedBookList(books, func(book Book) bool {
+		return true
+	}, func(a Book, b Book) bool {
+		return a.ModTime.Unix() > b.ModTime.Unix()
+	})
 
-		matched := sortedBookList(books, func(book Book) bool {
-			return true
-		}, func(a Book, b Book) bool {
-			return a.ModTime.Unix() > b.ModTime.Unix()
-		})
+	html, notfound := bookListPageHTML(matched, "Books", "There are no books in your library.", true)
 
-		html, notfound := bookListPageHTML(matched, "Books", "There are no books in your library.", true)
-
-		if notfound {
-			w.WriteHeader(http.StatusNotFound)
-		}
-
-		io.WriteString(w, html)
-		return
+	if notfound {
+		w.WriteHeader(http.StatusNotFound)
 	}
+
+	io.WriteString(w, html)
+}
+
+// BookHandler handles a book page
+func BookHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	bid := p.ByName("id")
 
 	w.Header().Set("Content-Type", "text/html")
 	for _, b := range books {
@@ -332,13 +333,10 @@ func BooksHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-
-	w.WriteHeader(http.StatusNotFound)
-	io.WriteString(w, pageHTML("Not Found", "Could not find book with id "+bid, false, false))
 }
 
 // SearchHandler handles the search page
-func SearchHandler(w http.ResponseWriter, r *http.Request) {
+func SearchHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	q := r.URL.Query().Get("q")
 	ql := strings.ToLower(q)
 
@@ -371,10 +369,17 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // JSONHandler handles the books.json file
-func JSONHandler(w http.ResponseWriter, r *http.Request) {
+func JSONHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Header().Set("Content-Type", "application/json")
 	b, _ := json.Marshal(books)
 	w.Write(b)
+}
+
+// RandomHandler redirects to a random book
+func RandomHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	rand.Seed(time.Now().Unix())
+	n := rand.Int() % len(books)
+	http.Redirect(w, r, "/books/"+books[n].ID, http.StatusTemporaryRedirect)
 }
 
 var books []Book
@@ -382,28 +387,35 @@ var books []Book
 func runServer(bks []Book, addr string) {
 	books = bks
 
-	StaticHandler := http.StripPrefix("/static", http.FileServer(assetFS()))
-	CoversHandler := http.StripPrefix("/covers", http.FileServer(http.Dir(*tempdir)))
+	router := httprouter.New()
 
-	http.Handle("/static/", StaticHandler)
-	http.Handle("/covers/", CoversHandler)
-	http.HandleFunc("/download/", DownloadHandler)
-	http.HandleFunc("/authors/", AuthorsHandler)
-	http.HandleFunc("/series/", SeriesHandler)
-	http.HandleFunc("/books/", BooksHandler)
-	http.HandleFunc("/search/", SearchHandler)
-	http.HandleFunc("/books.json", JSONHandler)
-	http.HandleFunc("/random/", func(w http.ResponseWriter, r *http.Request) {
-		rand.Seed(time.Now().Unix())
-		n := rand.Int() % len(books)
-		http.Redirect(w, r, "/books/"+books[n].ID, http.StatusTemporaryRedirect)
-	})
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	router.ServeFiles("/static/*filepath", assetFS())
+	router.ServeFiles("/covers/*filepath", http.Dir(*tempdir))
+
+	router.GET("/download", DownloadListHandler)
+	router.GET("/download/:filename", DownloadHandler)
+
+	router.GET("/authors", AuthorListHandler)
+	router.GET("/authors/:id", AuthorHandler)
+
+	router.GET("/series", SeriesListHandler)
+	router.GET("/series/:id", SeriesHandler)
+
+	router.GET("/books", BookListHandler)
+	router.GET("/books/:id", BookHandler)
+
+	router.GET("/search", SearchHandler)
+
+	router.GET("/books.json", JSONHandler)
+
+	router.GET("/random", RandomHandler)
+
+	router.GET("/", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		http.Redirect(w, r, "/books/", http.StatusTemporaryRedirect)
 	})
 
 	log.Printf("Serving on %s\n", addr)
-	err := http.ListenAndServe(addr, nil)
+	err := http.ListenAndServe(addr, router)
 	if err != nil {
 		log.Fatalf("Error starting server: %s\n", err)
 	}
