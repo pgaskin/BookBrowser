@@ -15,6 +15,7 @@ import (
 	"runtime/debug"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/geek1011/kepubify/kepub"
@@ -25,23 +26,25 @@ import (
 
 // Server is a BookBrowser server.
 type Server struct {
-	Books    *BookList
-	BookDir  string
-	CoverDir string
-	Addr     string
-	Verbose  bool
-	router   *httprouter.Router
+	Books     *BookList
+	booksLock *sync.RWMutex
+	BookDir   string
+	CoverDir  string
+	Addr      string
+	Verbose   bool
+	router    *httprouter.Router
 }
 
 // NewServer creates a new BookBrowser server. It will not index the books automatically.
 func NewServer(addr, bookdir, coverdir string, verbose bool) *Server {
 	s := &Server{
-		Books:    &BookList{},
-		BookDir:  bookdir,
-		Addr:     addr,
-		CoverDir: coverdir,
-		Verbose:  verbose,
-		router:   httprouter.New(),
+		Books:     &BookList{},
+		booksLock: &sync.RWMutex{},
+		BookDir:   bookdir,
+		Addr:      addr,
+		CoverDir:  coverdir,
+		Verbose:   verbose,
+		router:    httprouter.New(),
 	}
 
 	s.initRouter()
@@ -58,6 +61,11 @@ func (s *Server) printLog(format string, v ...interface{}) {
 
 // RefreshBookIndex refreshes the book index
 func (s *Server) RefreshBookIndex() error {
+	s.printLog("Locking book index\n")
+	s.booksLock.Lock()
+	defer s.printLog("Unlocking book index\n")
+	defer s.booksLock.Unlock()
+
 	books, err := NewBookListFromDir(s.BookDir, s.CoverDir, s.Verbose)
 	if err != nil {
 		debug.FreeOSMemory()
@@ -115,6 +123,9 @@ type nameID struct {
 }
 
 func (s *Server) sortedBookPropertyList(getNameID func(Book) nameID, filterNameID func(nameID) bool, sortNameID func(nameID, nameID) bool) []nameID {
+	s.booksLock.RLock()
+	defer s.booksLock.RUnlock()
+
 	doneItems := map[string]bool{}
 	items := []nameID{}
 	for _, b := range *s.Books {
@@ -141,6 +152,9 @@ func (s *Server) sortedBookPropertyList(getNameID func(Book) nameID, filterNameI
 }
 
 func (s *Server) sortedBookList(filterBook func(Book) bool, sortBook func(Book, Book) bool) []Book {
+	s.booksLock.RLock()
+	defer s.booksLock.RUnlock()
+
 	filteredItems := []Book{}
 	for _, book := range *s.Books {
 		if filterBook(book) {
@@ -154,6 +168,9 @@ func (s *Server) sortedBookList(filterBook func(Book) bool, sortBook func(Book, 
 }
 
 func (s *Server) handleDownloadList(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	s.booksLock.RLock()
+	defer s.booksLock.RUnlock()
+
 	w.Header().Set("Content-Type", "text/html")
 	var buf bytes.Buffer
 	buf.WriteString(`
@@ -207,6 +224,9 @@ padding: 0;
 }
 
 func (s *Server) handleDownload(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	s.booksLock.RLock()
+	defer s.booksLock.RUnlock()
+
 	bid := p.ByName("filename")
 	bid = strings.Replace(strings.Replace(bid, filepath.Ext(bid), "", 1), ".kepub", "", -1)
 	iskepub := false
@@ -285,6 +305,9 @@ func (s *Server) handleDownload(w http.ResponseWriter, r *http.Request, p httpro
 }
 
 func (s *Server) handleAuthorList(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	s.booksLock.RLock()
+	defer s.booksLock.RUnlock()
+
 	w.Header().Set("Content-Type", "text/html")
 	var listHTML bytes.Buffer
 
@@ -308,6 +331,9 @@ func (s *Server) handleAuthorList(w http.ResponseWriter, r *http.Request, _ http
 }
 
 func (s *Server) handleAuthor(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	s.booksLock.RLock()
+	defer s.booksLock.RUnlock()
+
 	aid := p.ByName("id")
 
 	w.Header().Set("Content-Type", "text/html")
@@ -333,6 +359,9 @@ func (s *Server) handleAuthor(w http.ResponseWriter, r *http.Request, p httprout
 }
 
 func (s *Server) handleSeriesList(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	s.booksLock.RLock()
+	defer s.booksLock.RUnlock()
+
 	w.Header().Set("Content-Type", "text/html")
 	var listHTML bytes.Buffer
 
@@ -360,6 +389,9 @@ func (s *Server) handleSeriesList(w http.ResponseWriter, r *http.Request, _ http
 }
 
 func (s *Server) handleSeries(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	s.booksLock.RLock()
+	defer s.booksLock.RUnlock()
+
 	sid := p.ByName("id")
 
 	w.Header().Set("Content-Type", "text/html")
@@ -385,6 +417,9 @@ func (s *Server) handleSeries(w http.ResponseWriter, r *http.Request, p httprout
 }
 
 func (s *Server) handleBookList(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	s.booksLock.RLock()
+	defer s.booksLock.RUnlock()
+
 	w.Header().Set("Content-Type", "text/html")
 
 	matched := s.sortedBookList(func(book Book) bool {
@@ -403,6 +438,9 @@ func (s *Server) handleBookList(w http.ResponseWriter, r *http.Request, _ httpro
 }
 
 func (s *Server) handleBook(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	s.booksLock.RLock()
+	defer s.booksLock.RUnlock()
+
 	bid := p.ByName("id")
 
 	w.Header().Set("Content-Type", "text/html")
@@ -415,6 +453,9 @@ func (s *Server) handleBook(w http.ResponseWriter, r *http.Request, p httprouter
 }
 
 func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	s.booksLock.RLock()
+	defer s.booksLock.RUnlock()
+
 	q := r.URL.Query().Get("q")
 	ql := strings.ToLower(q)
 
@@ -447,12 +488,18 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request, _ httprout
 }
 
 func (s *Server) handleBooksJSON(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	s.booksLock.RLock()
+	defer s.booksLock.RUnlock()
+
 	w.Header().Set("Content-Type", "application/json")
 	b, _ := json.Marshal(s.Books)
 	w.Write(b)
 }
 
 func (s *Server) handleRandom(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	s.booksLock.RLock()
+	defer s.booksLock.RUnlock()
+
 	rand.Seed(time.Now().Unix())
 	n := rand.Int() % len(*s.Books)
 	http.Redirect(w, r, "/books/"+(*s.Books)[n].ID, http.StatusTemporaryRedirect)
