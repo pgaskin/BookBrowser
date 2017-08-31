@@ -500,7 +500,7 @@ func (s *Server) handleRandom(w http.ResponseWriter, r *http.Request, _ httprout
 	s.booksLock.RLock()
 	defer s.booksLock.RUnlock()
 
-	rand.Seed(time.Now().Unix())
+	rand.Seed(time.Now().UnixNano())
 	n := rand.Int() % len(*s.Books)
 	http.Redirect(w, r, "/books/"+(*s.Books)[n].ID, http.StatusTemporaryRedirect)
 }
