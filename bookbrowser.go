@@ -97,15 +97,6 @@ func main() {
 			os.Exit(0)
 		}()
 
-		books, err := NewBookListFromDir(bookdir, tempdir, true)
-		if err != nil {
-			log.Fatalf("Fatal error indexing books: %s\n", err)
-		}
-
-		if len(*books) == 0 {
-			log.Fatalln("Fatal error: no books found")
-		}
-
 		if !strings.Contains(addr, ":") {
 			log.Fatalln("Invalid listening address")
 		}
@@ -118,7 +109,17 @@ func main() {
 			}
 		}
 
-		runServer(*books, addr, tempdir)
+		server := NewServer(addr, bookdir, tempdir, true)
+		server.RefreshBookIndex()
+
+		if len(*server.Books) == 0 {
+			log.Fatalln("Fatal error: no books found")
+		}
+
+		err = server.Serve()
+		if err != nil {
+			log.Fatalf("Error starting server: %s\n", err)
+		}
 	}
 	app.Run(os.Args)
 }

@@ -235,8 +235,8 @@ func NewBookFromFile(path, coverpath string) (bk *Book, err error) {
 // BookList is a slice of books
 type BookList []Book
 
-// NewBookListFromDir creates a BookList from the books in a dir. It will still return if there are errors indexing some of the books.
-func NewBookListFromDir(path, coverdir string, printlog bool) (*BookList, error) {
+// NewBookListFromDir creates a BookList from the books in a dir. It will still return a nil error if there are errors indexing some of the books. It will only return an error if there is a problem getting the file list.
+func NewBookListFromDir(path, coverdir string, verbose bool) (*BookList, error) {
 	matches, err := zglob.Glob(filepath.Join(path, "/**/*.epub"))
 	if err != nil {
 		return nil, err
@@ -250,12 +250,12 @@ func NewBookListFromDir(path, coverdir string, printlog bool) (*BookList, error)
 
 	var books BookList
 	for i, filename := range matches {
-		if printlog {
+		if verbose {
 			log.Printf("%.f%% Indexing %s\n", float64(i)/float64(len(matches))*100, filename)
 		}
 		book, err := NewBookFromFile(filename, coverdir)
 		if err != nil {
-			if printlog {
+			if verbose {
 				log.Printf("Error indexing %s: %s\n", filename, err)
 			}
 			continue
