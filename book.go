@@ -251,7 +251,7 @@ func NewBookListFromDir(path, coverdir string, verbose bool) (*BookList, error) 
 	var books BookList
 	for i, filename := range matches {
 		if verbose {
-			log.Printf("%.f%% Indexing %s\n", float64(i)/float64(len(matches))*100, filename)
+			log.Printf("%.f%% Indexing %s\n", float64(i+1)/float64(len(matches))*100, filename)
 		}
 		book, err := NewBookFromFile(filename, coverdir)
 		if err != nil {
