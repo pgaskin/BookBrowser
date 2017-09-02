@@ -13,7 +13,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime/debug"
-	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -117,51 +116,6 @@ func (s *Server) initRouter() {
 	s.router.ServeFiles("/covers/*filepath", http.Dir(s.CoverDir))
 }
 
-func (s *Server) sortedBookPropertyList(getNameID func(Book) NameID, filterNameID func(NameID) bool, sortNameID func(NameID, NameID) bool) []NameID {
-	s.booksLock.RLock()
-	defer s.booksLock.RUnlock()
-
-	doneItems := map[string]bool{}
-	items := []NameID{}
-	for _, b := range *s.Books {
-		nid := getNameID(b)
-		if doneItems[nid.ID] {
-			continue
-		}
-		doneItems[nid.ID] = true
-		items = append(items, NameID{
-			Name: nid.Name,
-			ID:   nid.ID,
-		})
-	}
-	filteredItems := []NameID{}
-	for _, ni := range items {
-		if filterNameID(ni) {
-			filteredItems = append(filteredItems, ni)
-		}
-	}
-	sort.Slice(filteredItems, func(i, j int) bool {
-		return sortNameID(filteredItems[i], filteredItems[j])
-	})
-	return filteredItems
-}
-
-func (s *Server) sortedBookList(filterBook func(Book) bool, sortBook func(Book, Book) bool) []Book {
-	s.booksLock.RLock()
-	defer s.booksLock.RUnlock()
-
-	filteredItems := []Book{}
-	for _, book := range *s.Books {
-		if filterBook(book) {
-			filteredItems = append(filteredItems, book)
-		}
-	}
-	sort.Slice(filteredItems, func(i, j int) bool {
-		return sortBook(filteredItems[i], filteredItems[j])
-	})
-	return filteredItems
-}
-
 func (s *Server) handleDownloadList(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	s.booksLock.RLock()
 	defer s.booksLock.RUnlock()
@@ -203,9 +157,7 @@ padding: 0;
 </head>
 <body>
 	`)
-	sbl := s.sortedBookList(func(b Book) bool {
-		return true
-	}, func(a Book, b Book) bool {
+	sbl := s.Books.Sorted(func(a Book, b Book) bool {
 		return a.Title < b.Title
 	})
 	for _, b := range sbl {
@@ -306,15 +258,11 @@ func (s *Server) handleAuthorList(w http.ResponseWriter, r *http.Request, _ http
 	w.Header().Set("Content-Type", "text/html")
 	var listHTML bytes.Buffer
 
-	authors := s.sortedBookPropertyList(func(b Book) NameID {
-		return b.Author.NameID
-	}, func(ni NameID) bool {
-		return ni.Name != ""
-	}, func(a NameID, b NameID) bool {
+	authors := s.Books.GetAuthors().Sorted(func(a Author, b Author) bool {
 		return a.Name < b.Name
 	})
 	listHTML.WriteString(`<div class="items view cards">`)
-	for _, ni := range authors {
+	for _, ni := range *authors {
 		listHTML.WriteString(itemCardHTML(ni.Name, "/authors/"+ni.ID))
 	}
 	listHTML.WriteString(`</div>`)
@@ -330,9 +278,9 @@ func (s *Server) handleAuthor(w http.ResponseWriter, r *http.Request, p httprout
 
 	w.Header().Set("Content-Type", "text/html")
 
-	matched := s.sortedBookList(func(book Book) bool {
+	matched := s.Books.Filtered(func(book Book) bool {
 		return book.Author.ID == aid
-	}, func(a Book, b Book) bool {
+	}).Sorted(func(a Book, b Book) bool {
 		return a.Title < b.Title
 	})
 
@@ -357,19 +305,15 @@ func (s *Server) handleSeriesList(w http.ResponseWriter, r *http.Request, _ http
 	w.Header().Set("Content-Type", "text/html")
 	var listHTML bytes.Buffer
 
-	series := s.sortedBookPropertyList(func(b Book) NameID {
-		return b.Series.NameID
-	}, func(ni NameID) bool {
-		return ni.Name != ""
-	}, func(a NameID, b NameID) bool {
+	series := s.Books.GetSeries().Sorted(func(a Series, b Series) bool {
 		return a.Name < b.Name
 	})
 	listHTML.WriteString(`<div class="items view cards">`)
-	for _, ni := range series {
+	for _, ni := range *series {
 		listHTML.WriteString(itemCardHTML(ni.Name, "/series/"+ni.ID))
 	}
 	listHTML.WriteString(`</div>`)
-	if len(series) == 0 {
+	if len(*series) == 0 {
 		io.WriteString(w, pageHTML("Series", "No series have been found.", false, false))
 		return
 	}
@@ -385,9 +329,9 @@ func (s *Server) handleSeries(w http.ResponseWriter, r *http.Request, p httprout
 
 	w.Header().Set("Content-Type", "text/html")
 
-	matched := s.sortedBookList(func(book Book) bool {
+	matched := s.Books.Filtered(func(book Book) bool {
 		return book.Series.ID == sid
-	}, func(a Book, b Book) bool {
+	}).Sorted(func(a Book, b Book) bool {
 		return a.Series.Index < b.Series.Index
 	})
 
@@ -411,9 +355,7 @@ func (s *Server) handleBookList(w http.ResponseWriter, r *http.Request, _ httpro
 
 	w.Header().Set("Content-Type", "text/html")
 
-	matched := s.sortedBookList(func(book Book) bool {
-		return true
-	}, func(a Book, b Book) bool {
+	matched := s.Books.Sorted(func(a Book, b Book) bool {
 		return a.ModTime.Unix() > b.ModTime.Unix()
 	})
 

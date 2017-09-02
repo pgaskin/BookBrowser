@@ -234,8 +234,8 @@
                 cols["id"].setAttribute("href", "/books/id".replace("id", row.id));
                 cols["title"].innerHTML = row.title;
                 cols["title"].setAttribute("href", "/books/id".replace("id", row.id));
-                cols["author"].innerHTML = row.author || "";
-                cols["author"].setAttribute("href", "/authors/aid".replace("aid", row.authorid));
+                cols["author"].innerHTML = row.author.name || "";
+                cols["author"].setAttribute("href", "/authors/aid".replace("aid", row.author.id));
                 cols["description"].appendChild(document.createElement("div")).innerText = row.description ||
                     "";
                 cols["description"].setAttribute("href", "/books/id".replace("id", row.id));

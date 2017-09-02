@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime/debug"
+	"sort"
 	"strconv"
 	"time"
 
@@ -241,8 +242,121 @@ func NewBookFromFile(path, coverpath string) (bk *Book, err error) {
 	return book, nil
 }
 
-// BookList is a slice of books
+// BookList is a list of books
 type BookList []Book
+
+// Sorted returns a copy of the BookList sorted by the function
+func (l *BookList) Sorted(sorter func(a, b Book) bool) BookList {
+	// Make a copy
+	sorted := make(BookList, len(*l))
+	copy(sorted, *l)
+	// Sort the copy
+	sort.Slice(sorted, func(i, j int) bool {
+		return sorter(sorted[i], sorted[j])
+	})
+	return sorted
+}
+
+// Filtered returns a copy of the BookList filtered by the function
+func (l *BookList) Filtered(filterer func(a Book) bool) *BookList {
+	filtered := BookList{}
+	for _, a := range *l {
+		if filterer(a) {
+			filtered = append(filtered, a)
+		}
+	}
+
+	return &filtered
+}
+
+// AuthorList is a list of authors
+type AuthorList []Author
+
+// SeriesList is a list of series
+type SeriesList []Series
+
+// GetAuthors gets the authors in a BookList
+func (l *BookList) GetAuthors() *AuthorList {
+	authors := AuthorList{}
+	done := map[string]bool{}
+	for _, b := range *l {
+		if done[b.Author.ID] {
+			continue
+		}
+		authors = append(authors, b.Author)
+		done[b.Author.ID] = true
+	}
+	return authors.Filtered(func(a Author) bool {
+		return a.Name != ""
+	})
+}
+
+// Sorted returns a copy of the AuthorList sorted by the function
+func (l *AuthorList) Sorted(sorter func(a, b Author) bool) *AuthorList {
+	// Make a copy
+	sorted := make(AuthorList, len(*l))
+	copy(sorted, *l)
+	// Sort the copy
+	sort.Slice(sorted, func(i, j int) bool {
+		return sorter(sorted[i], sorted[j])
+	})
+	return &sorted
+}
+
+// Filtered returns a copy of the AuthorList filtered by the function
+func (l *AuthorList) Filtered(filterer func(a Author) bool) *AuthorList {
+	filtered := AuthorList{}
+	for _, a := range *l {
+		if filterer(a) {
+			filtered = append(filtered, a)
+		}
+	}
+
+	return &filtered
+}
+
+// GetSeries gets the series in a BookList
+func (l *BookList) GetSeries() *SeriesList {
+	series := SeriesList{}
+	done := map[string]bool{}
+	for _, b := range *l {
+		if done[b.Series.ID] {
+			continue
+		}
+		series = append(series, b.Series)
+		done[b.Series.ID] = true
+	}
+	return series.Filtered(func(a Series) bool {
+		return a.Name != ""
+	})
+}
+
+// Sorted returns a copy of the SeriesList sorted by the function
+func (l *SeriesList) Sorted(sorter func(a, b Series) bool) *SeriesList {
+	// Make a copy
+	sorted := make(SeriesList, len(*l))
+	copy(sorted, *l)
+	// Sort the copy
+	sort.Slice(sorted, func(i, j int) bool {
+		return sorter(sorted[i], sorted[j])
+	})
+	return &sorted
+}
+
+// Filtered returns a copy of the SeriesList filtered by the function
+func (l *SeriesList) Filtered(filterer func(a Series) bool) *SeriesList {
+	filtered := SeriesList{}
+	for _, a := range *l {
+		if filterer(a) {
+			filtered = append(filtered, a)
+		}
+	}
+
+	return &filtered
+}
+
+// NameIDList is a list of nameids
+type NameIDList []NameID
 
 // NewBookListFromDir creates a BookList from the books in a dir. It will still return a nil error if there are errors indexing some of the books. It will only return an error if there is a problem getting the file list.
 func NewBookListFromDir(path, coverdir string, verbose bool) (*BookList, error) {
