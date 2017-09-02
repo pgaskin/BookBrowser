@@ -30,7 +30,7 @@ func TestEPUBMetadata(t *testing.T) {
 	}
 
 	assert.Equal(t, "BookBrowser Test Book 1", book.Title, "title")
-	assert.Equal(t, "Patrick G", book.Author, "author")
+	assert.Equal(t, "Patrick G", book.Author.Name, "author")
 	assert.Equal(t, "Patrick G", book.Publisher, "publisher")
 	assert.Equal(t, "<p>This is a test book for <i>BookBrowser</i>, a ebook content server.</p>", book.Description, "description")
 	assert.Equal(t, "epub", book.FileType, "filetype")
