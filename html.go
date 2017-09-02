@@ -113,9 +113,9 @@ func bookHTML(b *Book, isInfo bool) string {
 	html.WriteString(`<a class="title" href="/books/` + b.ID + `">`)
 	html.WriteString(b.Title)
 	html.WriteString(`</a>`)
-	if b.Author != "" {
-		html.WriteString(`<a class="author" href="/authors/` + b.AuthorID + `">`)
-		html.WriteString(b.Author)
+	if b.Author.Name != "" {
+		html.WriteString(`<a class="author" href="/authors/` + b.Author.ID + `">`)
+		html.WriteString(b.Author.Name)
 		html.WriteString(`</a>`)
 	}
 	if b.Series.Name != "" {

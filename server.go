@@ -117,29 +117,24 @@ func (s *Server) initRouter() {
 	s.router.ServeFiles("/covers/*filepath", http.Dir(s.CoverDir))
 }
 
-type nameID struct {
-	Name string
-	ID   string
-}
-
-func (s *Server) sortedBookPropertyList(getNameID func(Book) nameID, filterNameID func(nameID) bool, sortNameID func(nameID, nameID) bool) []nameID {
+func (s *Server) sortedBookPropertyList(getNameID func(Book) NameID, filterNameID func(NameID) bool, sortNameID func(NameID, NameID) bool) []NameID {
 	s.booksLock.RLock()
 	defer s.booksLock.RUnlock()
 
 	doneItems := map[string]bool{}
-	items := []nameID{}
+	items := []NameID{}
 	for _, b := range *s.Books {
 		nid := getNameID(b)
 		if doneItems[nid.ID] {
 			continue
 		}
 		doneItems[nid.ID] = true
-		items = append(items, nameID{
+		items = append(items, NameID{
 			Name: nid.Name,
 			ID:   nid.ID,
 		})
 	}
-	filteredItems := []nameID{}
+	filteredItems := []NameID{}
 	for _, ni := range items {
 		if filterNameID(ni) {
 			filteredItems = append(filteredItems, ni)
@@ -311,14 +306,11 @@ func (s *Server) handleAuthorList(w http.ResponseWriter, r *http.Request, _ http
 	w.Header().Set("Content-Type", "text/html")
 	var listHTML bytes.Buffer
 
-	authors := s.sortedBookPropertyList(func(b Book) nameID {
-		return nameID{
-			Name: b.Author,
-			ID:   b.AuthorID,
-		}
-	}, func(ni nameID) bool {
+	authors := s.sortedBookPropertyList(func(b Book) NameID {
+		return b.Author.NameID
+	}, func(ni NameID) bool {
 		return ni.Name != ""
-	}, func(a nameID, b nameID) bool {
+	}, func(a NameID, b NameID) bool {
 		return a.Name < b.Name
 	})
 	listHTML.WriteString(`<div class="items view cards">`)
@@ -339,14 +331,14 @@ func (s *Server) handleAuthor(w http.ResponseWriter, r *http.Request, p httprout
 	w.Header().Set("Content-Type", "text/html")
 
 	matched := s.sortedBookList(func(book Book) bool {
-		return book.AuthorID == aid
+		return book.Author.ID == aid
 	}, func(a Book, b Book) bool {
 		return a.Title < b.Title
 	})
 
 	aname := ""
 	if len(matched) != 0 {
-		aname = matched[0].Author
+		aname = matched[0].Author.Name
 	}
 
 	html, notfound := bookListPageHTML(matched, aname, "Author not found", false)
@@ -365,14 +357,11 @@ func (s *Server) handleSeriesList(w http.ResponseWriter, r *http.Request, _ http
 	w.Header().Set("Content-Type", "text/html")
 	var listHTML bytes.Buffer
 
-	series := s.sortedBookPropertyList(func(b Book) nameID {
-		return nameID{
-			Name: b.Series.Name,
-			ID:   b.Series.ID,
-		}
-	}, func(ni nameID) bool {
+	series := s.sortedBookPropertyList(func(b Book) NameID {
+		return b.Series.NameID
+	}, func(ni NameID) bool {
 		return ni.Name != ""
-	}, func(a nameID, b nameID) bool {
+	}, func(a NameID, b NameID) bool {
 		return a.Name < b.Name
 	})
 	listHTML.WriteString(`<div class="items view cards">`)
@@ -467,7 +456,7 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request, _ httprout
 		matched := false
 		for _, b := range *s.Books {
 			matches := false
-			matches = matches || strings.Contains(strings.ToLower(b.Author), ql)
+			matches = matches || strings.Contains(strings.ToLower(b.Author.Name), ql)
 			matches = matches || strings.Contains(strings.ToLower(b.Title), ql)
 			matches = matches || strings.Contains(strings.ToLower(b.Series.Name), ql)
 

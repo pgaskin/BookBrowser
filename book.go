@@ -26,19 +26,28 @@ import (
 	"golang.org/x/tools/godoc/vfs/zipfs"
 )
 
+// NameID represents a name and an id
+type NameID struct {
+	Name string `json:"name,omitempty"`
+	ID   string `json:"id,omitempty"`
+}
+
 // Series represents a book series
 type Series struct {
-	Name  string  `json:"name,omitempty"`
-	ID    string  `json:"id,omitempty"`
+	NameID
 	Index float64 `json:"index,omitempty"`
+}
+
+// Author represents a book author
+type Author struct {
+	NameID
 }
 
 // Book represents a book
 type Book struct {
 	ID          string    `json:"id"`
 	Title       string    `json:"title"`
-	Author      string    `json:"author,omitempty"`
-	AuthorID    string    `json:"authorid"`
+	Author      Author    `json:"author"`
 	Publisher   string    `json:"publisher,omitempty"`
 	Description string    `json:"description,omitempty"`
 	Series      Series    `json:"series,omitempty"`
@@ -73,12 +82,12 @@ func NewBookFromFile(path, coverpath string) (bk *Book, err error) {
 		m, err := GetPDFMeta(path)
 		if err == nil {
 			book.Title = m.Title
-			book.Author = m.Author
+			book.Author.Name = m.Author
 		}
 
 		id := sha1.New()
-		io.WriteString(id, book.Author)
-		book.AuthorID = hex.EncodeToString(id.Sum(nil))[:10]
+		io.WriteString(id, book.Author.Name)
+		book.Author.ID = hex.EncodeToString(id.Sum(nil))[:10]
 		io.WriteString(id, book.Series.Name)
 		io.WriteString(id, book.Title)
 		book.ID = hex.EncodeToString(id.Sum(nil))[:10]
@@ -125,7 +134,7 @@ func NewBookFromFile(path, coverpath string) (bk *Book, err error) {
 			break
 		}
 		for _, e := range opf.FindElements("//creator") {
-			book.Author = e.Text()
+			book.Author.Name = e.Text()
 			break
 		}
 		for _, e := range opf.FindElements("//publisher") {
@@ -152,8 +161,8 @@ func NewBookFromFile(path, coverpath string) (bk *Book, err error) {
 		}
 
 		id := sha1.New()
-		io.WriteString(id, book.Author)
-		book.AuthorID = hex.EncodeToString(id.Sum(nil))[:10]
+		io.WriteString(id, book.Author.Name)
+		book.Author.ID = hex.EncodeToString(id.Sum(nil))[:10]
 		io.WriteString(id, book.Series.Name)
 		io.WriteString(id, book.Title)
 		book.ID = hex.EncodeToString(id.Sum(nil))[:10]
