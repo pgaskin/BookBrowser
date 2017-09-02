@@ -355,8 +355,38 @@ func (l *SeriesList) Filtered(filterer func(a Series) bool) *SeriesList {
 	return &filtered
 }
 
-// NameIDList is a list of nameids
-type NameIDList []NameID
+// HasBook checks whether a book with an id exists
+func (l *BookList) HasBook(id string) bool {
+	exists := false
+	for _, b := range *l {
+		if b.ID == id {
+			exists = true
+		}
+	}
+	return exists
+}
+
+// HasAuthor checks whether an author with an id exists
+func (l *BookList) HasAuthor(id string) bool {
+	exists := false
+	for _, b := range *l {
+		if b.Author.ID == id {
+			exists = true
+		}
+	}
+	return exists
+}
+
+// HasSeries checks whether a series with an id exists
+func (l *BookList) HasSeries(id string) bool {
+	exists := false
+	for _, b := range *l {
+		if b.Series.ID == id {
+			exists = true
+		}
+	}
+	return exists
+}
 
 // NewBookListFromDir creates a BookList from the books in a dir. It will still return a nil error if there are errors indexing some of the books. It will only return an error if there is a problem getting the file list.
 func NewBookListFromDir(path, coverdir string, verbose bool) (*BookList, error) {
