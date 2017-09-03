@@ -27,6 +27,18 @@ import (
 	"golang.org/x/tools/godoc/vfs/zipfs"
 )
 
+func fix(s string) string {
+	return strings.Map(func(in rune) rune {
+		switch in {
+		case '“', '‹', '”', '›':
+			return '"'
+		case '‘', '’':
+			return '\''
+		}
+		return in
+	}, s)
+}
+
 // NameID represents a name and an id
 type NameID struct {
 	Name string `json:"name,omitempty"`
@@ -238,6 +250,11 @@ func NewBookFromFile(path, coverpath string) (bk *Book, err error) {
 	default:
 		return nil, fmt.Errorf("Unknown filetype: %s", book.FileType)
 	}
+
+	book.Title = fix(book.Title)
+	book.Author.Name = fix(book.Author.Name)
+	book.Description = fix(book.Description)
+	book.Series.Name = fix(book.Series.Name)
 
 	return book, nil
 }
