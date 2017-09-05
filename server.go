@@ -161,7 +161,7 @@ padding: 0;
 		return a.Title < b.Title
 	})
 	for _, b := range sbl {
-		buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s - %s (%v)</a>", b.ID, b.FileType, b.Title, b.Author, b.Series.Name, b.Series.Index))
+		buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s - %s (%v)</a>", b.ID, b.FileType, b.Title, b.Author.Name, b.Series.Name, b.Series.Index))
 	}
 	buf.WriteString(`
 </body>
