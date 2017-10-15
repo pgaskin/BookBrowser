@@ -234,12 +234,14 @@
                 cols["id"].setAttribute("href", "/books/id".replace("id", row.id));
                 cols["title"].innerHTML = row.title;
                 cols["title"].setAttribute("href", "/books/id".replace("id", row.id));
-                cols["author"].innerHTML = row.author.name || "";
-                cols["author"].setAttribute("href", "/authors/aid".replace("aid", row.author.id));
+                if (row.author) {
+                    cols["author"].innerHTML = row.author.name || "";
+                    cols["author"].setAttribute("href", "/authors/aid".replace("aid", row.author.id));
+                }
                 cols["description"].appendChild(document.createElement("div")).innerText = row.description ||
                     "";
                 cols["description"].setAttribute("href", "/books/id".replace("id", row.id));
-                if (row.series.name && row.series.name != "") {
+                if (row.series) {
                     cols["series-name"].innerHTML = row.series.name;
                     cols["series-name"].setAttribute("href", "/series/sid".replace("sid", row.series.id));
                     cols["series-index"].innerHTML = row.series.index;

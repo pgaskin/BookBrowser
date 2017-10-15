@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
+
+	"github.com/geek1011/BookBrowser/models"
 )
 
 func pageHTML(title string, content string, containsview bool, showsearch bool) string {
@@ -89,7 +91,7 @@ func pageHTML(title string, content string, containsview bool, showsearch bool) 
 	return html.String()
 }
 
-func bookHTML(b *Book, isInfo bool) string {
+func bookHTML(b *models.Book, isInfo bool) string {
 	var html bytes.Buffer
 	if isInfo {
 		html.WriteString(`<div class="book info">`)
@@ -113,12 +115,12 @@ func bookHTML(b *Book, isInfo bool) string {
 	html.WriteString(`<a class="title" href="/books/` + b.ID + `">`)
 	html.WriteString(b.Title)
 	html.WriteString(`</a>`)
-	if b.Author.Name != "" {
+	if b.Author != nil {
 		html.WriteString(`<a class="author" href="/authors/` + b.Author.ID + `">`)
 		html.WriteString(b.Author.Name)
 		html.WriteString(`</a>`)
 	}
-	if b.Series.Name != "" {
+	if b.Series != nil {
 		html.WriteString(`<div class="series">`)
 		html.WriteString(`<a class="name" href="/series/` + b.Series.ID + `">`)
 		html.WriteString(b.Series.Name)
@@ -149,7 +151,7 @@ func bookHTML(b *Book, isInfo bool) string {
 	return html.String()
 }
 
-func bookListPageHTML(books []Book, title string, notfoundtext string, showsearch bool) (html string, notfound bool) {
+func bookListPageHTML(books []*models.Book, title string, notfoundtext string, showsearch bool) (html string, notfound bool) {
 	if len(books) == 0 {
 		return pageHTML("Not Found", notfoundtext, false, false), true
 	}
@@ -157,7 +159,7 @@ func bookListPageHTML(books []Book, title string, notfoundtext string, showsearc
 	var booksHTML bytes.Buffer
 	booksHTML.WriteString(`<div class="books view cards">`)
 	for _, b := range books {
-		booksHTML.WriteString(bookHTML(&b, false))
+		booksHTML.WriteString(bookHTML(b, false))
 	}
 	booksHTML.WriteString(`</div>`)
 

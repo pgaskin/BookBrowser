@@ -17,6 +17,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/geek1011/BookBrowser/models"
+	"github.com/geek1011/BookBrowser/modules/booklist"
 	"github.com/geek1011/kepubify/kepub"
 	"github.com/julienschmidt/httprouter"
 )
@@ -25,7 +27,7 @@ import (
 
 // Server is a BookBrowser server.
 type Server struct {
-	Books     *BookList
+	Books     *booklist.BookList
 	booksLock *sync.RWMutex
 	BookDir   string
 	CoverDir  string
@@ -37,7 +39,7 @@ type Server struct {
 // NewServer creates a new BookBrowser server. It will not index the books automatically.
 func NewServer(addr, bookdir, coverdir string, verbose bool) *Server {
 	s := &Server{
-		Books:     &BookList{},
+		Books:     &booklist.BookList{},
 		booksLock: &sync.RWMutex{},
 		BookDir:   bookdir,
 		Addr:      addr,
@@ -65,10 +67,11 @@ func (s *Server) RefreshBookIndex() error {
 	defer s.printLog("Unlocking book index\n")
 	defer s.booksLock.Unlock()
 
-	books, err := NewBookListFromDir(s.BookDir, s.CoverDir, s.Verbose)
-	if err != nil {
-		debug.FreeOSMemory()
-		return err
+	books, errs := booklist.NewBookListFromDir(s.BookDir, s.CoverDir, s.Verbose)
+	if len(errs) != 0 {
+		if s.Verbose {
+			log.Printf("Indexing finished with %v errors", len(errs))
+		}
 	}
 
 	s.Books = books
@@ -157,11 +160,19 @@ padding: 0;
 </head>
 <body>
 	`)
-	sbl := s.Books.Sorted(func(a Book, b Book) bool {
+	sbl := s.Books.Sorted(func(a, b *models.Book) bool {
 		return a.Title < b.Title
 	})
 	for _, b := range sbl {
-		buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s - %s (%v)</a>", b.ID, b.FileType, b.Title, b.Author.Name, b.Series.Name, b.Series.Index))
+		if b.Author != nil && b.Series != nil {
+			buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s - %s (%v)</a>", b.ID, b.FileType, b.Title, b.Author.Name, b.Series.Name, b.Series.Index))
+		} else if b.Author != nil && b.Series == nil {
+			buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s</a>", b.ID, b.FileType, b.Title, b.Author.Name))
+		} else if b.Author == nil && b.Series != nil {
+			buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s (%v)</a>", b.ID, b.FileType, b.Title, b.Series.Name, b.Series.Index))
+		} else if b.Author == nil && b.Series == nil {
+			buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s</a>", b.ID, b.FileType, b.Title))
+		}
 	}
 	buf.WriteString(`
 </body>
@@ -258,7 +269,7 @@ func (s *Server) handleAuthorList(w http.ResponseWriter, r *http.Request, _ http
 	w.Header().Set("Content-Type", "text/html")
 	var listHTML bytes.Buffer
 
-	authors := s.Books.GetAuthors().Sorted(func(a Author, b Author) bool {
+	authors := s.Books.GetAuthors().Sorted(func(a, b *models.Author) bool {
 		return a.Name < b.Name
 	})
 	listHTML.WriteString(`<div class="items view cards">`)
@@ -278,9 +289,9 @@ func (s *Server) handleAuthor(w http.ResponseWriter, r *http.Request, p httprout
 
 	w.Header().Set("Content-Type", "text/html")
 
-	matched := s.Books.Filtered(func(book Book) bool {
-		return book.Author.ID == aid
-	}).Sorted(func(a Book, b Book) bool {
+	matched := s.Books.Filtered(func(book *models.Book) bool {
+		return book.Author != nil && book.Author.ID == aid
+	}).Sorted(func(a, b *models.Book) bool {
 		return a.Title < b.Title
 	})
 
@@ -305,7 +316,7 @@ func (s *Server) handleSeriesList(w http.ResponseWriter, r *http.Request, _ http
 	w.Header().Set("Content-Type", "text/html")
 	var listHTML bytes.Buffer
 
-	series := s.Books.GetSeries().Sorted(func(a Series, b Series) bool {
+	series := s.Books.GetSeries().Sorted(func(a, b *models.Series) bool {
 		return a.Name < b.Name
 	})
 	listHTML.WriteString(`<div class="items view cards">`)
@@ -329,9 +340,9 @@ func (s *Server) handleSeries(w http.ResponseWriter, r *http.Request, p httprout
 
 	w.Header().Set("Content-Type", "text/html")
 
-	matched := s.Books.Filtered(func(book Book) bool {
-		return book.Series.ID == sid
-	}).Sorted(func(a Book, b Book) bool {
+	matched := s.Books.Filtered(func(book *models.Book) bool {
+		return book.Series != nil && book.Series.ID == sid
+	}).Sorted(func(a, b *models.Book) bool {
 		return a.Series.Index < b.Series.Index
 	})
 
@@ -355,7 +366,7 @@ func (s *Server) handleBookList(w http.ResponseWriter, r *http.Request, _ httpro
 
 	w.Header().Set("Content-Type", "text/html")
 
-	matched := s.Books.Sorted(func(a Book, b Book) bool {
+	matched := s.Books.Sorted(func(a, b *models.Book) bool {
 		return a.ModTime.Unix() > b.ModTime.Unix()
 	})
 
@@ -377,7 +388,7 @@ func (s *Server) handleBook(w http.ResponseWriter, r *http.Request, p httprouter
 	w.Header().Set("Content-Type", "text/html")
 	for _, b := range *s.Books {
 		if b.ID == bid {
-			io.WriteString(w, pageHTML(b.Title, bookHTML(&b, true), false, false))
+			io.WriteString(w, pageHTML(b.Title, bookHTML(b, true), false, false))
 			return
 		}
 	}
@@ -398,12 +409,12 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request, _ httprout
 		matched := false
 		for _, b := range *s.Books {
 			matches := false
-			matches = matches || strings.Contains(strings.ToLower(b.Author.Name), ql)
+			matches = matches || b.Author != nil && strings.Contains(strings.ToLower(b.Author.Name), ql)
 			matches = matches || strings.Contains(strings.ToLower(b.Title), ql)
-			matches = matches || strings.Contains(strings.ToLower(b.Series.Name), ql)
+			matches = matches || b.Series != nil && strings.Contains(strings.ToLower(b.Series.Name), ql)
 
 			if matches {
-				booksHTML.WriteString(bookHTML(&b, false))
+				booksHTML.WriteString(bookHTML(b, false))
 				matched = true
 			}
 		}

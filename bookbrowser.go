@@ -3,30 +3,19 @@ package main
 import (
 	"io/ioutil"
 	"log"
-	"net"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"strings"
 	"syscall"
 
+	_ "github.com/geek1011/BookBrowser/formats/all"
+	"github.com/geek1011/BookBrowser/modules/sigusr"
+	"github.com/geek1011/BookBrowser/modules/util"
 	"github.com/urfave/cli"
 )
 
 var curversion = "dev"
-
-// GetIP gets the preferred outbound ip of this machine
-func GetIP() net.IP {
-	conn, err := net.Dial("udp", "8.8.8.8:80")
-	if err != nil {
-		return nil
-	}
-	defer conn.Close()
-
-	localAddr := conn.LocalAddr().(*net.UDPAddr)
-
-	return localAddr.IP
-}
 
 func main() {
 	workdir, err := os.Getwd()
@@ -103,7 +92,7 @@ func main() {
 
 		sp := strings.SplitN(addr, ":", 2)
 		if sp[0] == "" {
-			ip := GetIP()
+			ip := util.GetIP()
 			if ip != nil {
 				log.Printf("This server can be accessed at http://%s:%s\n", ip.String(), sp[1])
 			}
@@ -116,7 +105,10 @@ func main() {
 			log.Fatalln("Fatal error: no books found")
 		}
 
-		addRefreshSignalListener(server)
+		sigusr.Handle(func() {
+			log.Println("Booklist refresh triggered by SIGUSR1")
+			server.RefreshBookIndex()
+		})
 
 		err = server.Serve()
 		if err != nil {
