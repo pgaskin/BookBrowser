@@ -1,0 +1,7 @@
+{{template "base/top" .}}
+<div class="authors">
+{{range .Authors}}
+<a href="/authors/{{.ID}}" class="author">{{.Name}}</a>
+{{end}}
+</div>
+{{template "base/bottom" .}}

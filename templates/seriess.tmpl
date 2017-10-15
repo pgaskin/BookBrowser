@@ -1,0 +1,7 @@
+{{template "base/top" .}}
+<div class="series">
+{{range .Series}}
+<a href="/series/{{.ID}}" class="author">{{.Name}}</a>
+{{end}}
+</div>
+{{template "base/bottom" .}}

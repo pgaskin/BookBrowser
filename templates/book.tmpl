@@ -1,0 +1,34 @@
+{{template "base/top" .}}
+{{with .Book}}
+<div class="book">
+    <a href="/books/{{.ID}}" class="cover">
+        <img src="/covers/{{.ID}}_thumb.jpg" alt="cover">
+    </a>
+    <div class="meta">
+        <a href="/books/{{.ID}}" class="title">{{.Title}}</a>
+        {{with .Author}}
+        <a href="/authors/{{.ID}}" class="author">{{.Name}}</a>
+        {{end}}
+        {{with .Series}}
+        <div class="series">
+            <a href="/series/{{.ID}}" class="name">{{.Name}}</a>
+            - <span class="index">{{.Index}}</span>
+        </div>
+        {{end}}
+        {{if .Description}}
+        <div class="description">{{.Description}}</div>
+        {{end}}
+
+        <div class="btn-group">
+            <a href="/download/{{.ID}}.{{.FileType}}" class="download btn btn-default">Download {{ .FileType | ToUpper }}</a>
+            {{if eq .FileType "epub"}}
+            <a class="reader btn btn-default" href="/static/reader/epub/#!/download/{{.ID}}.{{FileType}}">Read</a>
+            {{end}}
+            {{if eq .FileType "pdf"}}
+            <a class="reader btn btn-default" href="/static/reader/pdf/web/viewer.html?file=/download/{{.ID}}.{{FileType}}`">Read</a>
+            {{end}}
+        </div>
+    </div>
+</div>
+{{end}}
+{{template "base/bottom" .}}

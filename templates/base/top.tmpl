@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{.PageTitle}}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+</head>
+
+<body class="light `{{if .ContainsView}}contains-view{{else}}no-contains-view{{end}}">
+    <div class="container">
+        <div class="nav">
+            <div class="left">
+                <div class="title">
+                    <a href="/books/" class="item">BookBrowser</a>
+                </div>
+            </div>
+            <div class="right">
+                <a href="/books/" class="item">Books</a>
+                <a href="/authors/" class="item">Authors</a>
+                <a href="/series/" class="item">Series</a>
+                <a href="/static/list.html" class="item">List</a>
+                <a href="/random/" class="item">Random</a>
+                <a href="/search/" class="item">Search</a>
+            </div>
+        </div>
+        <div class="section">
+            {{if .Title}}
+            <div class="title">{{.Title}}</div>
+            {{end}}
+            <div class="body">
+                <div class="bar">
+                    {{if .ShowSearch}}
+                    <div class="search">
+                        <form action="/search/" method="GET">
+                            <input class="q" name="q" type="search" placeholder="Search books..." />
+                            <button class="s" type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                    {{else}}
+                    <div style="flex:1"></div>
+                    {{end}}
+                    <div class="view-buttons">
+                        <a href="javascript:void(0);" class="cards view-button" title="Cards">
+                            <i class="fa fa-th"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="list view-button" title="List">
+                            <i class="fa fa-bars"></i>
+                        </a>
+                    </div>
+                </div>
+                {{/* CONTENT
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+*/}}
