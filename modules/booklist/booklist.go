@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"sort"
 
 	"github.com/geek1011/BookBrowser/formats"
@@ -110,6 +111,7 @@ func NewBookListFromDir(dir, coverOutDir string, verbose bool) (*BookList, []*In
 		}
 	}
 
+	debug.FreeOSMemory()
 	return &books, errors
 }
 
