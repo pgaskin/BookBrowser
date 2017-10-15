@@ -1,11 +1,13 @@
 package formats
 
 import (
+	"image"
+
 	"github.com/geek1011/BookBrowser/models"
 )
 
 // IndexerFunc is a function which takes a filename and returns a Book and a Cover, if it is present.
-type IndexerFunc func(filename string) (*models.Book, *models.Cover, error)
+type IndexerFunc func(filename string) (book *models.Book, cover image.Image, err error)
 
 // Format represents a handler for an ebook format.
 type Format struct {

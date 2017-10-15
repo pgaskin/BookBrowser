@@ -85,13 +85,13 @@ func NewBookListFromDir(dir, coverOutDir string, verbose bool) (*BookList, []*In
 				}
 				defer coverFile.Close()
 
-				err = jpeg.Encode(coverFile, *cover, nil)
+				err = jpeg.Encode(coverFile, cover, nil)
 				if err != nil {
 					continue
 				}
 
 				// Better quality: thumb := resize.Resize(200, 0, img, resize.Lanczos2)
-				thumb := resize.Resize(200, 0, *cover, resize.Bicubic)
+				thumb := resize.Resize(200, 0, cover, resize.Bicubic)
 				thumbFile, err := os.Create(thumbPath)
 				if err != nil {
 					continue

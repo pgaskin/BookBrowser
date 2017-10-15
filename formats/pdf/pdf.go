@@ -2,6 +2,7 @@ package pdf
 
 import (
 	"fmt"
+	"image"
 	"io/ioutil"
 	"log"
 	"os"
@@ -15,7 +16,7 @@ import (
 	"github.com/geek1011/BookBrowser/modules/util"
 )
 
-func indexer(filename string) (book *models.Book, cover *models.Cover, err error) {
+func indexer(filename string) (book *models.Book, cover image.Image, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			book = nil
@@ -75,7 +76,8 @@ func indexer(filename string) (book *models.Book, cover *models.Cover, err error
 	s = ""
 	debug.FreeOSMemory()
 
-	return models.NewBook(title, author, "", "", 0, "", filename, false, modtime, "pdf"), nil, nil
+	var coverTmp image.Image
+	return models.NewBook(title, author, "", "", 0, "", filename, false, modtime, "pdf"), coverTmp, nil
 }
 
 func init() {

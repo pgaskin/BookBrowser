@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"errors"
 	"fmt"
+	"image"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
@@ -19,7 +20,7 @@ import (
 	"github.com/geek1011/BookBrowser/models"
 )
 
-func indexer(filename string) (book *models.Book, cover *models.Cover, err error) {
+func indexer(filename string) (book *models.Book, cover image.Image, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			book = nil
@@ -36,7 +37,7 @@ func indexer(filename string) (book *models.Book, cover *models.Cover, err error
 	var description string
 	var hasCover bool
 	var modtime time.Time
-	var coverTmp models.Cover
+	var coverTmp image.Image
 
 	if file, err := os.Stat(filename); err == nil {
 		modtime = file.ModTime()
@@ -155,7 +156,7 @@ func indexer(filename string) (book *models.Book, cover *models.Cover, err error
 		}
 	}
 
-	return models.NewBook(title, author, publisher, seriesName, seriesIndex, description, filename, hasCover, modtime, "epub"), &coverTmp, nil
+	return models.NewBook(title, author, publisher, seriesName, seriesIndex, description, filename, hasCover, modtime, "epub"), coverTmp, nil
 }
 
 func init() {
