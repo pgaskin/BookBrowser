@@ -1,6 +1,7 @@
 package formats
 
 import (
+	"image"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,7 +15,7 @@ func TestRegisterFormat(t *testing.T) {
 	RegisterFormat(&Format{
 		Glob:      "**/*.test",
 		Extension: "test",
-		Indexer: func(filename string) (*models.Book, *models.Cover, error) {
+		Indexer: func(filename string) (*models.Book, image.Image, error) {
 			return nil, nil, nil
 		},
 	})
