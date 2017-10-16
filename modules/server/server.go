@@ -24,7 +24,7 @@ import (
 	"github.com/unrolled/render"
 )
 
-//go:generate go-bindata-assetfs -pkg server ../../public/...
+//go:generate go-bindata-assetfs -pkg server -prefix ../../  ../../public/...
 
 // Server is a BookBrowser server.
 type Server struct {
