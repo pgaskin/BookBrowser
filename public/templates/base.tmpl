@@ -6,72 +6,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{.PageTitle}}</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="/static/style.css?v={{.CurVersion}}">
 </head>
 
-<body class="light `{{if .ContainsView}}contains-view{{else}}no-contains-view{{end}}">
-    <div class="container">
-        <div class="nav">
-            <div class="left">
-                <div class="title">
-                    <a href="/books/" class="item">BookBrowser</a>
-                </div>
-            </div>
-            <div class="right">
-                <a href="/books/" class="item">Books</a>
-                <a href="/authors/" class="item">Authors</a>
-                <a href="/series/" class="item">Series</a>
-                <a href="/static/list.html" class="item">List</a>
-                <a href="/random/" class="item">Random</a>
-                <a href="/search/" class="item">Search</a>
-            </div>
+<body>
+    <nav class="main no-icons">
+        <div class="left">
+            <a href="/" class="brand">BookBrowser</a>
         </div>
-        <div class="section">
-            {{if .Title}}
-            <div class="title">{{.Title}}</div>
-            {{end}}
-            <div class="body">
-                {{if .ContainsView}}
-                <div class="bar">
-                    {{if .ShowSearch}}
-                    <div class="search">
-                        <form action="/search/" method="GET">
-                            <input class="q" name="q" type="search" placeholder="Search books..." />
-                            <button class="s" type="submit">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </form>
-                    </div>
-                    {{else}}
-                    <div style="flex:1"></div>
-                    {{end}}
-                    <div class="view-buttons">
-                        <a href="javascript:void(0);" class="cards view-button" title="Cards">
-                            <i class="fa fa-th"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="list view-button" title="List">
-                            <i class="fa fa-bars"></i>
-                        </a>
-                    </div>
-                </div>
+        <div class="right">
+            <a href="/books">
+                <i class="fa fa-book"></i>
+                <span>Books</span>
+            </a>
+            <a href="/authors">
+                <i class="fa fa-user"></i>
+                <span>Authors</span>
+            </a>
+            <a href="/series">
+                <i class="fa fa-tags"></i>
+                <span>Series</span>
+            </a>
+            <a href="/random">
+                <i class="fa fa-random"></i>
+                <span>Random</span>
+            </a>
+            <a href="/search" class="search-item">
+                <i class="fa fa-search"></i>
+                <span>Search</span>
+            </a>
+        </div>
+    </nav>
+
+    {{if .Title}}
+    <h1 class="title">
+        {{.Title}}
+    </h1>
+    {{end}} {{if .ShowBar}}
+    <div class="bar">
+        {{if .ShowSearch}}
+        <div class="search">
+            <form action="/search" method="GET">
+                {{if .Query}}
+                <input type="text" name="q" placeholder="Search Books..." class="box" />
+                {{else}}
+                <input type="text" name="q" placeholder="Search Books..." value="{{.Query}}" class="box" />
                 {{end}}
-                {{yield}}
-            </div>
+                <button type="submit" class="button">
+                    <i class="fa fa-search"></i>
+                </button>
+            </form>
         </div>
-        <div class="footer section">
-            <div>BookBrowser {{.CurVersion}}</div>
-            <div>Copyright 2017
-                <a href="https://geek1011.github.io">Patrick G</a>
-            </div>
+        {{else}}
+        <div class="spacer" style="flex:1;"></div>
+        {{end}} {{if .ShowViewSelector}}
+        <div class="view">
+            <a class="button view-cards">
+                <i class="fa fa-th"></i>
+            </a>
+            <a class="button view-list">
+                <i class="fa fa-th-list"></i>
+            </a>
         </div>
-        <script src="/static/view.js"></script>
-        <script>
-            BookBrowserVersion = "{{.CurVersion}}";
-        </script>
-        <script src="/static/picomodal.js"></script>
-        <script src="/static/updater.js"></script>
+        {{end}}
+    </div>
+    {{end}} {{yield}}
+
+    <footer>
+        <div>BookBrowser {{.CurVersion}}</div>
+        <div>Copyright 2017
+            <a href="https://geek1011.github.io">Patrick G</a>
+        </div>
+    </footer>
+
+    {{if .ShowViewSelector}}
+    <script src="/static/view.js?v={{.CurVersion}}"></script>
+    {{end}}
+
+    <script>
+        BookBrowserVersion = "{{.CurVersion}}";
+    </script>
+    <script src="/static/picomodal.js"></script>
+    <script src="/static/updater.js?v={{.CurVersion}}"></script>
 </body>
 
 </html>

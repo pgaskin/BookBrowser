@@ -1,2 +1,5 @@
 <center><a href="/static/list.html">Advanced Search</a></center>
+<br>
+{{if .Query}}
 {{template "books" .}}
+{{end}}

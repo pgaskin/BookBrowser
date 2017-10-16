@@ -1,30 +1,36 @@
 {{with .Book}}
-<div class="book">
-    <a href="/books/{{.ID}}" class="cover">
+<div class="single-book">
+    <div class="cover">
         <img src="/covers/{{.ID}}.jpg" alt="cover">
-    </a>
+        <div class="buttons">
+            <a href="/download/{{.ID}}.{{.FileType}}" class="button download">Download {{ .FileType | ToUpper }}</a>
+            {{if eq .FileType "epub"}}
+            <a class="button read" href="/static/reader/epub/#!/download/{{.ID}}.{{.FileType}}">Read</a>
+            {{end}} {{if eq .FileType "pdf"}}
+            <a class="button read" href="/static/reader/pdf/web/viewer.html?file=/download/{{.ID}}.{{.FileType}}`">Read</a>
+            {{end}}
+        </div>
+    </div>
     <div class="meta">
-        <div href="/books/{{.ID}}" class="title">{{.Title}}</div>
+        <div class="title">{{.Title}}</div>
         {{with .Author}}
         <a href="/authors/{{.ID}}" class="author">{{.Name}}</a>
-        {{end}}
-        {{with .Series}}
+        {{end}} {{with .Series}}
         <div class="series">
-            <a href="/series/{{.ID}}" class="name">{{.Name}}</a>
-            - <span class="index">{{.Index}}</span>
+            <a href="/series/{{.ID}}" class="name">{{.Name}}</a> -
+            <span class="index">{{.Index}}</span>
+        </div>
+        {{end}} {{if .Description}}
+        <div class="description">
+            {{.Description | raw}}
         </div>
         {{end}}
-        {{if .Description}}
-        <div class="description">{{.Description | raw}}</div>
-        {{end}}
-
-        <div class="btn-group">
-            <a href="/download/{{.ID}}.{{.FileType}}" class="download btn btn-default">Download {{ .FileType | ToUpper }}</a>
+        <div class="buttons">
+            <a href="/download/{{.ID}}.{{.FileType}}" class="button download">Download {{ .FileType | ToUpper }}</a>
             {{if eq .FileType "epub"}}
-            <a class="reader btn btn-default" href="/static/reader/epub/#!/download/{{.ID}}.{{.FileType}}">Read</a>
-            {{end}}
-            {{if eq .FileType "pdf"}}
-            <a class="reader btn btn-default" href="/static/reader/pdf/web/viewer.html?file=/download/{{.ID}}.{{.FileType}}`">Read</a>
+            <a class="button read" href="/static/reader/epub/#!/download/{{.ID}}.{{.FileType}}">Read</a>
+            {{end}} {{if eq .FileType "pdf"}}
+            <a class="button read" href="/static/reader/pdf/web/viewer.html?file=/download/{{.ID}}.{{.FileType}}`">Read</a>
             {{end}}
         </div>
     </div>

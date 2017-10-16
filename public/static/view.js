@@ -1,45 +1,47 @@
-if (document.body.className.indexOf("no-contains-view")>-1) {
-    console.log("No view detected");
-} else {
-    var cvbtn = document.querySelector(".view-buttons .cards");
-    var lvbtn = document.querySelector(".view-buttons .list");
-    var vlst = document.querySelector(".view");
+var v = document.querySelector(".current-view");
+var d = "cards";
+var lb = document.querySelector(".view-list");
+var cb = document.querySelector(".view-cards");
 
-    var listView = function () {
-        cvbtn.classList.remove("active");
-        lvbtn.classList.add("active");
-        vlst.classList.remove("cards");
-        vlst.classList.add("list");
-        localStorage.setItem("view", "list");
+var getCurrentView = function() {
+    var c = "";
+    if (v.classList.contains("list")) {
+        c = "list";
+    } if (v.classList.contains("cards")) {
+        c = "cards";
+    } else {
+        c = d.toString();
     }
+};
 
-    var cardsView = function () {
-        lvbtn.classList.remove("active");
-        cvbtn.classList.add("active");
-        vlst.classList.remove("list");
-        vlst.classList.add("cards");
-        localStorage.setItem("view", "cards");
-    }
+var setCurrentView = function(c) {
+    v.classList.remove("list");
+    v.classList.remove("cards");
+    v.classList.add(c);
 
-    var restoreView = function () {
-        if (window.localStorage) {
-            var v = localStorage.getItem("view");
-            if (v !== null) {
-                if (v == "list") {
-                    listView();
-                } else {
-                    cardsView();
-                }
-            } else {
-                cardsView();
-            }
+    if (cb) {
+        if (c == "cards") {
+            cb.classList.add("active");
         } else {
-            cardsView();
+            cb.classList.remove("active");
         }
     }
 
-    lvbtn.addEventListener("click", listView);
-    cvbtn.addEventListener("click", cardsView);
+    if (lb) {
+        if (c == "list") {
+            lb.classList.add("active");
+        } else {
+            lb.classList.remove("active");
+        }
+    }
+};
 
-    restoreView();
-}
+lb.addEventListener("click", function() {
+    setCurrentView("list");
+});
+
+cb.addEventListener("click", function() {
+    setCurrentView("cards");
+});
+
+setCurrentView(d);

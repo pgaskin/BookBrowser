@@ -294,12 +294,13 @@ func (s *Server) handleAuthorList(w http.ResponseWriter, r *http.Request, _ http
 	s.booksLock.RLock()
 	defer s.booksLock.RUnlock()
 
-	s.render.HTML(w, http.StatusFound, "authors", map[string]interface{}{
-		"CurVersion":   s.version,
-		"PageTitle":    "Authors",
-		"ContainsView": false,
-		"ShowSearch":   false,
-		"Title":        "Authors",
+	s.render.HTML(w, http.StatusOK, "authors", map[string]interface{}{
+		"CurVersion":       s.version,
+		"PageTitle":        "Authors",
+		"ShowBar":          true,
+		"ShowSearch":       false,
+		"ShowViewSelector": true,
+		"Title":            "Authors",
 		"Authors": s.Books.GetAuthors().Sorted(func(a, b *models.Author) bool {
 			return a.Name < b.Name
 		}),
@@ -318,12 +319,13 @@ func (s *Server) handleAuthor(w http.ResponseWriter, r *http.Request, p httprout
 	}
 
 	if aname != "" {
-		s.render.HTML(w, http.StatusFound, "author", map[string]interface{}{
-			"CurVersion":   s.version,
-			"PageTitle":    aname,
-			"ContainsView": false,
-			"ShowSearch":   false,
-			"Title":        aname,
+		s.render.HTML(w, http.StatusOK, "author", map[string]interface{}{
+			"CurVersion":       s.version,
+			"PageTitle":        aname,
+			"ShowBar":          true,
+			"ShowSearch":       false,
+			"ShowViewSelector": true,
+			"Title":            aname,
 			"Books": s.Books.Filtered(func(book *models.Book) bool {
 				return book.Author != nil && book.Author.ID == p.ByName("id")
 			}).Sorted(func(a, b *models.Book) bool {
@@ -334,12 +336,13 @@ func (s *Server) handleAuthor(w http.ResponseWriter, r *http.Request, p httprout
 	}
 
 	s.render.HTML(w, http.StatusNotFound, "notfound", map[string]interface{}{
-		"CurVersion":   s.version,
-		"PageTitle":    "Not Found",
-		"ContainsView": false,
-		"ShowSearch":   false,
-		"Title":        "Not Found",
-		"Message":      "Author not found.",
+		"CurVersion":       s.version,
+		"PageTitle":        "Not Found",
+		"ShowBar":          false,
+		"ShowSearch":       false,
+		"ShowViewSelector": false,
+		"Title":            "Not Found",
+		"Message":          "Author not found.",
 	})
 }
 
@@ -347,12 +350,13 @@ func (s *Server) handleSeriesList(w http.ResponseWriter, r *http.Request, _ http
 	s.booksLock.RLock()
 	defer s.booksLock.RUnlock()
 
-	s.render.HTML(w, http.StatusFound, "seriess", map[string]interface{}{
-		"CurVersion":   s.version,
-		"PageTitle":    "Series",
-		"ContainsView": false,
-		"ShowSearch":   false,
-		"Title":        "Series",
+	s.render.HTML(w, http.StatusOK, "seriess", map[string]interface{}{
+		"CurVersion":       s.version,
+		"PageTitle":        "Series",
+		"ShowBar":          true,
+		"ShowSearch":       false,
+		"ShowViewSelector": true,
+		"Title":            "Series",
 		"Series": s.Books.GetSeries().Sorted(func(a, b *models.Series) bool {
 			return a.Name < b.Name
 		}),
@@ -371,12 +375,13 @@ func (s *Server) handleSeries(w http.ResponseWriter, r *http.Request, p httprout
 	}
 
 	if sname != "" {
-		s.render.HTML(w, http.StatusFound, "series", map[string]interface{}{
-			"CurVersion":   s.version,
-			"PageTitle":    sname,
-			"ContainsView": false,
-			"ShowSearch":   false,
-			"Title":        sname,
+		s.render.HTML(w, http.StatusOK, "series", map[string]interface{}{
+			"CurVersion":       s.version,
+			"PageTitle":        sname,
+			"ShowBar":          true,
+			"ShowSearch":       false,
+			"ShowViewSelector": true,
+			"Title":            sname,
 			"Books": s.Books.Filtered(func(book *models.Book) bool {
 				return book.Series != nil && book.Series.ID == p.ByName("id")
 			}).Sorted(func(a, b *models.Book) bool {
@@ -387,12 +392,13 @@ func (s *Server) handleSeries(w http.ResponseWriter, r *http.Request, p httprout
 	}
 
 	s.render.HTML(w, http.StatusNotFound, "notfound", map[string]interface{}{
-		"CurVersion":   s.version,
-		"PageTitle":    "Not Found",
-		"ContainsView": false,
-		"ShowSearch":   false,
-		"Title":        "Not Found",
-		"Message":      "Series not found.",
+		"CurVersion":       s.version,
+		"PageTitle":        "Not Found",
+		"ShowBar":          false,
+		"ShowSearch":       false,
+		"ShowViewSelector": false,
+		"Title":            "Not Found",
+		"Message":          "Series not found.",
 	})
 }
 
@@ -400,13 +406,14 @@ func (s *Server) handleBookList(w http.ResponseWriter, r *http.Request, _ httpro
 	s.booksLock.RLock()
 	defer s.booksLock.RUnlock()
 
-	s.render.HTML(w, http.StatusFound, "books", map[string]interface{}{
-		"CurVersion":   s.version,
-		"PageTitle":    "Books",
-		"ContainsView": true,
-		"ShowSearch":   true,
-		"Title":        "Books",
-		"Books":        s.Books,
+	s.render.HTML(w, http.StatusOK, "books", map[string]interface{}{
+		"CurVersion":       s.version,
+		"PageTitle":        "Books",
+		"ShowBar":          true,
+		"ShowSearch":       true,
+		"ShowViewSelector": true,
+		"Title":            "",
+		"Books":            s.Books,
 	})
 }
 
@@ -416,25 +423,27 @@ func (s *Server) handleBook(w http.ResponseWriter, r *http.Request, p httprouter
 
 	for _, b := range *s.Books {
 		if b.ID == p.ByName("id") {
-			s.render.HTML(w, http.StatusFound, "book", map[string]interface{}{
-				"CurVersion":   s.version,
-				"PageTitle":    b.Title,
-				"ContainsView": false,
-				"ShowSearch":   false,
-				"Title":        b.Title,
-				"Book":         b,
+			s.render.HTML(w, http.StatusOK, "book", map[string]interface{}{
+				"CurVersion":       s.version,
+				"PageTitle":        b.Title,
+				"ShowBar":          false,
+				"ShowSearch":       false,
+				"ShowViewSelector": false,
+				"Title":            "",
+				"Book":             b,
 			})
 			return
 		}
 	}
 
 	s.render.HTML(w, http.StatusNotFound, "notfound", map[string]interface{}{
-		"CurVersion":   s.version,
-		"PageTitle":    "Not Found",
-		"ContainsView": false,
-		"ShowSearch":   false,
-		"Title":        "Not Found",
-		"Message":      "Book not found.",
+		"CurVersion":       s.version,
+		"PageTitle":        "Not Found",
+		"ShowBar":          false,
+		"ShowSearch":       false,
+		"ShowViewSelector": false,
+		"Title":            "Not Found",
+		"Message":          "Book not found.",
 	})
 }
 
@@ -446,12 +455,14 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request, _ httprout
 	ql := strings.ToLower(q)
 
 	if len(q) != 0 {
-		s.render.HTML(w, http.StatusFound, "search", map[string]interface{}{
-			"CurVersion":   s.version,
-			"PageTitle":    "Search Results",
-			"ContainsView": true,
-			"ShowSearch":   true,
-			"Title":        "Search Results",
+		s.render.HTML(w, http.StatusOK, "search", map[string]interface{}{
+			"CurVersion":       s.version,
+			"PageTitle":        "Search Results",
+			"ShowBar":          true,
+			"ShowSearch":       true,
+			"ShowViewSelector": true,
+			"Title":            "Search Results",
+			"Query":            q,
 			"Books": s.Books.Filtered(func(a *models.Book) bool {
 				matches := false
 				matches = matches || a.Author != nil && strings.Contains(strings.ToLower(a.Author.Name), ql)
@@ -464,11 +475,13 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request, _ httprout
 	}
 
 	s.render.HTML(w, http.StatusOK, "search", map[string]interface{}{
-		"CurVersion":   s.version,
-		"PageTitle":    "Search",
-		"ContainsView": true,
-		"ShowSearch":   true,
-		"Title":        "Search",
+		"CurVersion":       s.version,
+		"PageTitle":        "Search",
+		"ShowBar":          true,
+		"ShowSearch":       true,
+		"ShowViewSelector": false,
+		"Title":            "Search",
+		"Query":            "",
 	})
 }
 
