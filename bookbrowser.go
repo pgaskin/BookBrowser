@@ -9,6 +9,8 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/geek1011/BookBrowser/modules/server"
+
 	_ "github.com/geek1011/BookBrowser/formats/all"
 	"github.com/geek1011/BookBrowser/modules/sigusr"
 	"github.com/geek1011/BookBrowser/modules/util"
@@ -98,19 +100,19 @@ func main() {
 			}
 		}
 
-		server := NewServer(addr, bookdir, tempdir, true)
-		server.RefreshBookIndex()
+		s := server.NewServer(addr, bookdir, tempdir, curversion, true)
+		s.RefreshBookIndex()
 
-		if len(*server.Books) == 0 {
+		if len(*s.Books) == 0 {
 			log.Fatalln("Fatal error: no books found")
 		}
 
 		sigusr.Handle(func() {
 			log.Println("Booklist refresh triggered by SIGUSR1")
-			server.RefreshBookIndex()
+			s.RefreshBookIndex()
 		})
 
-		err = server.Serve()
+		err = s.Serve()
 		if err != nil {
 			log.Fatalf("Error starting server: %s\n", err)
 		}

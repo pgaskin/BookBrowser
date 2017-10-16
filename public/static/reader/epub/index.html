@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ePubViewer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,700,700i" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="description" content="eBook Reader is an free, highly customizable and easy-to-use web app for reading eBooks.">
+</head>
+
+<body>
+    <div class="reader">
+        <div class="header">
+            <div class="left">
+                <a href="javascript:ePubViewer.actions.showSidebar('toc');" class="item toc-button" data-if="loaded">
+                    <span class="material-icons">list</span>
+                </a>
+                <a href="javascript:ePubViewer.actions.showSidebar('info');" class="item info-button" data-if="loaded">
+                    <span class="material-icons">info</span>
+                </a>
+                <a href="javascript:ePubViewer.actions.showSidebar('search');" class="item search-button" data-if="loaded">
+                    <span class="material-icons">search</span>
+                </a>
+            </div>
+            <div class="center">
+                <span class="nomobile">
+                    <a href="javascript:void(0);" class="item title" data-if="loaded">
+                        <span data-text="book-title"></span>
+                </a>
+                </span>
+            </div>
+            <div class="right">
+                <a href="javascript:ePubViewer.actions.showSidebar('settings');" class="item settings-button">
+                    <span class="material-icons">settings</span>
+                </a>
+                <a href="javascript:ePubViewer.actions.openBook();" id="openbutton" class="item open-button">
+                    <span class="material-icons">file_upload</span>
+                </a>
+            </div>
+        </div>
+        <div class="main">
+            <div class="sidebar hidden overlay">
+                <div class="toc-sidebar sidebar-inner" data-sidebar="toc">
+                    <div class="sidebar-header">Table of Contents
+                        <a href="javascript:ePubViewer.actions.closeSidebars();" class="x">
+                            <span class="material-icons">close</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-contents">
+                        <div class="toc"></div>
+                    </div>
+                </div>
+                <div class="info-sidebar sidebar-inner" data-sidebar="info">
+                    <div class="sidebar-header">Info
+                        <a href="javascript:ePubViewer.actions.closeSidebars();" class="x">
+                            <span class="material-icons">close</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-contents">
+                        <div>
+                            <div class="book-info">
+                                <div class="cover">
+                                    <img src="" alt="cover" data-src="cover-url" data-if="cover-url">
+                                </div>
+                                <div class="meta">
+                                    <div class="book-title" data-text="book-title"></div>
+                                    <div class="book-author" data-text="book-author"></div>
+                                </div>
+                            </div>
+                            <div class="progress-info">
+                                <div class="percent-read" data-if="percent-read">
+                                    <span data-text="percent-read" data-if="percent-read"></span><span class="percent">% read</span>
+                                </div>
+                                <div class="pages" data-if="total-pages">
+                                    <span class="page">Page</span>
+                                    <span data-text="current-page"></span>
+                                    <span class="of"> of </span>
+                                    <span data-text="total-pages"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-sidebar sidebar-inner" data-sidebar="settings">
+                    <div class="sidebar-header">Settings
+                        <a href="javascript:ePubViewer.actions.closeSidebars();" class="x">
+                            <span class="material-icons">close</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-contents">
+                        <div>
+                            <div class="control">
+                                <div class="label">Font</div>
+                                <select autocomplete="off" data-setting="font" onchange="ePubViewer.functions.updateSettingsFromSelectors()">
+                                    <option value="OpenSans" selected>Open Sans</option>
+                                    <option value="ArbutusSlab">Arbutus Slab</option>
+                                    <option value="DroidSerif">Droid Serif</option>
+                                    <option value="SourceCodePro">Source Code Pro</option>
+                                    <option value="SourceSansPro">Source Sans Pro</option>
+                                </select>
+                            </div>
+                            <div class="control">
+                                <div class="label">Theme</div>
+                                <select autocomplete="off" data-setting="theme" onchange="ePubViewer.functions.updateSettingsFromSelectors()">
+                                    <option value="SepiaLight">Sepia</option>
+                                    <option value="White" selected>White</option>
+                                    <option value="Black">Black</option>
+                                    <option value="Gray" selected>Gray</option>
+                                    <option value="Dark">Dark</option>
+                                    <option value="SolarizedLight">Solarized Light</option>
+                                    <option value="SolarizedDark">Solarized Dark</option>
+                                </select>
+                            </div>
+                            <div class="control">
+                                <div class="label">Line Spacing</div>
+                                <select autocomplete="off" data-setting="line-height" onchange="ePubViewer.functions.updateSettingsFromSelectors()">
+                                    <option value="1">1</option>
+                                    <option value="1.1">1.1</option>
+                                    <option value="1.2">1.2</option>
+                                    <option value="1.3">1.3</option>
+                                    <option value="1.4">1.4</option>
+                                    <option value="1.5" selected>1.5</option>
+                                    <option value="1.6">1.6</option>
+                                    <option value="1.7">1.7</option>
+                                    <option value="1.8">1.8</option>
+                                    <option value="1.9">1.9</option>
+                                    <option value="2">2</option>
+                                    <option value="2.2">2.2</option>
+                                    <option value="2.4">2.4</option>
+                                    <option value="2.6">2.6</option>
+                                    <option value="2.8">2.8</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                            <div class="control">
+                                <div class="label">Font Size</div>
+                                <select autocomplete="off" data-setting="font-size" onchange="ePubViewer.functions.updateSettingsFromSelectors()">
+                                    <option value="9pt">9</option>
+                                    <option value="10pt">10</option>
+                                    <option value="11pt" selected>11</option>
+                                    <option value="12pt">12</option>
+                                    <option value="13pt">13</option>
+                                    <option value="14pt">14</option>
+                                    <option value="15pt">15</option>
+                                    <option value="16pt">16</option>
+                                    <option value="17pt">17</option>
+                                    <option value="18pt">18</option>
+                                </select>
+                            </div>
+                            <div class="control">
+                                <div class="label">Margin</div>
+                                <select autocomplete="off" data-setting="margin" onchange="ePubViewer.functions.updateSettingsFromSelectors()">
+                                    <option value="1%">1%</option>
+                                    <option value="2%">2%</option>
+                                    <option value="3%">3%</option>
+                                    <option value="4%">4%</option>
+                                    <option value="5%" selected>5%</option>
+                                    <option value="6%">6%</option>
+                                    <option value="7%">7%</option>
+                                    <option value="8%">8%</option>
+                                    <option value="9%">9%</option>
+                                    <option value="10%">10%</option>
+                                </select>
+                            </div>
+                            <div class="control">
+                                <div class="label">Fullscreen</div>
+                                <button onclick="ePubViewer.actions.fullScreen()">Fullscreen</button>
+                            </div>
+                        </div>
+                        <div class="about">
+                            <br>
+                            <small>
+                                <a href="javascript:ePubViewer.actions.settingsReset();">Reset Settings</a><br>
+                                <a href="javascript:ePubViewer.actions.allReset();">Reset All</a>
+                            </small>
+                            <br><br>
+                            <small>
+                                <a href="http://github.com/geek1011/ePubViewer/issues" target="_blank">Report a bug</a><br><br>
+                                <a href="https://github.com/geek1011/ePubViewer">ePubViewer</a> Copyright 2017 <a href="https://geek1011.github.io">Patrick G</a>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="search-sidebar sidebar-inner" data-sidebar="search">
+                    <div class="sidebar-header">Search
+                        <a href="javascript:ePubViewer.actions.closeSidebars();" class="x">
+                            <span class="material-icons">close</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-contents">
+                        <form class="search-bar" onsubmit="ePubViewer.actions.handleSearch();return false;">
+                            <input type="text" class="search-box" placeholder="Search..." autocomplete="off" onkeydown="ePubViewer.actions.clearSearch();" />
+                            <button type="submit"><span class="material-icons">search</span></button>
+                        </form>
+                        <div class="search-results"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="welcome">
+                    <div class="welcome-inner">
+                        <div class="title">ePubViewer</div>
+                        <div class="menu">
+                            <a href="javascript:ePubViewer.actions.openBook();" class="big-item">Open a Book</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="left">
+                <a href="javascript:ePubViewer.actions.prevPage();" class="item next-page-button" data-if="loaded">
+                    <span class="material-icons">keyboard_arrow_left</span>
+                </a>
+            </div>
+            <div class="center" data-if="loaded">
+                <a href="javascript:void(0);" class="item page-number" data-if="total-pages">
+                    <span class="page">Page</span>
+                    <span data-text="current-page"></span>
+                    <span class="of"> of </span>
+                    <span data-text="total-pages"></span>
+                </a>
+                <a href="javascript:void(0);" class="item percent" data-if-not="total-pages">
+                    <span data-text="percent-read"></span><span class="of">% read</span>
+                </a>
+            </div>
+            <div class="right">
+                <a href="javascript:ePubViewer.actions.nextPage();" class="item next-page-button" data-if="loaded">
+                    <span class="material-icons">keyboard_arrow_right</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="error banner load-error">
+        Unknown error loading ePubViewer. Please try using a different browser. If the issue still persists, please <a href="https://github.com/geek1011/ePubViewer/issues">open an issue</a>.
+    </div>
+    <div class="error banner incompatible-browser">
+        Your browser does not support ePubViewer. Please <a href="https://browsehappy.com">upgrade</a> to a modern browser and try again.
+    </div>
+    <script>
+        ePubViewerLoadError = window.setTimeout(function() {
+            document.body.parentElement.className = document.body.parentElement.className + " load-error";
+        }, 2000);
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="epubjs/libs/localforage.min.js"></script>
+    <script src="epubjs/libs/zip.min.js"></script>
+    <script src="epubjs/epub.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

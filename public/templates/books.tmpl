@@ -1,0 +1,24 @@
+<div class="books">
+{{range .Books}}
+<div class="book">
+    <a href="/books/{{.ID}}" class="cover">
+        <img src="/covers/{{.ID}}_thumb.jpg" alt="cover">
+    </a>
+    <div class="meta">
+        <a href="/books/{{.ID}}" class="title">{{.Title}}</a>
+        {{with .Author}}
+        <a href="/authors/{{.ID}}" class="author">{{.Name}}</a>
+        {{end}}
+        {{with .Series}}
+        <div class="series">
+            <a href="/series/{{.ID}}" class="name">{{.Name}}</a>
+            - <span class="index">{{.Index}}</span>
+        </div>
+        {{end}}
+    </div>
+</div>
+{{end}}
+{{if not .Books}}
+Not found
+{{end}}
+</div>
