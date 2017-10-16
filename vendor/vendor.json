@@ -3,10 +3,54 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "iTyK6+LglXn9zjYGbjMTLxtLXio=",
+			"path": "archive/zip",
+			"revision": ""
+		},
+		{
+			"path": "bufio",
+			"revision": ""
+		},
+		{
+			"path": "bytes",
+			"revision": ""
+		},
+		{
+			"path": "compress/gzip",
+			"revision": ""
+		},
+		{
+			"path": "crypto/sha1",
+			"revision": ""
+		},
+		{
+			"path": "encoding/hex",
+			"revision": ""
+		},
+		{
+			"path": "encoding/json",
+			"revision": ""
+		},
+		{
+			"path": "encoding/xml",
+			"revision": ""
+		},
+		{
+			"path": "errors",
+			"revision": ""
+		},
+		{
+			"path": "flag",
+			"revision": ""
+		},
+		{
+			"path": "fmt",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "LlvQPCCJxa/4kNQDPBM5fZrtAnU=",
 			"path": "github.com/PuerkitoBio/goquery",
-			"revision": "8806ada2a4ab225c06e9106f9631be80932db7ce",
-			"revisionTime": "2017-06-23T16:21:02Z"
+			"revision": "1a71cc719d0d5b9e4f14ae072bef08b576b0bab5",
+			"revisionTime": "2017-10-07T14:12:28Z"
 		},
 		{
 			"checksumSHA1": "2rWSos1D+xqNSGkvEMOG3pntod8=",
@@ -15,22 +59,22 @@
 			"revisionTime": "2016-12-24T14:14:13Z"
 		},
 		{
-			"checksumSHA1": "V8IOVCEbg5n8vBs0x7svZ0sv1P0=",
+			"checksumSHA1": "usT4LCSQItkFvFOQT7cBlkCuGaE=",
 			"path": "github.com/beevik/etree",
-			"revision": "09746331a38f3da8c023a85a65c8c152070de725",
-			"revisionTime": "2017-05-11T20:24:51Z"
+			"revision": "af219c0c7ea1b67ec263c0b1b1b96d284a9181ce",
+			"revisionTime": "2017-10-15T22:09:51Z"
 		},
 		{
-			"checksumSHA1": "t8CsjyFayB7tH16Th46OH2zL09I=",
+			"checksumSHA1": "1YQ8EuNTA1ICp4YBEBU1Rc3kEow=",
 			"path": "github.com/cheggaaa/pb",
-			"revision": "f6ccf2184de4dd34495277e38dc19b6e7fbe0ea2",
-			"revisionTime": "2017-05-08T13:24:47Z"
+			"revision": "0af82b7d15eb9371fbdf8f468ff10cbba62e0414",
+			"revisionTime": "2017-08-02T15:54:58Z"
 		},
 		{
 			"checksumSHA1": "mrz/kicZiUaHxkyfvC/DyQcr8Do=",
 			"path": "github.com/davecgh/go-spew/spew",
-			"revision": "adab96458c51a58dc1783b3335dcce5461522e75",
-			"revisionTime": "2017-07-11T18:34:51Z"
+			"revision": "ecdeabc65495df2dec95d7c4a4c3e021903035e5",
+			"revisionTime": "2017-10-02T20:02:53Z"
 		},
 		{
 			"checksumSHA1": "7DxViusFRJ7UPH0jZqYatwDrOkY=",
@@ -41,8 +85,8 @@
 		{
 			"checksumSHA1": "9w9yweGig7vqJqLSJMPSe0yRPXE=",
 			"path": "github.com/geek1011/kepubify/kepub",
-			"revision": "7ac7e179f7495701493b66f3dfeb0fb1faacbcd9",
-			"revisionTime": "2017-08-19T12:38:24Z"
+			"revision": "d6d9dff6262ccd55299e25a086935ce94a2eec09",
+			"revisionTime": "2017-10-07T23:20:27Z"
 		},
 		{
 			"checksumSHA1": "gKyBj05YkfuLFruAyPZ4KV9nFp8=",
@@ -81,10 +125,10 @@
 			"revisionTime": "2016-01-10T10:55:54Z"
 		},
 		{
-			"checksumSHA1": "J+ppEq6nYMKxhB9+c+MD1x9UwSc=",
+			"checksumSHA1": "mGbTYZ8dHVTiPTTJu3ktp+84pPI=",
 			"path": "github.com/stretchr/testify/assert",
-			"revision": "05e8a0eda380579888eb53c394909df027f06991",
-			"revisionTime": "2017-07-13T16:51:06Z"
+			"revision": "890a5c3458b43e6104ff5da8dfa139d013d77544",
+			"revisionTime": "2017-07-05T02:17:15Z"
 		},
 		{
 			"checksumSHA1": "/CkShsXSmW4032TjVej9ZwhjxOY=",
@@ -93,34 +137,178 @@
 			"revisionTime": "2017-10-06T15:03:03Z"
 		},
 		{
-			"checksumSHA1": "8YLoOB7KeQqUSPvlBynceGY4xOc=",
+			"checksumSHA1": "cQfZ+JnB/SweDbrGSTVE07/k8Vw=",
 			"path": "github.com/urfave/cli",
-			"revision": "f017f86fccc5a039a98f23311f34fdf78b014f78",
-			"revisionTime": "2017-08-13T14:59:49Z"
+			"revision": "7bc6a0acffa589f415f88aca16cc1de5ffd66f9c",
+			"revisionTime": "2017-10-14T20:27:26Z"
 		},
 		{
-			"checksumSHA1": "vqc3a+oTUGX8PmD0TS+qQ7gmN8I=",
+			"checksumSHA1": "/PGQlVbw8jILX3tLQaYAg6bTAFI=",
 			"path": "golang.org/x/net/html",
-			"revision": "f5079bd7f6f74e23c4d65efa0f4ce14cbd6a3c0f",
-			"revisionTime": "2017-07-19T21:11:51Z"
+			"revision": "a04bdaca5b32abe1c069418fb7088ae607de5bd0",
+			"revisionTime": "2017-10-03T05:09:24Z"
 		},
 		{
-			"checksumSHA1": "z79z5msRzgU48FCZxSuxfU8b4rs=",
+			"checksumSHA1": "uMRr2bnIJS+9Xm0FqMBYUTzaSGs=",
 			"path": "golang.org/x/net/html/atom",
-			"revision": "f5079bd7f6f74e23c4d65efa0f4ce14cbd6a3c0f",
-			"revisionTime": "2017-07-19T21:11:51Z"
+			"revision": "a04bdaca5b32abe1c069418fb7088ae607de5bd0",
+			"revisionTime": "2017-10-03T05:09:24Z"
 		},
 		{
-			"checksumSHA1": "YsJ4cdsl/xvPS2BghZ1ms1BH+2Q=",
+			"checksumSHA1": "NC6sRRBg4e1wHOkOu2doF24QWh0=",
 			"path": "golang.org/x/tools/godoc/vfs",
-			"revision": "3da34b1b520a543128e8441cd2ffffc383111d03",
-			"revisionTime": "2017-07-17T21:44:42Z"
+			"revision": "e4b401d06e5ee9f990011dc4f24cd24162131565",
+			"revisionTime": "2017-08-30T20:00:42Z"
 		},
 		{
 			"checksumSHA1": "PNmeEAMPM9nLqYkgmzwfeGIAl7Q=",
 			"path": "golang.org/x/tools/godoc/vfs/zipfs",
-			"revision": "3da34b1b520a543128e8441cd2ffffc383111d03",
-			"revisionTime": "2017-07-17T21:44:42Z"
+			"revision": "e4b401d06e5ee9f990011dc4f24cd24162131565",
+			"revisionTime": "2017-08-30T20:00:42Z"
+		},
+		{
+			"path": "html/template",
+			"revision": ""
+		},
+		{
+			"path": "image",
+			"revision": ""
+		},
+		{
+			"path": "image/color",
+			"revision": ""
+		},
+		{
+			"path": "image/gif",
+			"revision": ""
+		},
+		{
+			"path": "image/jpeg",
+			"revision": ""
+		},
+		{
+			"path": "image/png",
+			"revision": ""
+		},
+		{
+			"path": "io",
+			"revision": ""
+		},
+		{
+			"path": "io/ioutil",
+			"revision": ""
+		},
+		{
+			"path": "log",
+			"revision": ""
+		},
+		{
+			"path": "math",
+			"revision": ""
+		},
+		{
+			"path": "math/rand",
+			"revision": ""
+		},
+		{
+			"path": "net",
+			"revision": ""
+		},
+		{
+			"path": "net/http",
+			"revision": ""
+		},
+		{
+			"path": "net/http/httptest",
+			"revision": ""
+		},
+		{
+			"path": "net/url",
+			"revision": ""
+		},
+		{
+			"path": "os",
+			"revision": ""
+		},
+		{
+			"path": "os/signal",
+			"revision": ""
+		},
+		{
+			"path": "path",
+			"revision": ""
+		},
+		{
+			"path": "path/filepath",
+			"revision": ""
+		},
+		{
+			"path": "reflect",
+			"revision": ""
+		},
+		{
+			"path": "regexp",
+			"revision": ""
+		},
+		{
+			"path": "runtime",
+			"revision": ""
+		},
+		{
+			"path": "runtime/debug",
+			"revision": ""
+		},
+		{
+			"path": "sort",
+			"revision": ""
+		},
+		{
+			"path": "strconv",
+			"revision": ""
+		},
+		{
+			"path": "strings",
+			"revision": ""
+		},
+		{
+			"path": "sync",
+			"revision": ""
+		},
+		{
+			"path": "sync/atomic",
+			"revision": ""
+		},
+		{
+			"path": "syscall",
+			"revision": ""
+		},
+		{
+			"path": "testing",
+			"revision": ""
+		},
+		{
+			"path": "text/tabwriter",
+			"revision": ""
+		},
+		{
+			"path": "text/template",
+			"revision": ""
+		},
+		{
+			"path": "time",
+			"revision": ""
+		},
+		{
+			"path": "unicode",
+			"revision": ""
+		},
+		{
+			"path": "unicode/utf8",
+			"revision": ""
+		},
+		{
+			"path": "unsafe",
+			"revision": ""
 		}
 	],
 	"rootPath": "github.com/geek1011/BookBrowser"
