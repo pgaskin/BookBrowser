@@ -99,7 +99,7 @@ footer.main {
 footer.about {
     display: block;
     text-align: right;
-    padding: 5px 2px;
+    padding: 10px 2px;
     font-size: 11px;
     font-style: italic;
     color: rgba(0,0,0,.5);
