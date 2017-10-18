@@ -11,7 +11,7 @@ html {
     background: #eee;
 }
 
-body {
+body .body-wrapper {
     max-width: 860px;
     margin: 0 auto;
     box-shadow: 0 0px 2px 0px rgba(0, 0, 0, .15);
@@ -88,12 +88,30 @@ nav.main.text-under a span {
     font-size: 10px;
 }
 
-footer {
+footer.main {
     display: block;
     padding: 10px 5px;
     text-align: center;
     box-shadow: 0 -2px 2px -2px rgba(0, 0, 0, .15);
     color: rgba(0, 0, 0, .78) !important;
+}
+
+footer.about {
+    display: block;
+    text-align: right;
+    padding: 5px 2px;
+    font-size: 11px;
+    font-style: italic;
+    color: rgba(0,0,0,.5);
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+footer.about a,
+footer.about a:link,
+footer.about a:visited {
+    color: inherit;
+    text-decoration: underline;
 }
 
 @media only screen and (max-width: 600px) {

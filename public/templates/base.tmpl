@@ -10,73 +10,72 @@
 </head>
 
 <body>
-    <nav class="main no-icons">
-        <div class="left">
-            <a href="/" class="brand">BookBrowser</a>
-        </div>
-        <div class="right">
-            <a href="/books">
-                <i class="fa fa-book"></i>
-                <span>Books</span>
-            </a>
-            <a href="/authors">
-                <i class="fa fa-user"></i>
-                <span>Authors</span>
-            </a>
-            <a href="/series">
-                <i class="fa fa-tags"></i>
-                <span>Series</span>
-            </a>
-            <a href="/random">
-                <i class="fa fa-random"></i>
-                <span>Random</span>
-            </a>
-            <a href="/search" class="search-item">
-                <i class="fa fa-search"></i>
-                <span>Search</span>
-            </a>
-        </div>
-    </nav>
-
-    {{if .Title}}
-    <h1 class="title">
-        {{.Title}}
-    </h1>
-    {{end}} {{if .ShowBar}}
-    <div class="bar">
-        {{if .ShowSearch}}
-        <div class="search">
-            <form action="/search" method="GET">
-                {{if .Query}}
-                <input type="text" name="q" placeholder="Search Books..." class="box" />
-                {{else}}
-                <input type="text" name="q" placeholder="Search Books..." value="{{.Query}}" class="box" />
-                {{end}}
-                <button type="submit" class="button">
+    <div class="body-wrapper">
+        <nav class="main no-icons">
+            <div class="left">
+                <a href="/" class="brand">BookBrowser</a>
+            </div>
+            <div class="right">
+                <a href="/books">
+                    <i class="fa fa-book"></i>
+                    <span>Books</span>
+                </a>
+                <a href="/authors">
+                    <i class="fa fa-user"></i>
+                    <span>Authors</span>
+                </a>
+                <a href="/series">
+                    <i class="fa fa-tags"></i>
+                    <span>Series</span>
+                </a>
+                <a href="/random">
+                    <i class="fa fa-random"></i>
+                    <span>Random</span>
+                </a>
+                <a href="/search" class="search-item">
                     <i class="fa fa-search"></i>
-                </button>
-            </form>
-        </div>
-        {{else}}
-        <div class="spacer" style="flex:1;"></div>
-        {{end}} {{if .ShowViewSelector}}
-        <div class="view">
-            <a class="button view-cards">
-                <i class="fa fa-th"></i>
-            </a>
-            <a class="button view-list">
-                <i class="fa fa-th-list"></i>
-            </a>
-        </div>
-        {{end}}
-    </div>
-    {{end}} {{yield}}
+                    <span>Search</span>
+                </a>
+            </div>
+        </nav>
 
-    <footer>
-        <div>BookBrowser {{.CurVersion}}</div>
-        <div>Copyright 2017
-            <a href="https://geek1011.github.io">Patrick G</a>
+        {{if .Title}}
+        <h1 class="title">
+            {{.Title}}
+        </h1>
+        {{end}} {{if .ShowBar}}
+        <div class="bar">
+            {{if .ShowSearch}}
+            <div class="search">
+                <form action="/search" method="GET">
+                    {{if .Query}}
+                    <input type="text" name="q" placeholder="Search Books..." class="box" /> {{else}}
+                    <input type="text" name="q" placeholder="Search Books..." value="{{.Query}}" class="box" /> {{end}}
+                    <button type="submit" class="button">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </form>
+            </div>
+            {{else}}
+            <div class="spacer" style="flex:1;"></div>
+            {{end}} {{if .ShowViewSelector}}
+            <div class="view">
+                <a class="button view-cards">
+                    <i class="fa fa-th"></i>
+                </a>
+                <a class="button view-list">
+                    <i class="fa fa-th-list"></i>
+                </a>
+            </div>
+            {{end}}
         </div>
+        {{end}} {{yield}}
+
+        <!-- <footer class="main"></footer> -->
+    </div>
+
+    <footer class="about">
+        <a href="https://geek1011.github.io/BookBrowser">BookBrowser</a> {{.CurVersion}} | Copyright 2017 <a href="https://geek1011.github.io">Patrick G</a>
     </footer>
 
     {{if .ShowViewSelector}}
