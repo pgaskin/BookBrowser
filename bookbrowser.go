@@ -25,9 +25,9 @@ func main() {
 		log.Fatalf("Fatal error: %s\n", err)
 	}
 
-	tempdir, err := ioutil.TempDir("", "bookbrowser")
+	deftempdir, err := ioutil.TempDir("", "bookbrowser")
 	if err != nil {
-		tempdir = filepath.Join(workdir, "_temp")
+		deftempdir = filepath.Join(workdir, "_temp")
 	}
 
 	app := cli.NewApp()
@@ -42,8 +42,8 @@ func main() {
 		},
 		cli.StringFlag{
 			Name:  "tempdir, t",
-			Value: tempdir,
-			Usage: "Use `DIR` as the location for storing temporary files such as cover thumbnails. The directory is created on start and deleted on exit.",
+			Value: deftempdir,
+			Usage: "Use `DIR` as the location for storing temporary files such as cover thumbnails. The directory is created on start and deleted on exit, unless it already exists.",
 		},
 		cli.StringFlag{
 			Name:  "addr, a",
@@ -55,6 +55,8 @@ func main() {
 	app.Action = func(c *cli.Context) {
 		bookdir := c.String("bookdir")
 		tempdir := c.String("tempdir")
+		noRemoveTempDir := false
+
 		addr := c.String("addr")
 
 		log.Printf("BookBrowser %s\n", curversion)
@@ -62,6 +64,13 @@ func main() {
 		if _, err := os.Stat(bookdir); err != nil {
 			if os.IsNotExist(err) {
 				log.Fatalf("Fatal error: book directory %s does not exist\n", bookdir)
+			}
+		}
+
+		if fi, err := os.Stat(tempdir); err == nil || fi.IsDir() {
+			noRemoveTempDir = true
+			if tempdir == deftempdir {
+				noRemoveTempDir = false
 			}
 		}
 
@@ -83,8 +92,12 @@ func main() {
 		signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 		go func() {
 			<-sigs
-			log.Println("Cleaning up covers")
-			os.RemoveAll(tempdir)
+			if noRemoveTempDir {
+				log.Println("Not removing temp dir because dir already existed at start")
+			} else {
+				log.Println("Cleaning up temp dir")
+				os.RemoveAll(tempdir)
+			}
 			os.Exit(0)
 		}()
 
