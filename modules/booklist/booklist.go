@@ -282,6 +282,7 @@ func (l *BookList) HasSeries(id string) bool {
 // - series-desc
 // - seriesindex-asc
 // - seriesindex-desc
+// - modified-desc
 func (l *BookList) SortBy(sort string) (nl *BookList, sorted bool) {
 	sort = strings.ToLower(sort)
 
@@ -344,6 +345,11 @@ func (l *BookList) SortBy(sort string) (nl *BookList, sorted bool) {
 				return a.Series.Index > b.Series.Index
 			}
 			return false
+		})
+		break
+	case "modified-desc":
+		nb = nb.Sorted(func(a, b *models.Book) bool {
+			return a.ModTime.Unix() > b.ModTime.Unix()
 		})
 		break
 	default:
