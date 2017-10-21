@@ -128,16 +128,16 @@ func (s *Server) initRouter() {
 
 	s.router.GET("/books.json", s.handleBooksJSON)
 
-	s.router.GET("/books", s.handleBookList)
+	s.router.GET("/books", s.handleBooks)
 	s.router.GET("/books/:id", s.handleBook)
 
-	s.router.GET("/authors", s.handleAuthorList)
+	s.router.GET("/authors", s.handleAuthors)
 	s.router.GET("/authors/:id", s.handleAuthor)
 
-	s.router.GET("/series", s.handleSeriesList)
+	s.router.GET("/series", s.handleSeriess)
 	s.router.GET("/series/:id", s.handleSeries)
 
-	s.router.GET("/download", s.handleDownloadList)
+	s.router.GET("/download", s.handleDownloads)
 	s.router.GET("/download/:filename", s.handleDownload)
 
 	s.router.GET("/static/*filepath", func(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
@@ -147,7 +147,7 @@ func (s *Server) initRouter() {
 	s.router.ServeFiles("/covers/*filepath", http.Dir(s.CoverDir))
 }
 
-func (s *Server) handleDownloadList(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (s *Server) handleDownloads(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	s.booksLock.RLock()
 	defer s.booksLock.RUnlock()
 
@@ -290,7 +290,7 @@ func (s *Server) handleDownload(w http.ResponseWriter, r *http.Request, p httpro
 	io.WriteString(w, "Could not find book with id "+bid)
 }
 
-func (s *Server) handleAuthorList(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (s *Server) handleAuthors(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	s.booksLock.RLock()
 	defer s.booksLock.RUnlock()
 
@@ -348,7 +348,7 @@ func (s *Server) handleAuthor(w http.ResponseWriter, r *http.Request, p httprout
 	})
 }
 
-func (s *Server) handleSeriesList(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (s *Server) handleSeriess(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	s.booksLock.RLock()
 	defer s.booksLock.RUnlock()
 
@@ -410,7 +410,7 @@ func (s *Server) handleSeries(w http.ResponseWriter, r *http.Request, p httprout
 	})
 }
 
-func (s *Server) handleBookList(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (s *Server) handleBooks(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	s.booksLock.RLock()
 	defer s.booksLock.RUnlock()
 
