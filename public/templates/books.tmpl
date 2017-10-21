@@ -2,7 +2,11 @@
     {{range .Books}}
     <div class="book">
         <a href="/books/{{.ID}}" class="cover">
+            {{if .HasCover}}
             <img src="/covers/{{.ID}}_thumb.jpg" alt="cover">
+            {{else}}
+            <img src="/static/nocover.jpg" alt="cover">
+            {{end}}
         </a>
         <div class="meta">
             <a href="/books/{{.ID}}" class="title">{{.Title}}</a>

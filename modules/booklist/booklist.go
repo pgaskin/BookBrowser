@@ -26,7 +26,7 @@ type IndexerError struct {
 }
 
 // NewBookListFromDir creates a BookList from a directory of books.
-func NewBookListFromDir(dir, coverOutDir string, verbose bool) (*BookList, []*IndexerError) {
+func NewBookListFromDir(dir, coverOutDir string, verbose, nocovers bool) (*BookList, []*IndexerError) {
 	errors := []*IndexerError{}
 	books := BookList{}
 
@@ -77,7 +77,7 @@ func NewBookListFromDir(dir, coverOutDir string, verbose bool) (*BookList, []*In
 				continue
 			}
 
-			if cover != nil {
+			if !nocovers && book.HasCover && cover != nil {
 				coverPath := filepath.Join(coverOutDir, book.ID+".jpg")
 				thumbPath := filepath.Join(coverOutDir, book.ID+"_thumb.jpg")
 
@@ -106,6 +106,10 @@ func NewBookListFromDir(dir, coverOutDir string, verbose bool) (*BookList, []*In
 				}
 
 				book.HasCover = true
+			}
+
+			if nocovers {
+				book.HasCover = false
 			}
 
 			books = append(books, book)

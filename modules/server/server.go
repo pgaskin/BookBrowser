@@ -32,6 +32,7 @@ type Server struct {
 	booksLock *sync.RWMutex
 	BookDir   string
 	CoverDir  string
+	NoCovers  bool
 	Addr      string
 	Verbose   bool
 	router    *httprouter.Router
@@ -40,13 +41,14 @@ type Server struct {
 }
 
 // NewServer creates a new BookBrowser server. It will not index the books automatically.
-func NewServer(addr, bookdir, coverdir, version string, verbose bool) *Server {
+func NewServer(addr, bookdir, coverdir, version string, verbose, nocovers bool) *Server {
 	s := &Server{
 		Books:     &booklist.BookList{},
 		booksLock: &sync.RWMutex{},
 		BookDir:   bookdir,
 		Addr:      addr,
 		CoverDir:  coverdir,
+		NoCovers:  nocovers,
 		Verbose:   verbose,
 		router:    httprouter.New(),
 		version:   version,
@@ -72,7 +74,7 @@ func (s *Server) RefreshBookIndex() error {
 	defer s.printLog("Unlocking book index\n")
 	defer s.booksLock.Unlock()
 
-	books, errs := booklist.NewBookListFromDir(s.BookDir, s.CoverDir, s.Verbose)
+	books, errs := booklist.NewBookListFromDir(s.BookDir, s.CoverDir, s.Verbose, s.NoCovers)
 	if len(errs) != 0 {
 		if s.Verbose {
 			log.Printf("Indexing finished with %v errors", len(errs))

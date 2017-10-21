@@ -1,7 +1,11 @@
 {{with .Book}}
 <div class="single-book">
     <div class="cover">
+        {{if .HasCover}}
         <img src="/covers/{{.ID}}.jpg" alt="cover">
+        {{else}}
+        <img src="/static/nocover.jpg" alt="cover">
+        {{end}}
         <div class="buttons">
             <a href="/download/{{.ID}}.{{.FileType}}" class="button download">Download {{ .FileType | ToUpper }}</a>
             {{if eq .FileType "epub"}}

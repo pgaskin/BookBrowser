@@ -50,11 +50,16 @@ func main() {
 			Value: ":8090",
 			Usage: "`ADDR` is the address to bind the server to. It is in the format IP:PORT. The IP is optional.",
 		},
+		cli.BoolFlag{
+			Name:  "nocovers, n",
+			Usage: "Do not index covers",
+		},
 	}
 	app.HideHelp = true
 	app.Action = func(c *cli.Context) {
 		bookdir := c.String("bookdir")
 		tempdir := c.String("tempdir")
+		nocovers := c.Bool("nocovers")
 		noRemoveTempDir := false
 
 		addr := c.String("addr")
@@ -113,7 +118,7 @@ func main() {
 			}
 		}
 
-		s := server.NewServer(addr, bookdir, tempdir, curversion, true)
+		s := server.NewServer(addr, bookdir, tempdir, curversion, true, nocovers)
 		s.RefreshBookIndex()
 
 		if len(*s.Books) == 0 {
