@@ -1,5 +1,5 @@
 @import url('https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css');
-@import url('https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i');
+@import url('https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
 
 * {
@@ -7,7 +7,7 @@
 }
 
 html {
-    font-family: Lato, 'Open Sans', sans-serif;
+    font-family: Nunito, Lato, 'Open Sans', sans-serif;
     background: #eee;
 }
 
@@ -34,19 +34,24 @@ nav.main .right {
     flex: 0 0 auto;
 }
 
+nav.main a {
+    border-bottom: 1px solid transparent;
+}
+
 nav.main a,
 nav.main a:link,
 nav.main a:visited {
     display: inline-block;
     padding: 10px;
     color: inherit;
-    text-transform: uppercase;
     text-decoration: none;
+    text-transform: none;
 }
 
 nav.main a:hover,
 nav.main a.active {
     color: rgba(0, 0, 0, .78);
+    border-bottom: 1px solid black;
 }
 
 nav.main a i {
