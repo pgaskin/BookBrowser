@@ -487,7 +487,7 @@ h1.title {
 .single-book .buttons .button:visited {
     display: inline-block;
     border: 1px solid #0074D9;
-    padding: 5px 5px;
+    padding: 5px 4px;
     margin: 3px;
     border-radius: 4px;
     text-decoration: none;
