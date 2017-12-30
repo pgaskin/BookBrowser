@@ -2,18 +2,20 @@ package booklist
 
 import (
 	"fmt"
+	"image"
 	"image/jpeg"
 	"log"
+	"math"
 	"os"
 	"path/filepath"
 	"runtime/debug"
 	"sort"
 	"strings"
 
+	"github.com/bamiaux/rez"
 	"github.com/geek1011/BookBrowser/formats"
 	"github.com/geek1011/BookBrowser/models"
 	zglob "github.com/mattn/go-zglob"
-	"github.com/nfnt/resize"
 )
 
 // BookList represents a list of Books
@@ -92,8 +94,43 @@ func NewBookListFromDir(dir, coverOutDir string, verbose, nocovers bool) (*BookL
 					continue
 				}
 
-				// Better quality: thumb := resize.Resize(200, 0, img, resize.Lanczos2)
-				thumb := resize.Resize(200, 0, cover, resize.Bicubic)
+				coverBounds := cover.Bounds()
+				coverWidth := coverBounds.Dx()
+				coverHeight := coverBounds.Dy()
+
+				if coverWidth <= 200 {
+					continue
+				}
+
+				// Scale to fit in 200x900
+				scale := math.Min(float64(200.0/float64(coverWidth)), float64(900.0/float64(coverHeight)))
+
+				// Scale and round down
+				coverWidth = int(float64(coverWidth) * scale)
+				coverHeight = int(float64(coverHeight) * scale)
+
+				r := image.Rect(0, 0, coverWidth, coverHeight)
+				var thumb image.Image
+				switch t := cover.(type) {
+				case *image.YCbCr:
+					thumb = image.NewYCbCr(r, t.SubsampleRatio)
+				case *image.RGBA:
+					thumb = image.NewRGBA(r)
+				case *image.NRGBA:
+					thumb = image.NewNRGBA(r)
+				case *image.Gray:
+					thumb = image.NewGray(r)
+				default:
+					continue
+				}
+
+				// rez.NewLanczos(2.0) is faster, but slower
+				err = rez.Convert(thumb, cover, rez.NewBicubicFilter())
+				if err != nil {
+					fmt.Println(coverWidth, coverHeight, scale, err)
+					continue
+				}
+
 				thumbFile, err := os.Create(thumbPath)
 				if err != nil {
 					continue

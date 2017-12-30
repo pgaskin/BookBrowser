@@ -59,6 +59,12 @@
 			"revisionTime": "2016-12-24T14:14:13Z"
 		},
 		{
+			"checksumSHA1": "FOqUoijHGUZuS1T4pTcdlrNNlvc=",
+			"path": "github.com/bamiaux/rez",
+			"revision": "29f4463c688b986c11f166b12734f69b58b5555f",
+			"revisionTime": "2017-07-31T18:41:18Z"
+		},
+		{
 			"checksumSHA1": "usT4LCSQItkFvFOQT7cBlkCuGaE=",
 			"path": "github.com/beevik/etree",
 			"revision": "af219c0c7ea1b67ec263c0b1b1b96d284a9181ce",
@@ -111,12 +117,6 @@
 			"path": "github.com/mattn/go-zglob/fastwalk",
 			"revision": "95345c4e1c0ebc9d16a3284177f09360f4d20fab",
 			"revisionTime": "2017-01-24T11:57:57Z"
-		},
-		{
-			"checksumSHA1": "r5eQHkttko6kxroDEENXbmXKrSs=",
-			"path": "github.com/nfnt/resize",
-			"revision": "891127d8d1b52734debe1b3c3d7e747502b6c366",
-			"revisionTime": "2016-07-24T20:39:20Z"
 		},
 		{
 			"checksumSHA1": "LuFv4/jlrmFNnDb/5SCSEPAM9vU=",
