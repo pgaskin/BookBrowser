@@ -72,7 +72,7 @@ func main() {
 			}
 		}
 
-		if fi, err := os.Stat(tempdir); err == nil || fi.IsDir() {
+		if fi, err := os.Stat(tempdir); err == nil || (fi != nil && fi.IsDir()) {
 			noRemoveTempDir = true
 			if tempdir == deftempdir {
 				noRemoveTempDir = false

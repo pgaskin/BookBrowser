@@ -21,3 +21,8 @@ func TestStringAfter(t *testing.T) {
 func TestFixString(t *testing.T) {
 	assert.Equal(t, `""""''`, FixString(`“‹”›‘’`))
 }
+
+func TestExists(t *testing.T) {
+	assert.True(t, Exists("."))
+	assert.False(t, Exists("sdfsdfsdf"))
+}
