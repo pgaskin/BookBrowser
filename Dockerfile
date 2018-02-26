@@ -7,6 +7,7 @@ RUN apk update && apk add git
 WORKDIR /go/src/app
 COPY . .
 RUN go get -v
+RUN go generate
 RUN go build
 
 FROM alpine:latest
