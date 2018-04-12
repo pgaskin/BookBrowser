@@ -85,64 +85,10 @@ func NewBookListFromDir(dir, coverOutDir string, verbose, nocovers bool) (*BookL
 				thumbPath := filepath.Join(coverOutDir, book.ID+"_thumb.jpg")
 
 				if !(util.Exists(coverPath) && util.Exists(thumbPath)) {
-					coverFile, err := os.Create(coverPath)
-					if err != nil {
-						continue
-					}
-					defer coverFile.Close()
-
-					err = jpeg.Encode(coverFile, cover, nil)
-					if err != nil {
-						continue
-					}
-
-					coverBounds := cover.Bounds()
-					coverWidth := coverBounds.Dx()
-					coverHeight := coverBounds.Dy()
-
-					if coverWidth <= 200 {
-						continue
-					}
-
-					// Scale to fit in 200x900
-					scale := math.Min(float64(200.0/float64(coverWidth)), float64(900.0/float64(coverHeight)))
-
-					// Scale and round down
-					coverWidth = int(float64(coverWidth) * scale)
-					coverHeight = int(float64(coverHeight) * scale)
-
-					r := image.Rect(0, 0, coverWidth, coverHeight)
-					var thumb image.Image
-					switch t := cover.(type) {
-					case *image.YCbCr:
-						thumb = image.NewYCbCr(r, t.SubsampleRatio)
-					case *image.RGBA:
-						thumb = image.NewRGBA(r)
-					case *image.NRGBA:
-						thumb = image.NewNRGBA(r)
-					case *image.Gray:
-						thumb = image.NewGray(r)
-					default:
-						continue
-					}
-
-					// rez.NewLanczos(2.0) is faster, but slower
-					err = rez.Convert(thumb, cover, rez.NewBicubicFilter())
-					if err != nil {
-						fmt.Println(coverWidth, coverHeight, scale, err)
-						continue
-					}
-
-					thumbFile, err := os.Create(thumbPath)
-					if err != nil {
-						continue
-					}
-					defer thumbFile.Close()
-
-					err = jpeg.Encode(thumbFile, thumb, nil)
-					if err != nil {
-						continue
-					}
+          err = makeThumbs(coverPath, thumbPath, cover);
+          if err != nil {
+            continue
+          }
 				}
 
 				book.HasCover = true
@@ -158,6 +104,69 @@ func NewBookListFromDir(dir, coverOutDir string, verbose, nocovers bool) (*BookL
 
 	debug.FreeOSMemory()
 	return &books, errors
+}
+
+func makeThumbs(coverPath string, thumbPath string, cover image.Image) error {
+    coverFile, err := os.Create(coverPath)
+    if err != nil {
+      return nil
+    }
+    defer coverFile.Close()
+
+    err = jpeg.Encode(coverFile, cover, nil)
+    if err != nil {
+      return nil
+    }
+
+    coverBounds := cover.Bounds()
+    coverWidth := coverBounds.Dx()
+    coverHeight := coverBounds.Dy()
+
+    if coverWidth <= 200 {
+      return nil
+    }
+
+    // Scale to fit in 200x900
+    scale := math.Min(float64(200.0/float64(coverWidth)), float64(900.0/float64(coverHeight)))
+
+    // Scale and round down
+    coverWidth = int(float64(coverWidth) * scale)
+    coverHeight = int(float64(coverHeight) * scale)
+
+    r := image.Rect(0, 0, coverWidth, coverHeight)
+    var thumb image.Image
+    switch t := cover.(type) {
+    case *image.YCbCr:
+      thumb = image.NewYCbCr(r, t.SubsampleRatio)
+    case *image.RGBA:
+      thumb = image.NewRGBA(r)
+    case *image.NRGBA:
+      thumb = image.NewNRGBA(r)
+    case *image.Gray:
+      thumb = image.NewGray(r)
+    default:
+      return nil
+    }
+
+    // rez.NewLanczos(2.0) is faster, but slower
+    err = rez.Convert(thumb, cover, rez.NewBicubicFilter())
+    if err != nil {
+      fmt.Println(coverWidth, coverHeight, scale, err)
+      return err
+    }
+
+    thumbFile, err := os.Create(thumbPath)
+    if err != nil {
+      return err
+    }
+    defer thumbFile.Close()
+
+    err = jpeg.Encode(thumbFile, thumb, nil)
+    if err != nil {
+      return err
+    }
+
+    return nil
 }
 
 // Sorted returns a copy of the BookList sorted by the function
