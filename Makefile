@@ -1,3 +1,7 @@
+ifndef GOPATH
+  export GOPATH=${HOME}/go
+endif
+
 .PHONY: default
 default: clean build-deps deps generate test build
 
