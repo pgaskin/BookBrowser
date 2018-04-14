@@ -1,4 +1,4 @@
-ifndef $$GOPATH
+ifndef GOPATH
   export GOPATH=${HOME}/go
 endif
 
