@@ -46,6 +46,13 @@ for GOOS in linux windows darwin freebsd; do
     done
 done
 
+for GOOS in linux; do
+    for GOARCH in arm arm64; do
+        echo "Building BookBrowser $APP_VERSION for $GOOS $GOARCH"
+        GOOS=$GOOS GOARCH=$GOOARCH go build -ldflags "-X main.curversion=$APP_VERSION" -o "build/BookBrowser-$GOOS-$(echo $GOARCH|sed 's/arm/-arm-32bit/g'|sed 's/arm64/-arm-64bit/g')$(echo $GOOS|sed 's/linux//g')"
+    done
+done
+
 
 if [[ "$SKIP_UPLOAD" != "true" ]]; then
     echo "Creating release"
