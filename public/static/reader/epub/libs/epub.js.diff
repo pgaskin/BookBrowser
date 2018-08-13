@@ -1,0 +1,157 @@
+diff --git a/libs/epub.orig.js b/libs/epub.js
+index c2a047f..bbe850d 100644
+--- a/libs/epub.orig.js
++++ b/libs/epub.js
+@@ -3262,27 +3262,27 @@ function substitute(content, urls, replacements) {
+ /* 8 */
+ /***/ (function(module, exports) {
+ 
+-var g;
+-
+-// This works in non-strict mode
+-g = (function() {
+-	return this;
+-})();
+-
+-try {
+-	// This works if eval is allowed (see CSP)
+-	g = g || Function("return this")() || (1,eval)("this");
+-} catch(e) {
+-	// This works if the window reference is available
+-	if(typeof window === "object")
+-		g = window;
+-}
+-
+-// g can still be undefined, but nothing to do about it...
+-// We return undefined, instead of nothing here, so it's
+-// easier to handle this case. if(!global) { ...}
+-
+-module.exports = g;
++var g;
++
++// This works in non-strict mode
++g = (function() {
++	return this;
++})();
++
++try {
++	// This works if eval is allowed (see CSP)
++	g = g || Function("return this")() || (1,eval)("this");
++} catch(e) {
++	// This works if the window reference is available
++	if(typeof window === "object")
++		g = window;
++}
++
++// g can still be undefined, but nothing to do about it...
++// We return undefined, instead of nothing here, so it's
++// easier to handle this case. if(!global) { ...}
++
++module.exports = g;
+ 
+ 
+ /***/ }),
+@@ -4971,7 +4971,8 @@ var Contents = function () {
+ 			if (axis === "vertical") {
+ 				this.css("padding", gap / 2 + "px 20px", true);
+ 			} else {
+-				this.css("padding", "20px " + gap / 2 + "px", true);
++				this.css("padding-left", gap / 2 + "px", true);
++				this.css("padding-right", gap / 2 + "px", true);
+ 			}
+ 
+ 			this.css("box-sizing", "border-box");
+@@ -12166,6 +12167,9 @@ var Packaging = function () {
+ 			metadata.language = this.getElementText(xml, "language");
+ 			metadata.rights = this.getElementText(xml, "rights");
+ 
++			metadata.series = this.getMetaContent(xml, "calibre:series");
++			metadata.seriesIndex = this.getMetaContent(xml, "calibre:series_index");
++
+ 			metadata.modified_date = this.getPropertyText(xml, "dcterms:modified");
+ 
+ 			metadata.layout = this.getPropertyText(xml, "rendition:layout");
+@@ -12371,6 +12375,26 @@ var Packaging = function () {
+ 			return "";
+ 		}
+ 
++		/**
++   * Get meta content
++   * @private
++   * @param  {document} xml
++   * @param  {string} name
++   * @return {string} text
++   */
++
++	}, {
++		key: 'getMetaContent',
++		value: function getMetaContent(xml, name) {
++			var el = (0, _core.qsp)(xml, "meta", { "name": name });
++
++			if (el && el.getAttribute("content")) {
++				return el.getAttribute("content");
++			}
++
++			return "";
++		}
++
+ 		/**
+    * Load JSON Manifest
+    * @param  {document} packageDocument OPF XML
+@@ -16754,31 +16778,30 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
+ /* 70 */
+ /***/ (function(module, exports) {
+ 
+-module.exports = function(module) {
+-	if(!module.webpackPolyfill) {
+-		module.deprecate = function() {};
+-		module.paths = [];
+-		// module.parent = undefined by default
+-		if(!module.children) module.children = [];
+-		Object.defineProperty(module, "loaded", {
+-			enumerable: true,
+-			get: function() {
+-				return module.l;
+-			}
+-		});
+-		Object.defineProperty(module, "id", {
+-			enumerable: true,
+-			get: function() {
+-				return module.i;
+-			}
+-		});
+-		module.webpackPolyfill = 1;
+-	}
+-	return module;
+-};
++module.exports = function(module) {
++	if(!module.webpackPolyfill) {
++		module.deprecate = function() {};
++		module.paths = [];
++		// module.parent = undefined by default
++		if(!module.children) module.children = [];
++		Object.defineProperty(module, "loaded", {
++			enumerable: true,
++			get: function() {
++				return module.l;
++			}
++		});
++		Object.defineProperty(module, "id", {
++			enumerable: true,
++			get: function() {
++				return module.i;
++			}
++		});
++		module.webpackPolyfill = 1;
++	}
++	return module;
++};
+ 
+ 
+ /***/ })
+ /******/ ]);
+-});
+-//# sourceMappingURL=epub.js.map
+\ No newline at end of file
++});
+\ No newline at end of file
