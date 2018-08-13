@@ -7,11 +7,10 @@ import (
 )
 
 func TestEPUBMetadata(t *testing.T) {
-	book, cover, err := indexer("pdf_test.pdf")
+	pdf, err := load("pdf_test.pdf")
 	assert.Nil(t, err, "should not error when loading book")
 
-	assert.NotNil(t, book, "book should not be nil")
-	assert.Nil(t, cover, "should not return a cover")
+	assert.NotNil(t, pdf, "pdf should not be nil")
 
 	// TODO: Finish rest of tests
 }

@@ -89,10 +89,10 @@
 			"revisionTime": "2017-02-27T21:27:28Z"
 		},
 		{
-			"checksumSHA1": "9w9yweGig7vqJqLSJMPSe0yRPXE=",
+			"checksumSHA1": "yLcB7C8Nm8YupMj67iGsgYQjdNg=",
 			"path": "github.com/geek1011/kepubify/kepub",
-			"revision": "d6d9dff6262ccd55299e25a086935ce94a2eec09",
-			"revisionTime": "2017-10-07T23:20:27Z"
+			"revision": "13613146585f9a58ffae0c36b4cd8c6837b16f79",
+			"revisionTime": "2018-06-23T16:48:50Z"
 		},
 		{
 			"checksumSHA1": "gKyBj05YkfuLFruAyPZ4KV9nFp8=",
@@ -117,6 +117,18 @@
 			"path": "github.com/mattn/go-zglob/fastwalk",
 			"revision": "95345c4e1c0ebc9d16a3284177f09360f4d20fab",
 			"revisionTime": "2017-01-24T11:57:57Z"
+		},
+		{
+			"checksumSHA1": "6z9MgcvNbdVGsAIvv6BHA1uALQA=",
+			"path": "github.com/nfnt/resize",
+			"revision": "83c6a9932646f83e3267f353373d47347b6036b2",
+			"revisionTime": "2018-02-21T19:10:11Z"
+		},
+		{
+			"checksumSHA1": "ljd3FhYRJ91cLZz3wsH9BQQ2JbA=",
+			"path": "github.com/pkg/errors",
+			"revision": "816c9085562cd7ee03e7f8188a1cfd942858cded",
+			"revisionTime": "2018-03-11T21:45:15Z"
 		},
 		{
 			"checksumSHA1": "LuFv4/jlrmFNnDb/5SCSEPAM9vU=",

@@ -2,64 +2,115 @@ package epub
 
 import (
 	"archive/zip"
-	"errors"
+	"crypto/sha1"
 	"fmt"
 	"image"
-	"image/gif"
-	"image/jpeg"
-	"image/png"
+	_ "image/gif"
+	_ "image/png"
+	"io"
 	"os"
 	"path/filepath"
 	"strconv"
-	"time"
 
-	"golang.org/x/tools/godoc/vfs/zipfs"
+	"github.com/geek1011/BookBrowser/booklist"
+	"github.com/geek1011/BookBrowser/formats"
 
 	"github.com/beevik/etree"
-	"github.com/geek1011/BookBrowser/formats"
-	"github.com/geek1011/BookBrowser/models"
+	"github.com/pkg/errors"
+	"golang.org/x/tools/godoc/vfs/zipfs"
 )
 
-func indexer(filename string) (book *models.Book, cover image.Image, err error) {
+type epub struct {
+	hascover  bool
+	book      *booklist.Book
+	coverpath *string
+}
+
+func (e *epub) Book() *booklist.Book {
+	return e.book
+}
+
+func (e *epub) HasCover() bool {
+	return e.coverpath != nil
+}
+
+func (e *epub) GetCover() (i image.Image, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			book = nil
-			cover = nil
-			err = fmt.Errorf("Unknown error parsing book. Skipping. Error: %s", r)
+			err = errors.New("panic while decoding cover image")
 		}
 	}()
 
-	var title string
-	var author string
-	var seriesName string
-	var seriesIndex float64
-	var publisher string
-	var description string
-	var hasCover bool
-	var modtime time.Time
-	var coverTmp image.Image
-
-	if file, err := os.Stat(filename); err == nil {
-		modtime = file.ModTime()
+	zr, err := zip.OpenReader(e.book.FilePath)
+	if err != nil {
+		return nil, errors.Wrap(err, "error opening epub as zip")
 	}
+	defer zr.Close()
+
+	zfs := zipfs.New(zr, "epub")
+
+	cr, err := zfs.Open(*e.coverpath)
+	if err != nil {
+		return nil, errors.Wrapf(err, "could not open cover '%s'", *e.coverpath)
+	}
+	defer cr.Close()
+
+	i, _, err = image.Decode(cr)
+	if err != nil {
+		return nil, errors.Wrap(err, "error decoding image")
+	}
+
+	return i, nil
+}
+
+func load(filename string) (formats.BookInfo, error) {
+	e := &epub{book: &booklist.Book{}, hascover: false}
+
+	f, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := f.Stat()
+	if err != nil {
+		f.Close()
+		return nil, errors.Wrapf(err, "could not stat book")
+	}
+	e.book.FilePath = filename
+	e.book.FileSize = fi.Size()
+	e.book.ModTime = fi.ModTime()
+
+	s := sha1.New()
+	i, err := io.Copy(s, f)
+	if err == nil && i != fi.Size() {
+		err = errors.New("could not read whole file")
+	}
+	if err != nil {
+		f.Close()
+		return nil, errors.Wrap(err, "could not hash book")
+	}
+	e.book.Hash = fmt.Sprintf("%x", s.Sum(nil))
+
+	f.Close()
 
 	zr, err := zip.OpenReader(filename)
 	if err != nil {
-		return nil, nil, err
+		return nil, errors.Wrap(err, "error opening epub as zip")
 	}
+	defer zr.Close()
 
 	zfs := zipfs.New(zr, "epub")
 
 	rsk, err := zfs.Open("/META-INF/container.xml")
 	if err != nil {
-		return nil, nil, err
+		return nil, errors.Wrap(err, "error reading container.xml")
 	}
 	defer rsk.Close()
 
 	container := etree.NewDocument()
 	_, err = container.ReadFrom(rsk)
 	if err != nil {
-		return nil, nil, err
+		return nil, errors.Wrap(err, "error parsing container.xml")
 	}
 
 	rootfile := ""
@@ -68,101 +119,70 @@ func indexer(filename string) (book *models.Book, cover image.Image, err error) 
 	}
 
 	if rootfile == "" {
-		return nil, nil, errors.New("Cannot parse container")
+		return nil, errors.Wrap(err, "could not find rootfile in container.xml")
 	}
+
+	opfdir := filepath.Dir(rootfile)
 
 	rrsk, err := zfs.Open("/" + rootfile)
 	if err != nil {
-		return nil, nil, err
+		return nil, errors.Wrap(err, "error reading rootfile")
 	}
 	defer rrsk.Close()
-
-	opfdir := filepath.Dir(rootfile)
 
 	opf := etree.NewDocument()
 	_, err = opf.ReadFrom(rrsk)
 	if err != nil {
-		return nil, nil, err
+		return nil, errors.Wrap(err, "error parsing rootfile")
 	}
 
-	title = filepath.Base(filename)
-	for _, e := range opf.FindElements("//title") {
-		title = e.Text()
+	e.book.Title = filepath.Base(e.book.FilePath)
+	for _, el := range opf.FindElements("//title") {
+		e.book.Title = el.Text()
 		break
 	}
-	for _, e := range opf.FindElements("//creator") {
-		author = e.Text()
+	for _, el := range opf.FindElements("//creator") {
+		e.book.Author = el.Text()
 		break
 	}
-	for _, e := range opf.FindElements("//publisher") {
-		publisher = e.Text()
+	for _, el := range opf.FindElements("//publisher") {
+		e.book.Publisher = el.Text()
 		break
 	}
-	for _, e := range opf.FindElements("//description") {
-		description = e.Text()
+	for _, el := range opf.FindElements("//description") {
+		e.book.Description = el.Text()
 		break
 	}
-	for _, e := range opf.FindElements("//meta[@name='calibre:series']") {
-		seriesName = e.SelectAttrValue("content", "")
-		break
+	for _, el := range opf.FindElements("//meta[@name='calibre:series']") {
+		s := el.SelectAttrValue("content", "")
+		e.book.Series = s
 	}
-	for _, e := range opf.FindElements("//meta[@name='calibre:series_index']") {
-		i, err := strconv.ParseFloat(e.SelectAttrValue("content", "0"), 64)
-		if err == nil {
-			seriesIndex = i
+
+	if e.book.Series != "" {
+		for _, el := range opf.FindElements("//meta[@name='calibre:series_index']") {
+			i, _ := strconv.ParseFloat(el.SelectAttrValue("content", "0"), 64)
+			e.book.SeriesIndex = i
 			break
 		}
 	}
 
-	for _, e := range opf.FindElements("//meta[@name='cover']") {
-		coverid := e.SelectAttrValue("content", "")
+	for _, el := range opf.FindElements("//meta[@name='cover']") {
+		coverid := el.SelectAttrValue("content", "")
 		if coverid != "" {
 			for _, f := range opf.FindElements("//[@id='" + coverid + "']") {
 				coverPath := f.SelectAttrValue("href", "")
 				if coverPath != "" {
-					cr, err := zfs.Open("/" + opfdir + "/" + coverPath)
-					if err != nil {
-						continue
-					}
-					defer cr.Close()
-
-					ext := filepath.Ext(coverPath)
-					if ext == ".jpeg" {
-						ext = ".jpg"
-					}
-
-					switch ext {
-					case ".jpg":
-						coverTmp, err = jpeg.Decode(cr)
-						if err != nil {
-							continue
-						}
-					case ".gif":
-						coverTmp, err = gif.Decode(cr)
-						if err != nil {
-							continue
-						}
-					case ".png":
-						coverTmp, err = png.Decode(cr)
-						if err != nil {
-							continue
-						}
-					}
-
-					hasCover = true
+					coverPath = "/" + opfdir + "/" + coverPath
+					e.coverpath = &coverPath
 				}
 			}
 			break
 		}
 	}
 
-	return models.NewBook(title, author, publisher, seriesName, seriesIndex, description, filename, hasCover, modtime, "epub"), coverTmp, nil
+	return e, nil
 }
 
 func init() {
-	formats.RegisterFormat(&formats.Format{
-		Glob:      "**/*.epub",
-		Extension: ".epub",
-		Indexer:   indexer,
-	})
+	formats.Register("epub", load)
 }

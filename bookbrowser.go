@@ -9,9 +9,9 @@ import (
 	"strings"
 	"syscall"
 
+	_ "github.com/geek1011/BookBrowser/formats/epub"
+	_ "github.com/geek1011/BookBrowser/formats/pdf"
 	"github.com/geek1011/BookBrowser/modules/server"
-
-	_ "github.com/geek1011/BookBrowser/formats/all"
 	"github.com/geek1011/BookBrowser/modules/sigusr"
 	"github.com/geek1011/BookBrowser/modules/util"
 	"github.com/urfave/cli"
@@ -121,7 +121,7 @@ func main() {
 		s := server.NewServer(addr, bookdir, tempdir, curversion, true, nocovers)
 		s.RefreshBookIndex()
 
-		if len(*s.Books) == 0 {
+		if len(s.Indexer.BookList()) == 0 {
 			log.Fatalln("Fatal error: no books found")
 		}
 

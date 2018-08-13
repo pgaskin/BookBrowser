@@ -14,11 +14,11 @@ import (
 	"path/filepath"
 	"runtime/debug"
 	"strings"
-	"sync"
 	"time"
 
-	"github.com/geek1011/BookBrowser/models"
-	"github.com/geek1011/BookBrowser/modules/booklist"
+	"github.com/geek1011/BookBrowser/booklist"
+	"github.com/geek1011/BookBrowser/formats"
+	"github.com/geek1011/BookBrowser/indexer"
 	"github.com/geek1011/kepubify/kepub"
 	"github.com/julienschmidt/httprouter"
 	"github.com/unrolled/render"
@@ -28,30 +28,38 @@ import (
 
 // Server is a BookBrowser server.
 type Server struct {
-	Books     *booklist.BookList
-	booksLock *sync.RWMutex
-	BookDir   string
-	CoverDir  string
-	NoCovers  bool
-	Addr      string
-	Verbose   bool
-	router    *httprouter.Router
-	render    *render.Render
-	version   string
+	Indexer  *indexer.Indexer
+	BookDir  string
+	CoverDir string
+	NoCovers bool
+	Addr     string
+	Verbose  bool
+	router   *httprouter.Router
+	render   *render.Render
+	version  string
 }
 
 // NewServer creates a new BookBrowser server. It will not index the books automatically.
 func NewServer(addr, bookdir, coverdir, version string, verbose, nocovers bool) *Server {
+	i, err := indexer.New([]string{bookdir}, &coverdir, formats.GetExts())
+	if err != nil {
+		panic(err)
+	}
+	i.Verbose = verbose
+
+	if verbose {
+		log.Printf("Supported formats: %s", strings.Join(formats.GetExts(), ", "))
+	}
+
 	s := &Server{
-		Books:     &booklist.BookList{},
-		booksLock: &sync.RWMutex{},
-		BookDir:   bookdir,
-		Addr:      addr,
-		CoverDir:  coverdir,
-		NoCovers:  nocovers,
-		Verbose:   verbose,
-		router:    httprouter.New(),
-		version:   version,
+		Indexer:  i,
+		BookDir:  bookdir,
+		Addr:     addr,
+		CoverDir: coverdir,
+		NoCovers: nocovers,
+		Verbose:  verbose,
+		router:   httprouter.New(),
+		version:  version,
 	}
 
 	s.initRender()
@@ -69,19 +77,17 @@ func (s *Server) printLog(format string, v ...interface{}) {
 
 // RefreshBookIndex refreshes the book index
 func (s *Server) RefreshBookIndex() error {
-	s.printLog("Locking book index\n")
-	s.booksLock.Lock()
-	defer s.printLog("Unlocking book index\n")
-	defer s.booksLock.Unlock()
-
-	books, errs := booklist.NewBookListFromDir(s.BookDir, s.CoverDir, s.Verbose, s.NoCovers)
+	errs, err := s.Indexer.Refresh()
+	if err != nil {
+		log.Printf("Error indexing: %s", err)
+		return err
+	}
 	if len(errs) != 0 {
 		if s.Verbose {
 			log.Printf("Indexing finished with %v errors", len(errs))
 		}
 	}
 
-	s.Books = books
 	debug.FreeOSMemory()
 	return nil
 }
@@ -150,9 +156,6 @@ func (s *Server) initRouter() {
 }
 
 func (s *Server) handleDownloads(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	s.booksLock.RLock()
-	defer s.booksLock.RUnlock()
-
 	w.Header().Set("Content-Type", "text/html")
 	var buf bytes.Buffer
 	buf.WriteString(`
@@ -190,18 +193,18 @@ padding: 0;
 </head>
 <body>
 	`)
-	sbl := s.Books.Sorted(func(a, b *models.Book) bool {
+	sbl := s.Indexer.BookList().Sorted(func(a, b *booklist.Book) bool {
 		return a.Title < b.Title
 	})
 	for _, b := range sbl {
-		if b.Author != nil && b.Series != nil {
-			buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s - %s (%v)</a>", b.ID, b.FileType, b.Title, b.Author.Name, b.Series.Name, b.Series.Index))
-		} else if b.Author != nil && b.Series == nil {
-			buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s</a>", b.ID, b.FileType, b.Title, b.Author.Name))
-		} else if b.Author == nil && b.Series != nil {
-			buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s (%v)</a>", b.ID, b.FileType, b.Title, b.Series.Name, b.Series.Index))
-		} else if b.Author == nil && b.Series == nil {
-			buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s</a>", b.ID, b.FileType, b.Title))
+		if b.Author != "" && b.Series != "" {
+			buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s - %s (%v)</a>", b.ID(), b.FileType(), b.Title, b.Author, b.Series, b.SeriesIndex))
+		} else if b.Author != "" && b.Series != "" {
+			buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s</a>", b.ID(), b.FileType(), b.Title, b.Author))
+		} else if b.Author == "" && b.Series != "" {
+			buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s - %s (%v)</a>", b.ID(), b.FileType(), b.Title, b.Series, b.SeriesIndex))
+		} else if b.Author == "" && b.Series == "" {
+			buf.WriteString(fmt.Sprintf("<a href=\"/download/%s.%s\">%s</a>", b.ID(), b.FileType(), b.Title))
 		}
 	}
 	buf.WriteString(`
@@ -212,9 +215,6 @@ padding: 0;
 }
 
 func (s *Server) handleDownload(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	s.booksLock.RLock()
-	defer s.booksLock.RUnlock()
-
 	bid := p.ByName("filename")
 	bid = strings.Replace(strings.Replace(bid, filepath.Ext(bid), "", 1), ".kepub", "", -1)
 	iskepub := false
@@ -222,10 +222,10 @@ func (s *Server) handleDownload(w http.ResponseWriter, r *http.Request, p httpro
 		iskepub = true
 	}
 
-	for _, b := range *s.Books {
-		if b.ID == bid {
+	for _, b := range s.Indexer.BookList() {
+		if b.ID() == bid {
 			if !iskepub {
-				rd, err := os.Open(b.Filepath)
+				rd, err := os.Open(b.FilePath)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					io.WriteString(w, "Error handling request")
@@ -233,8 +233,8 @@ func (s *Server) handleDownload(w http.ResponseWriter, r *http.Request, p httpro
 					return
 				}
 
-				w.Header().Set("Content-Disposition", "attachment; filename="+url.PathEscape(b.Title)+"."+b.FileType)
-				switch b.FileType {
+				w.Header().Set("Content-Disposition", "attachment; filename="+url.PathEscape(b.Title)+"."+b.FileType())
+				switch b.FileType() {
 				case "epub":
 					w.Header().Set("Content-Type", "application/epub+zip")
 				case "pdf":
@@ -248,7 +248,7 @@ func (s *Server) handleDownload(w http.ResponseWriter, r *http.Request, p httpro
 					log.Printf("Error handling request for %s: %s\n", r.URL.Path, err)
 				}
 			} else {
-				if b.FileType != "epub" {
+				if b.FileType() != "epub" {
 					w.WriteHeader(http.StatusNotFound)
 					io.WriteString(w, "Not found")
 					return
@@ -262,7 +262,7 @@ func (s *Server) handleDownload(w http.ResponseWriter, r *http.Request, p httpro
 				}
 				defer os.RemoveAll(td)
 				kepubf := filepath.Join(td, bid+".kepub.epub")
-				err = kepub.Kepubify(b.Filepath, kepubf, false)
+				err = kepub.Kepubify(b.FilePath, kepubf, false, nil, nil)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					log.Printf("Error handling request for %s: %s\n", r.URL.Path, err)
@@ -293,9 +293,6 @@ func (s *Server) handleDownload(w http.ResponseWriter, r *http.Request, p httpro
 }
 
 func (s *Server) handleAuthors(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	s.booksLock.RLock()
-	defer s.booksLock.RUnlock()
-
 	s.render.HTML(w, http.StatusOK, "authors", map[string]interface{}{
 		"CurVersion":       s.version,
 		"PageTitle":        "Authors",
@@ -303,26 +300,23 @@ func (s *Server) handleAuthors(w http.ResponseWriter, r *http.Request, _ httprou
 		"ShowSearch":       false,
 		"ShowViewSelector": true,
 		"Title":            "Authors",
-		"Authors": s.Books.GetAuthors().Sorted(func(a, b *models.Author) bool {
+		"Authors": s.Indexer.BookList().Authors().Sorted(func(a, b struct{ Name, ID string }) bool {
 			return a.Name < b.Name
 		}),
 	})
 }
 
 func (s *Server) handleAuthor(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	s.booksLock.RLock()
-	defer s.booksLock.RUnlock()
-
 	aname := ""
-	for _, author := range *s.Books.GetAuthors() {
+	for _, author := range *s.Indexer.BookList().Authors() {
 		if author.ID == p.ByName("id") {
 			aname = author.Name
 		}
 	}
 
 	if aname != "" {
-		bl := s.Books.Filtered(func(book *models.Book) bool {
-			return book.Author != nil && book.Author.ID == p.ByName("id")
+		bl := s.Indexer.BookList().Filtered(func(book *booklist.Book) bool {
+			return book.Author != "" && book.AuthorID() == p.ByName("id")
 		})
 		bl, _ = bl.SortBy("title-asc")
 		bl, _ = bl.SortBy(r.URL.Query().Get("sort"))
@@ -351,9 +345,6 @@ func (s *Server) handleAuthor(w http.ResponseWriter, r *http.Request, p httprout
 }
 
 func (s *Server) handleSeriess(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	s.booksLock.RLock()
-	defer s.booksLock.RUnlock()
-
 	s.render.HTML(w, http.StatusOK, "seriess", map[string]interface{}{
 		"CurVersion":       s.version,
 		"PageTitle":        "Series",
@@ -361,26 +352,23 @@ func (s *Server) handleSeriess(w http.ResponseWriter, r *http.Request, _ httprou
 		"ShowSearch":       false,
 		"ShowViewSelector": true,
 		"Title":            "Series",
-		"Series": s.Books.GetSeries().Sorted(func(a, b *models.Series) bool {
+		"Series": s.Indexer.BookList().Series().Sorted(func(a, b struct{ Name, ID string }) bool {
 			return a.Name < b.Name
 		}),
 	})
 }
 
 func (s *Server) handleSeries(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	s.booksLock.RLock()
-	defer s.booksLock.RUnlock()
-
 	sname := ""
-	for _, series := range *s.Books.GetSeries() {
+	for _, series := range *s.Indexer.BookList().Series() {
 		if series.ID == p.ByName("id") {
 			sname = series.Name
 		}
 	}
 
 	if sname != "" {
-		bl := s.Books.Filtered(func(book *models.Book) bool {
-			return book.Series != nil && book.Series.ID == p.ByName("id")
+		bl := s.Indexer.BookList().Filtered(func(book *booklist.Book) bool {
+			return book.Series != "" && book.SeriesID() == p.ByName("id")
 		})
 		bl, _ = bl.SortBy("seriesindex-asc")
 		bl, _ = bl.SortBy(r.URL.Query().Get("sort"))
@@ -392,10 +380,10 @@ func (s *Server) handleSeries(w http.ResponseWriter, r *http.Request, p httprout
 			"ShowSearch":       false,
 			"ShowViewSelector": true,
 			"Title":            sname,
-			"Books": s.Books.Filtered(func(book *models.Book) bool {
-				return book.Series != nil && book.Series.ID == p.ByName("id")
-			}).Sorted(func(a, b *models.Book) bool {
-				return a.Series.Index < b.Series.Index
+			"Books": s.Indexer.BookList().Filtered(func(book *booklist.Book) bool {
+				return book.Series != "" && book.SeriesID() == p.ByName("id")
+			}).Sorted(func(a, b *booklist.Book) bool {
+				return a.SeriesIndex < b.SeriesIndex
 			}),
 		})
 		return
@@ -413,10 +401,7 @@ func (s *Server) handleSeries(w http.ResponseWriter, r *http.Request, p httprout
 }
 
 func (s *Server) handleBooks(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	s.booksLock.RLock()
-	defer s.booksLock.RUnlock()
-
-	bl, _ := s.Books.SortBy("modified-desc")
+	bl, _ := s.Indexer.BookList().SortBy("modified-desc")
 	bl, _ = bl.SortBy(r.URL.Query().Get("sort"))
 
 	s.render.HTML(w, http.StatusOK, "books", map[string]interface{}{
@@ -431,11 +416,8 @@ func (s *Server) handleBooks(w http.ResponseWriter, r *http.Request, _ httproute
 }
 
 func (s *Server) handleBook(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	s.booksLock.RLock()
-	defer s.booksLock.RUnlock()
-
-	for _, b := range *s.Books {
-		if b.ID == p.ByName("id") {
+	for _, b := range s.Indexer.BookList() {
+		if b.ID() == p.ByName("id") {
 			s.render.HTML(w, http.StatusOK, "book", map[string]interface{}{
 				"CurVersion":       s.version,
 				"PageTitle":        b.Title,
@@ -461,18 +443,15 @@ func (s *Server) handleBook(w http.ResponseWriter, r *http.Request, p httprouter
 }
 
 func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	s.booksLock.RLock()
-	defer s.booksLock.RUnlock()
-
 	q := r.URL.Query().Get("q")
 	ql := strings.ToLower(q)
 
 	if len(q) != 0 {
-		bl := s.Books.Filtered(func(a *models.Book) bool {
+		bl := s.Indexer.BookList().Filtered(func(a *booklist.Book) bool {
 			matches := false
-			matches = matches || a.Author != nil && strings.Contains(strings.ToLower(a.Author.Name), ql)
+			matches = matches || a.Author != "" && strings.Contains(strings.ToLower(a.Author), ql)
 			matches = matches || strings.Contains(strings.ToLower(a.Title), ql)
-			matches = matches || a.Series != nil && strings.Contains(strings.ToLower(a.Series.Name), ql)
+			matches = matches || a.Series != "" && strings.Contains(strings.ToLower(a.Series), ql)
 			return matches
 		})
 		bl, _ = bl.SortBy("title-asc")
@@ -503,17 +482,11 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request, _ httprout
 }
 
 func (s *Server) handleBooksJSON(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	s.booksLock.RLock()
-	defer s.booksLock.RUnlock()
-
-	s.render.JSON(w, http.StatusOK, s.Books)
+	s.render.JSON(w, http.StatusOK, s.Indexer.BookList())
 }
 
 func (s *Server) handleRandom(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	s.booksLock.RLock()
-	defer s.booksLock.RUnlock()
-
 	rand.Seed(time.Now().UnixNano())
-	n := rand.Int() % len(*s.Books)
-	http.Redirect(w, r, "/books/"+(*s.Books)[n].ID, http.StatusTemporaryRedirect)
+	n := rand.Int() % len(s.Indexer.BookList())
+	http.Redirect(w, r, "/books/"+(s.Indexer.BookList())[n].ID(), http.StatusTemporaryRedirect)
 }

@@ -17,12 +17,12 @@
     </div>
     <div class="meta">
         <div class="title">{{.Title}}</div>
-        {{with .Author}}
-        <a href="/authors/{{.ID}}" class="author">{{.Name}}</a>
-        {{end}} {{with .Series}}
+        {{if .Author}}
+        <a href="/authors/{{.AuthorID}}" class="author">{{.Author}}</a>
+        {{end}} {{if .Series}}
         <div class="series">
-            <a href="/series/{{.ID}}" class="name">{{.Name}}</a> -
-            <span class="index">{{.Index}}</span>
+            <a href="/series/{{.SeriesID}}" class="name">{{.Series}}</a> -
+            <span class="index">{{.SeriesIndex}}</span>
         </div>
         {{end}} {{if .Description}}
         <div class="description">

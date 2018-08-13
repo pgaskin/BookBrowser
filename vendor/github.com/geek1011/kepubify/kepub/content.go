@@ -1,7 +1,6 @@
 package kepub
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -15,72 +14,121 @@ import (
 )
 
 func cleanFiles(basepath string) error {
-	_ = os.Remove(filepath.Join(basepath, "META-INF", "calibre_bookmarks.txt"))
-	_ = os.Remove(filepath.Join(basepath, "META-INF", "iTunesMetadata.plist"))
-	_ = os.Remove(filepath.Join(basepath, "iTunesMetadata.plist"))
-	_ = os.Remove(filepath.Join(basepath, "META-INF", "iTunesArtwork.plist"))
-	_ = os.Remove(filepath.Join(basepath, "iTunesArtwork.plist"))
-	_ = os.Remove(filepath.Join(basepath, "META-INF", ".DS_STORE"))
-	_ = os.Remove(filepath.Join(basepath, ".DS_STORE"))
-	_ = os.Remove(filepath.Join(basepath, "META-INF", "thumbs.db"))
-	_ = os.Remove(filepath.Join(basepath, "thumbs.db"))
+	toRemove := []string{
+		"META-INF/calibre_bookmarks.txt",
+		"META-INF/iTunesMetadata.plist",
+		"META-INF/iTunesArtwork.plist",
+		"META-INF/.DS_STORE",
+		"META-INF/thumbs.db",
+		".DS_STORE",
+		"thumbs.db",
+		"iTunesMetadata.plist",
+		"iTunesArtwork.plist",
+	}
+
+	for _, file := range toRemove {
+		os.Remove(filepath.Join(basepath, file))
+	}
+
 	return nil
 }
 
-// cleanOPF cleans up extra calibre metadata from the content.opf file
-func cleanOPF(opftext *string) error {
-	calibreTimestampRe := regexp.MustCompile(`<meta\s+name="calibre:timestamp"\s+content=".+"\s*\/>`)
-	*opftext = calibreTimestampRe.ReplaceAllString(*opftext, "")
-
-	calibreContributorRe := regexp.MustCompile(`<dc:contributor\s+opf:role="bkp"\s*>calibre .+<\/dc:contributor>`)
-	*opftext = calibreContributorRe.ReplaceAllString(*opftext, "")
-
+// processOPF cleans up extra calibre metadata from the content.opf file, and adds a reference to the cover image.
+func processOPF(opfText *string) error {
 	opf := etree.NewDocument()
-	err := opf.ReadFromString(*opftext)
+	err := opf.ReadFromString(*opfText)
 	if err != nil {
 		return err
 	}
 
-	for _, e := range opf.FindElements("//meta[@name='cover']") {
-		coverid := e.SelectAttrValue("content", "")
-		if coverid != "" {
-			*opftext = strings.Replace(*opftext, `id="`+coverid+`"`, `id="`+coverid+`" properties="cover-image"`, -1)
-		} else {
-			*opftext = strings.Replace(*opftext, `id="cover"`, `id="cover" properties="cover-image"`, -1)
+	// Add properties="cover-image" to cover file item entry to enable the kobo
+	// to find the cover image.
+	for _, meta := range opf.FindElements("//meta[@name='cover']") {
+		coverID := meta.SelectAttrValue("content", "")
+		if coverID == "" {
+			coverID = "cover"
+		}
+		for _, item := range opf.FindElements("//[@id='" + coverID + "']") {
+			item.CreateAttr("properties", "cover-image")
 		}
 	}
+
+	// Remove calibre:timestamp
+	for _, meta := range opf.FindElements("//meta[@name='calibre:timestamp']") {
+		meta.Parent().RemoveChild(meta)
+	}
+
+	// Remove calibre contributor tag
+	for _, contributor := range opf.FindElements("//dc:contributor[@role='bkp']") {
+		contributor.Parent().RemoveChild(contributor)
+	}
+
+	// Pretty print OPF
+	opf.Indent(4)
+
+	// Write OPF
+	*opfText, err = opf.WriteToString()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 // addDivs adds kobo divs.
 func addDivs(doc *goquery.Document) error {
+	// If there are more divs than ps, divs are probably being used as paragraphs, and adding the kobo divs will most likely break the book.
 	if len(doc.Find("div").Nodes) > len(doc.Find("p").Nodes) {
-		// If there are more divs than ps, divs are probably being used as paragraphs, and adding the kobo divs will most likely break the book.
 		return nil
 	}
+
+	// Add the kobo divs
 	doc.Find("body>*").WrapAllHtml(`<div class="book-inner"></div>`)
 	doc.Find("body>*").WrapAllHtml(`<div class="book-columns"></div>`)
+
 	return nil
 }
 
+// createSpan creates a Kobo span
+func createSpan(paragraph, segment int, text string) *html.Node {
+	// Create the span
+	span := &html.Node{
+		Type: html.ElementNode,
+		Data: "span",
+		Attr: []html.Attribute{{
+			Key: "class",
+			Val: "koboSpan",
+		}, {
+			Key: "id",
+			Val: fmt.Sprintf("kobo.%v.%v", paragraph, segment),
+		}},
+	}
+
+	// Add the text
+	span.AppendChild(&html.Node{
+		Type: html.TextNode,
+		Data: text,
+	})
+
+	return span
+}
+
+var sentencere = regexp.MustCompile(`((?ms).*?[\.\!\?\:]['"”’“…]?\s*)`)
+var nbspre = regexp.MustCompile(`^\xa0+$`)
+
 // addSpansToNode is a recursive helper function for addSpans.
 func addSpansToNode(node *html.Node, paragraph *int, segment *int) {
-	sentencere := regexp.MustCompile(`((?m).*?[\.\!\?\:]['"”’“…]?\s*)`)
-
-	// Part 2 of hacky way of setting innerhtml of a textnode by double escaping everything, and deescaping once afterwards
-	newAttr := []html.Attribute{}
-	for _, a := range node.Attr {
-		a.Key = html.EscapeString(a.Key)
-		a.Val = html.EscapeString(a.Val)
-		newAttr = append(newAttr, a)
+	nextNodes := []*html.Node{}
+	for c := node.FirstChild; c != nil; c = c.NextSibling {
+		nextNodes = append(nextNodes, c)
 	}
-	node.Attr = newAttr
 
 	if node.Type == html.TextNode {
 		if node.Parent.Data == "pre" {
 			// Do not add spans to pre elements
 			return
 		}
+
 		*segment++
 
 		sentencesindexes := sentencere.FindAllStringIndex(node.Data, -1)
@@ -99,20 +147,19 @@ func addSpansToNode(node *html.Node, paragraph *int, segment *int) {
 			sentences = append(sentences, node.Data[lasti[1]:len(node.Data)])
 		}
 
-		var newhtml bytes.Buffer
-
-		for _, sentence := range sentences {
-			if strings.TrimSpace(sentence) != "" {
-				newhtml.WriteString(fmt.Sprintf(`<span class="koboSpan" id="kobo.%v.%v">%s</span>`, *paragraph, *segment, html.EscapeString(sentence)))
+		for i, sentence := range sentences {
+			// if only 1 space, don't remove the element (issue #14) (issue #21)
+			if (i == 0 && node.Data == " ") || (i == 0 && nbspre.MatchString(node.Data)) || strings.TrimSpace(sentence) != "" {
+				node.Parent.InsertBefore(createSpan(*paragraph, *segment, sentence), node)
 				*segment++
 			}
 		}
 
-		// Part 1 of hacky way of setting innerhtml of a textnode by double escaping everything, and deescaping once afterwards
-		node.Data = newhtml.String()
+		node.Parent.RemoveChild(node)
 
 		return
 	}
+
 	if node.Type != html.ElementNode {
 		return
 	}
@@ -123,7 +170,8 @@ func addSpansToNode(node *html.Node, paragraph *int, segment *int) {
 		*segment = 0
 		*paragraph++
 	}
-	for c := node.FirstChild; c != nil; c = c.NextSibling {
+
+	for _, c := range nextNodes {
 		addSpansToNode(c, paragraph, segment)
 	}
 }
@@ -150,10 +198,12 @@ func addSpans(doc *goquery.Document) error {
 	return nil
 }
 
-// openSelfClosingPs opens self-closing p tags.
-func openSelfClosingPs(html *string) error {
-	re := regexp.MustCompile(`<p[^>/]*/>`)
-	*html = re.ReplaceAllString(*html, `<p></p>`)
+// addKoboStyles adds kobo styles.
+func addKoboStyles(doc *goquery.Document) error {
+	s := doc.Find("head").First().AppendHtml(`<style type="text/css">div#book-inner{margin-top: 0;margin-bottom: 0;}</style>`)
+	if s.Length() != 1 {
+		return fmt.Errorf("could not append kobo styles")
+	}
 	return nil
 }
 
@@ -172,34 +222,60 @@ func smartenPunctuation(html *string) error {
 }
 
 // cleanHTML cleans up html for a kobo epub.
-func cleanHTML(html *string) error {
-	emptyHeadingRe := regexp.MustCompile(`<h\d+>\s*</h\d+>`)
-	*html = emptyHeadingRe.ReplaceAllString(*html, "")
+func cleanHTML(doc *goquery.Document) error {
+	// Remove Adobe DRM tags
+	doc.Find(`meta[name="Adept.expected.resource"]`).Remove()
 
-	msPRe := regexp.MustCompile(`\s*<o:p>\s*<\/o:p>`)
-	*html = msPRe.ReplaceAllString(*html, " ")
+	// Remove empty MS <o:p> tags
+	doc.Find(`o\:p`).FilterFunction(func(_ int, s *goquery.Selection) bool {
+		return strings.Trim(s.Text(), "\t \n") == ""
+	}).Remove()
 
-	msStRe := regexp.MustCompile(`<\/?st1:\w+>`)
-	*html = msStRe.ReplaceAllString(*html, "")
+	// Remove empty headings
+	doc.Find(`h1,h2,h3,h4,h5,h6`).FilterFunction(func(_ int, s *goquery.Selection) bool {
+		h, _ := s.Html()
+		return strings.Trim(h, "\t \n") == ""
+	}).Remove()
 
-	// unicode replacement chars
-	*html = strings.Replace(*html, "�", "", -1)
+	// Remove MS <st1:whatever> tags
+	doc.Find(`*`).FilterFunction(func(_ int, s *goquery.Selection) bool {
+		return strings.HasPrefix(goquery.NodeName(s), "st1:")
+	}).Remove()
+
+	// Open self closing p tags
+	doc.Find(`p`).Each(func(_ int, s *goquery.Selection) {
+		if s.Children().Length() == 0 && strings.Trim(s.Text(), "\n \t") == "" {
+			s.SetHtml("")
+		}
+	})
+
+	doc.Find("svg").SetAttr("xmlns:xlink", "http://www.w3.org/1999/xlink")
+	doc.Find("svg a").RemoveAttr("xmlns:xlink")
+	doc.Find("svg image").RemoveAttr("xmlns:xlink")
 
 	// Add type to style tags
-	*html = strings.Replace(*html, `<style>`, `<style type="text/css">`, -1)
-
-	// ADEPT drm tags
-	adeptRe := regexp.MustCompile(`(<meta\s+content=".+"\s+name="Adept.expected.resource"\s+\/>)`)
-	*html = adeptRe.ReplaceAllString(*html, "")
-
-	// Fix commented xml tag
-	*html = strings.Replace(*html, `<!-- ?xml version="1.0" encoding="utf-8"? -->`, `<?xml version="1.0" encoding="utf-8"?>`, 1)
+	doc.Find(`style`).SetAttr("type", "text/css")
 
 	return nil
 }
 
+var selfClosingScriptRe = regexp.MustCompile(`<(script)([^>]*?)\/>`)
+var selfClosingTitleRe = regexp.MustCompile("<title */>")
+
+// fixInvalidSelfClosingTags fixes invalid self-closing tags which cause breakages. It must be run first.
+func fixInvalidSelfClosingTags(html *string) error {
+	*html = selfClosingTitleRe.ReplaceAllString(*html, "<title>book</title>")
+	*html = selfClosingScriptRe.ReplaceAllString(*html, "<$1$2> </$1>")
+	return nil
+}
+
 // process processes the html of a content file in an ordinary epub and converts it into a kobo epub by adding kobo divs, kobo spans, smartening punctuation, and cleaning html.
-func process(content *string) error {
+// It can also optionally run a postprocessor on the goquery.Document, or the html string.
+func process(content *string, postDoc *func(doc *goquery.Document) error, postHTML *func(h *string) error) error {
+	if err := fixInvalidSelfClosingTags(content); err != nil {
+		return err
+	}
+
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(*content))
 	if err != nil {
 		return err
@@ -213,19 +289,22 @@ func process(content *string) error {
 		return err
 	}
 
+	if err := addKoboStyles(doc); err != nil {
+		return err
+	}
+
+	if err := cleanHTML(doc); err != nil {
+		return err
+	}
+
+	if postDoc != nil {
+		if err := (*postDoc)(doc); err != nil {
+			return err
+		}
+	}
+
 	h, err := doc.Html()
 	if err != nil {
-		return err
-	}
-
-	// Part 3 of hacky way of setting innerhtml of a textnode by double escaping everything, and deescaping once afterwards. Must be done before further html processing
-	h = html.UnescapeString(h)
-
-	if err := openSelfClosingPs(&h); err != nil {
-		return err
-	}
-
-	if err := cleanHTML(&h); err != nil {
 		return err
 	}
 
@@ -233,8 +312,21 @@ func process(content *string) error {
 		return err
 	}
 
-	// Kobo style fixes
-	h = strings.Replace(h, "</head>", "<style type=\"text/css\">div#book-inner{margin-top: 0;margin-bottom: 0;}</style></head>", 1)
+	// Remove unicode replacement chars
+	h = strings.Replace(h, "�", "", -1)
+
+	// Fix commented xml tag
+	h = strings.Replace(h, `<!-- ?xml version="1.0" encoding="utf-8"? -->`, `<?xml version="1.0" encoding="utf-8"?>`, 1)
+	h = strings.Replace(h, `<!--?xml version="1.0" encoding="utf-8"?-->`, `<?xml version="1.0" encoding="utf-8"?>`, 1)
+
+	// Fix nbsps removed
+	h = strings.Replace(h, "\u00a0", "&#160;", -1)
+
+	if postHTML != nil {
+		if err := (*postHTML)(&h); err != nil {
+			return err
+		}
+	}
 
 	*content = h
 
