@@ -13,7 +13,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/geek1011/BookBrowser/booklist"
 	"github.com/geek1011/BookBrowser/formats"
-	"github.com/geek1011/BookBrowser/modules/util"
+	"github.com/geek1011/BookBrowser/util"
 	"github.com/pkg/errors"
 )
 

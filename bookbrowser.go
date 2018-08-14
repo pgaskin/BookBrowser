@@ -13,8 +13,8 @@ import (
 	_ "github.com/geek1011/BookBrowser/formats/mobi"
 	_ "github.com/geek1011/BookBrowser/formats/pdf"
 	"github.com/geek1011/BookBrowser/modules/server"
-	"github.com/geek1011/BookBrowser/modules/sigusr"
-	"github.com/geek1011/BookBrowser/modules/util"
+	"github.com/geek1011/BookBrowser/util"
+	"github.com/geek1011/BookBrowser/util/sigusr"
 	"github.com/urfave/cli"
 )
 

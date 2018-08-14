@@ -2,7 +2,6 @@ package util
 
 import (
 	"net"
-	"os"
 	"strings"
 )
 
@@ -51,10 +50,4 @@ func GetIP() net.IP {
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 
 	return localAddr.IP
-}
-
-// Exists checks whether a path exists
-func Exists(path string) bool {
-	_, err := os.Stat(path)
-	return err == nil
 }
