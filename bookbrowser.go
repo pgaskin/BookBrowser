@@ -12,7 +12,7 @@ import (
 	_ "github.com/geek1011/BookBrowser/formats/epub"
 	_ "github.com/geek1011/BookBrowser/formats/mobi"
 	_ "github.com/geek1011/BookBrowser/formats/pdf"
-	"github.com/geek1011/BookBrowser/modules/server"
+	"github.com/geek1011/BookBrowser/server"
 	"github.com/geek1011/BookBrowser/util"
 	"github.com/geek1011/BookBrowser/util/sigusr"
 	"github.com/urfave/cli"
