@@ -59,34 +59,16 @@
 			"revisionTime": "2016-12-24T14:14:13Z"
 		},
 		{
-			"checksumSHA1": "FOqUoijHGUZuS1T4pTcdlrNNlvc=",
-			"path": "github.com/bamiaux/rez",
-			"revision": "29f4463c688b986c11f166b12734f69b58b5555f",
-			"revisionTime": "2017-07-31T18:41:18Z"
-		},
-		{
 			"checksumSHA1": "usT4LCSQItkFvFOQT7cBlkCuGaE=",
 			"path": "github.com/beevik/etree",
 			"revision": "af219c0c7ea1b67ec263c0b1b1b96d284a9181ce",
 			"revisionTime": "2017-10-15T22:09:51Z"
 		},
 		{
-			"checksumSHA1": "1YQ8EuNTA1ICp4YBEBU1Rc3kEow=",
-			"path": "github.com/cheggaaa/pb",
-			"revision": "0af82b7d15eb9371fbdf8f468ff10cbba62e0414",
-			"revisionTime": "2017-08-02T15:54:58Z"
-		},
-		{
 			"checksumSHA1": "mrz/kicZiUaHxkyfvC/DyQcr8Do=",
 			"path": "github.com/davecgh/go-spew/spew",
 			"revision": "ecdeabc65495df2dec95d7c4a4c3e021903035e5",
 			"revisionTime": "2017-10-02T20:02:53Z"
-		},
-		{
-			"checksumSHA1": "7DxViusFRJ7UPH0jZqYatwDrOkY=",
-			"path": "github.com/elazarl/go-bindata-assetfs",
-			"revision": "30f82fa23fd844bd5bb1e5f216db87fd77b5eb43",
-			"revisionTime": "2017-02-27T21:27:28Z"
 		},
 		{
 			"checksumSHA1": "yLcB7C8Nm8YupMj67iGsgYQjdNg=",
@@ -129,12 +111,6 @@
 			"path": "github.com/julienschmidt/httprouter",
 			"revision": "975b5c4c7c21c0e3d2764200bf2aa8e34657ae6e",
 			"revisionTime": "2017-04-30T22:20:11Z"
-		},
-		{
-			"checksumSHA1": "cJE7dphDlam/i7PhnsyosNWtbd4=",
-			"path": "github.com/mattn/go-runewidth",
-			"revision": "97311d9f7767e3d6f422ea06661bc2c7a19e8a5d",
-			"revisionTime": "2017-05-10T07:48:58Z"
 		},
 		{
 			"checksumSHA1": "5xzgVm4v/J7VXwtip+KDu96be18=",
