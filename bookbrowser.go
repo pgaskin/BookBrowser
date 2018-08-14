@@ -119,11 +119,12 @@ func main() {
 		}
 
 		s := server.NewServer(addr, bookdir, tempdir, curversion, true, nocovers)
-		s.RefreshBookIndex()
-
-		if len(s.Indexer.BookList()) == 0 {
-			log.Fatalln("Fatal error: no books found")
-		}
+		go func() {
+			s.RefreshBookIndex()
+			if len(s.Indexer.BookList()) == 0 {
+				log.Fatalln("Fatal error: no books found")
+			}
+		}()
 
 		sigusr.Handle(func() {
 			log.Println("Booklist refresh triggered by SIGUSR1")

@@ -134,7 +134,11 @@ func (s *Server) initRouter() {
 
 	s.router.GET("/search", s.handleSearch)
 
-	s.router.GET("/books.json", s.handleBooksJSON)
+	s.router.GET("/api/indexer", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `{"indexing": %t, "progress": %f}`, s.Indexer.Progress != 0, s.Indexer.Progress)
+	})
 
 	s.router.GET("/books", s.handleBooks)
 	s.router.GET("/books/:id", s.handleBook)
@@ -479,10 +483,6 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request, _ httprout
 		"Title":            "Search",
 		"Query":            "",
 	})
-}
-
-func (s *Server) handleBooksJSON(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	s.render.JSON(w, http.StatusOK, s.Indexer.BookList())
 }
 
 func (s *Server) handleRandom(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
