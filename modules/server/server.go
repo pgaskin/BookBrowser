@@ -87,6 +87,8 @@ func (s *Server) RefreshBookIndex() error {
 		if s.Verbose {
 			log.Printf("Indexing finished with %v errors", len(errs))
 		}
+	} else {
+		log.Printf("Indexing finished")
 	}
 
 	debug.FreeOSMemory()
