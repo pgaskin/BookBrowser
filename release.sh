@@ -49,7 +49,7 @@ done
 for GOOS in linux; do
     for GOARCH in arm arm64; do
         echo "Building BookBrowser $APP_VERSION for $GOOS $GOARCH"
-        GOOS=$GOOS GOARCH=$GOOARCH go build -ldflags "-X main.curversion=$APP_VERSION" -o "build/BookBrowser-$GOOS-$(echo $GOARCH|sed 's/arm/-arm-32bit/g'|sed 's/arm64/-arm-64bit/g')$(echo $GOOS|sed 's/linux//g')"
+        GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-X main.curversion=$APP_VERSION" -o "build/BookBrowser-$GOOS-$GOARCH"
     done
 done
 
