@@ -149,10 +149,10 @@
 			"revisionTime": "2018-07-22T21:56:44Z"
 		},
 		{
-			"checksumSHA1": "Lz5Php4tvbJOB/6FWGlStzhppL0=",
+			"checksumSHA1": "WVKhLVXQFxXwmuRX+IRzebUmxjE=",
 			"path": "github.com/spf13/pflag",
-			"revision": "9a97c102cda95a86cec2345a6f09f55a939babf5",
-			"revisionTime": "2018-08-08T15:28:24Z"
+			"revision": "298182f68c66c05229eb03ac171abe6e309ee79a",
+			"revisionTime": "2018-08-31T15:14:32Z"
 		},
 		{
 			"checksumSHA1": "mGbTYZ8dHVTiPTTJu3ktp+84pPI=",
@@ -165,12 +165,6 @@
 			"path": "github.com/unrolled/render",
 			"revision": "32bf1ea2a39e4e796d9040b5cf235258cee978c1",
 			"revisionTime": "2017-10-06T15:03:03Z"
-		},
-		{
-			"checksumSHA1": "cQfZ+JnB/SweDbrGSTVE07/k8Vw=",
-			"path": "github.com/urfave/cli",
-			"revision": "7bc6a0acffa589f415f88aca16cc1de5ffd66f9c",
-			"revisionTime": "2017-10-14T20:27:26Z"
 		},
 		{
 			"checksumSHA1": "GtamqiJoL7PGHsN454AoffBFMa8=",
