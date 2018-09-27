@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -119,6 +121,7 @@ func main() {
 		if len(s.Indexer.BookList()) == 0 {
 			log.Fatalln("Fatal error: no books found")
 		}
+		checkUpdate()
 	}()
 
 	sigusr.Handle(func() {
@@ -129,5 +132,36 @@ func main() {
 	err = s.Serve()
 	if err != nil {
 		log.Fatalf("Error starting server: %s\n", err)
+	}
+}
+
+func checkUpdate() {
+	resp, err := http.Get("https://api.github.com/repos/geek1011/BookBrowser/releases/latest")
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+
+	buf, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+
+	if resp.StatusCode != 200 {
+		return
+	}
+
+	var obj struct {
+		URL string `json:"html_url"`
+		Tag string `json:"tag_name"`
+	}
+	if json.Unmarshal(buf, &obj) != nil {
+		return
+	}
+
+	if curversion != "dev" {
+		if !strings.HasPrefix(curversion, obj.Tag) {
+			log.Printf("Running version %s. Latest version is %s: %s\n", curversion, obj.Tag, obj.URL)
+		}
 	}
 }
