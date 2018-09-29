@@ -1,6 +1,9 @@
 package util
 
 import (
+	"archive/zip"
+	"crypto/sha256"
+	"fmt"
 	"net"
 	"strings"
 )
@@ -50,4 +53,19 @@ func GetIP() net.IP {
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 
 	return localAddr.IP
+}
+
+// ZipHash implements a fast hash for a zip file based on the embedded crc checksums and sizes.
+func ZipHash(filename string) (string, error) {
+	z, err := zip.OpenReader(filename)
+	if err != nil {
+		return "", err
+	}
+	defer z.Close()
+
+	sh := sha256.New()
+	for _, zf := range z.File {
+		sh.Write([]byte(fmt.Sprint(zf.CRC32, zf.UncompressedSize64)))
+	}
+	return fmt.Sprintf("%x\n", sh.Sum(nil)), nil
 }
