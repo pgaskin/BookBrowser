@@ -1,19 +1,9 @@
 .PHONY: default
-default: clean build-deps deps generate test build
+default: clean generate test build
 
 .PHONY: clean
 clean:
 	rm -rf build BookBrowser
-
-.PHONY: build-deps
-build-deps:
-	go get -v "github.com/kardianos/govendor"
-	go get -v "github.com/aktau/github-release"
-	go get -v "github.com/gobuffalo/packr/..."
-
-.PHONY: deps
-deps:
-	govendor sync
 
 .PHONY: generate
 generate:
