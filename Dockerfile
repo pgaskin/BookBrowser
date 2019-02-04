@@ -13,4 +13,4 @@ RUN go build
 FROM alpine:latest
 RUN mkdir /books
 COPY --from=build /go/src/app/app /app
-ENTRYPOINT ["/app", "-bookdir", "/books"]
+ENTRYPOINT ["/app", "--bookdir", "/books"]
