@@ -267,7 +267,7 @@ func (s *Server) handleDownload(w http.ResponseWriter, r *http.Request, p httpro
 				}
 				defer os.RemoveAll(td)
 				kepubf := filepath.Join(td, bid+".kepub.epub")
-				err = kepub.Kepubify(b.FilePath, kepubf, false, nil, nil)
+				err = (&kepub.Converter{}).Convert(b.FilePath, kepubf)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					log.Printf("Error handling request for %s: %s\n", r.URL.Path, err)
