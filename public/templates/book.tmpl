@@ -29,6 +29,12 @@
             {{.Description | raw}}
         </div>
         {{end}}
+        {{if .PublishDate}}
+        <div>{{.PublishDate.Format "Jan, 2006"}}</div>
+        {{end}}
+        {{if .ISBN}}
+        <div>ISBN: {{.ISBN}}</div>
+        {{end}}
         <div class="buttons">
             <a href="/download/{{.ID}}.{{.FileType}}" class="button download">Download {{ .FileType | ToUpper }}</a>
             {{if eq .FileType "epub"}}

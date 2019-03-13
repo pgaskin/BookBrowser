@@ -18,6 +18,8 @@ import (
 	"github.com/beevik/etree"
 	"github.com/pkg/errors"
 	"golang.org/x/tools/godoc/vfs/zipfs"
+	"github.com/moraes/isbn"
+	"time"
 )
 
 type epub struct {
@@ -153,6 +155,45 @@ func load(filename string) (formats.BookInfo, error) {
 		e.book.Description = el.Text()
 		break
 	}
+
+	isbnTags := []string{
+		"//source",
+		"//identifier",
+	}
+
+findISBN:
+	for _, tag := range isbnTags {
+		for _, el := range opf.FindElements(tag) {
+			val := el.Text()
+			if len(val)<10 {
+				continue
+			}
+			if val[0:9] == "urn:isbn:" {
+				val = val[9:]
+			}
+
+			if isbn.Validate(val) {
+				e.book.ISBN = val
+				break findISBN
+			}
+		}
+	}
+
+	pubDate := ""
+	for _, el := range opf.FindElements("//date") {
+		event := el.SelectAttrValue("opf:event", "")
+		if event == "original-publication" || event == "published" || event == "publication" {
+			pubDate = el.Text()
+			// found a concrete publication date; we're done
+			break
+		} else if event == "" {
+			pubDate = el.Text()
+			// keep searching in case we can find a date specifically tagged as a publication date
+		}
+	}
+
+	e.book.PublishDate = parsePublishDate(pubDate)
+
 	for _, el := range opf.FindElements("//meta[@name='calibre:series']") {
 		s := el.SelectAttrValue("content", "")
 		e.book.Series = s
@@ -185,4 +226,37 @@ func load(filename string) (formats.BookInfo, error) {
 
 func init() {
 	formats.Register("epub", load)
+}
+
+
+func parsePublishDate(s string) time.Time {
+	// handle the various dumb decisions people make when encoding dates
+	format := ""
+	switch len(s) {
+	case 32:
+		//2012-02-13T20:20:58.175203+00:00
+		format = "2006-01-02T15:04:05.000000-07:00"
+	case 25:
+		//2000-10-31 00:00:00-06:00
+		//2009-04-19T22:00:00+00:00
+		format = "2006-01-02" + string(s[10]) + "15:04:05-07:00"
+	case 20:
+		//2016-08-11T14:09:25Z
+		format = "2006-01-02T15:04:05Z"
+	case 19:
+		//2008-01-28T07:00:00
+		//2000-10-31 00:00:00
+		format = "2006-01-02" + string(s[10]) + "15:04:05"
+	case 10:
+		//1998-07-01
+		format = "2006-01-02"
+	default:
+		return time.Time{}
+	}
+
+	t, err := time.Parse(format,s)
+	if err != nil {
+		t = time.Time{}
+	}
+	return t
 }
