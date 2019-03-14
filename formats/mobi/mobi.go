@@ -14,8 +14,8 @@ import (
 
 
 	mobirdr "github.com/sblinch/mobi"
-		"encoding/binary"
-)
+	"encoding/binary"
+	)
 
 type mobi struct {
 	book *booklist.Book
@@ -130,10 +130,13 @@ func load(filename string) (bi formats.BookInfo, ferr error) {
 			if len(m.book.Publisher) == 0 {
 				m.book.Publisher = string(rec.Value)
 			}
-/* // uncomment after merging ISBN/publishing date pull request :)
+ /* // uncomment after merging ISBN/publishing date pull request :)
 		case mobirdr.EXTH_ISBN:
 			if len(m.book.ISBN) == 0 {
-				m.book.ISBN = string(rec.Value)
+				isbnStr := string(rec.Value)
+				if isbn.Validate(isbnStr) {
+					m.book.ISBN = isbnStr
+				}
 			}
 		case mobirdr.EXTH_PUBLISHINGDATE:
 			if m.book.PublishDate.IsZero() {
