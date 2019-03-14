@@ -117,6 +117,7 @@ func main() {
 
 	s := server.NewServer(*addr, *bookdir, *tempdir, curversion, true, *nocovers)
 	go func() {
+		s.LoadBookIndex()
 		s.RefreshBookIndex()
 		if len(s.Indexer.BookList()) == 0 {
 			log.Fatalln("Fatal error: no books found")

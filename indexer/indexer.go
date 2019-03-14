@@ -11,9 +11,10 @@ import (
 	"github.com/geek1011/BookBrowser/booklist"
 	"github.com/geek1011/BookBrowser/formats"
 
-	zglob "github.com/mattn/go-zglob"
+	"github.com/mattn/go-zglob"
 	"github.com/nfnt/resize"
 	"github.com/pkg/errors"
+	"encoding/json"
 )
 
 type Indexer struct {
@@ -25,6 +26,7 @@ type Indexer struct {
 	booklist  booklist.BookList
 	mu        sync.Mutex
 	indMu     sync.Mutex
+	seen      *SeenCache
 }
 
 func New(paths []string, coverpath *string, exts []string) (*Indexer, error) {
@@ -45,7 +47,79 @@ func New(paths []string, coverpath *string, exts []string) (*Indexer, error) {
 		cp = &p
 	}
 
-	return &Indexer{paths: paths, coverpath: cp, exts: exts}, nil
+	return &Indexer{paths: paths, coverpath: cp, exts: exts, seen: NewSeenCache()}, nil
+}
+
+func (i *Indexer) Load() error {
+	i.indMu.Lock()
+	defer i.indMu.Unlock()
+
+	booklist := booklist.BookList{}
+
+	jsonFilename := filepath.Join(*i.coverpath, "index.json")
+	f, err := os.Open(jsonFilename)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		} else {
+			return errors.Wrap(err, "could not open index cache file")
+		}
+	}
+	dec := json.NewDecoder(f)
+	err = dec.Decode(&booklist)
+	if err != nil {
+		return errors.Wrap(err, "could not decode index cache file")
+	}
+	seen := NewSeenCache()
+	for index, b := range booklist {
+		seen.Add(b.FilePath, b.FileSize, b.ModTime, index)
+	}
+
+	if i.Verbose {
+		log.Printf("Loaded %d items from index cache", len(booklist))
+	}
+
+	i.mu.Lock()
+	i.booklist = booklist
+	i.seen = seen
+	i.mu.Unlock()
+
+	return nil
+}
+
+func (i *Indexer) Save() error {
+	i.indMu.Lock()
+	defer i.indMu.Unlock()
+
+	i.mu.Lock()
+	booklist := i.booklist
+	i.mu.Unlock()
+
+	tmpFilename := filepath.Join(*i.coverpath, ".index.json.tmp")
+	jsonFilename := filepath.Join(*i.coverpath, "index.json")
+	f, err := os.Create(tmpFilename)
+	if err != nil {
+		f.Close()
+		return errors.Wrap(err, "could not create index cache temporary file")
+	}
+
+	enc := json.NewEncoder(f)
+	err = enc.Encode(&booklist)
+	if err != nil {
+		f.Close()
+		return errors.Wrap(err, "could not encode index cache file")
+	}
+
+	err = os.Rename(tmpFilename, jsonFilename)
+	if err != nil {
+		return errors.Wrap(err, "could not replace index cache file with temporary file")
+	}
+
+	if i.Verbose {
+		log.Printf("Saved %d items to index cache", len(booklist))
+	}
+
+	return nil
 }
 
 func (i *Indexer) Refresh() ([]error, error) {
@@ -62,8 +136,15 @@ func (i *Indexer) Refresh() ([]error, error) {
 		return errs, errors.New("no paths to index")
 	}
 
-	booklist := booklist.BookList{}
-	seen := map[string]bool{}
+	// seenID may be redundant at this point given that SeenCache does essentially the same thing, but
+	// seenCache is based on the mtime/size/filename of each book (for performance), whereas seenID is based on
+	// the file hash
+	seenID := map[string]bool{}
+	seen := NewSeenCache()
+
+	i.mu.Lock()
+	bl := i.booklist
+	i.mu.Unlock()
 
 	filenames := []string{}
 	for _, path := range i.paths {
@@ -81,29 +162,65 @@ func (i *Indexer) Refresh() ([]error, error) {
 		}
 	}
 
+	exists := make([]bool, len(bl), len(bl))
+
 	for fi, filepath := range filenames {
 		if i.Verbose {
 			log.Printf("Indexing %s", filepath)
 		}
 
-		book, err := i.getBook(filepath)
+		stat, err := os.Stat(filepath)
 		if err != nil {
-			errs = append(errs, errors.Wrapf(err, "error reading book '%s'", filepath))
+			errs = append(errs, errors.Wrapf(err, "cannot stat file '%s'", filepath))
 			if i.Verbose {
 				log.Printf("--> Error: %v", errs[len(errs)-1])
 			}
 			continue
 		}
-		if !seen[book.ID()] {
-			booklist = append(booklist, book)
-			seen[book.ID()] = true
+
+		var book *booklist.Book
+		hash := i.seen.Hash(filepath, stat.Size(), stat.ModTime())
+		haveSeen, blIndex := i.seen.SeenHash(hash)
+		if haveSeen {
+			exists[blIndex] = true
+			seen.AddHash(hash, blIndex)
+			if i.Verbose {
+				log.Printf("Already seen; not reindexing")
+			}
+		} else {
+			// TODO: pass stat variable to i.getBook() to avoid a duplicate os.Stat() for each book
+			book, err = i.getBook(filepath)
+			if err != nil {
+				errs = append(errs, errors.Wrapf(err, "error reading book '%s'", filepath))
+				if i.Verbose {
+					log.Printf("--> Error: %v", errs[len(errs)-1])
+				}
+				continue
+			}
+			if !seenID[book.ID()] {
+				bl = append(bl, book)
+				seenID[book.ID()] = true
+				blIndex = len(bl) - 1
+				seen.AddHash(hash, blIndex)
+			}
 		}
 
 		i.Progress = float64(fi+1) / float64(len(filenames))
 	}
 
+	// remove any books that have disappeared since our last indexing job
+	lastEntry := len(bl)-1
+	for index, stillExists := range exists {
+		if !stillExists {
+			bl[index] = bl[lastEntry]
+			lastEntry--
+		}
+	}
+	bl = bl[0:lastEntry+1]
+
 	i.mu.Lock()
-	i.booklist = booklist
+	i.booklist = bl
+	i.seen = seen
 	i.mu.Unlock()
 
 	return errs, nil
