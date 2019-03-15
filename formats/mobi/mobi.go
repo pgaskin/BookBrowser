@@ -124,6 +124,8 @@ func load(filename string) (bi formats.BookInfo, ferr error) {
 
 func init() {
 	formats.Register("mobi", load)
+	formats.Register("azw", load)
+	formats.Register("azw3", load)
 }
 
 /* // uncomment after merging ISBN/publishing date pull request :)
