@@ -28,3 +28,17 @@ func (al AuthorList) Sorted(less func(a, b struct{ Name, ID string }) bool) Auth
 	})
 	return nal
 }
+
+func (al AuthorList) Skip(n int) AuthorList {
+	if n >= len(al) {
+		return AuthorList{}
+	}
+	return al[n:]
+}
+
+func (al AuthorList) Take(n int) AuthorList {
+	if n > len(al) {
+		return al
+	}
+	return al[:n]
+}
