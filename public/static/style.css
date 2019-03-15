@@ -627,3 +627,36 @@ a:visited {
 a:hover {
     color: #004479;
 }
+
+.pagination,
+.pagination a {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.pagination a,
+.pagination a:link,
+.pagination a:visited,
+.pagination a:active,
+.pagination a:hover {
+    text-decoration: none;
+    padding: 4px 12px;
+    border: none;
+    background: #ddd;
+    color: #000;
+    margin-right: 2px;
+}
+
+.pagination a.current {
+    font-weight: bold;
+}
+.pagination a.next:before {
+    content: "\00bb";
+}
+.pagination a.prev:before {
+    content: "\00ab";
+}

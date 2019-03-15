@@ -3,3 +3,7 @@
 <a href="/authors/{{.ID}}" class="item">{{.Name}}</a>
 {{end}}
 </div>
+
+{{if .Authors}}
+{{template "pagination" .Pagination}}
+{{end}}
