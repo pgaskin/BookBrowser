@@ -2,7 +2,11 @@ package booklist
 
 import "sort"
 
-type SeriesList []struct{ Name, ID string }
+type SeriesList []Series
+
+type Series struct {
+	Name, ID string
+}
 
 func (bl BookList) Series() *SeriesList {
 	series := SeriesList{}
@@ -15,13 +19,19 @@ func (bl BookList) Series() *SeriesList {
 		if done[b.SeriesID()] {
 			continue
 		}
-		series = append(series, struct{ Name, ID string }{b.Series, b.SeriesID()})
+		series = append(series, Series{b.Series, b.SeriesID()})
 		done[b.SeriesID()] = true
 	}
 	return &series
 }
 
-func (sl SeriesList) Sorted(less func(a, b struct{ Name, ID string }) bool) SeriesList {
+func (bl BookList) BySeries(s Series) BookList {
+	return bl.Filtered(func(b *Book) bool {
+		return b.SeriesID() == s.ID
+	})
+}
+
+func (sl SeriesList) Sorted(less func(a, b Series) bool) SeriesList {
 	nsl := sl[:]
 	sort.SliceStable(nsl, func(i, j int) bool {
 		return less(sl[i], sl[j])

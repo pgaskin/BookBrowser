@@ -2,7 +2,11 @@ package booklist
 
 import "sort"
 
-type AuthorList []struct{ Name, ID string }
+type AuthorList []Author
+
+type Author struct {
+	Name, ID string
+}
 
 func (bl BookList) Authors() *AuthorList {
 	authors := AuthorList{}
@@ -15,13 +19,19 @@ func (bl BookList) Authors() *AuthorList {
 		if done[b.AuthorID()] {
 			continue
 		}
-		authors = append(authors, struct{ Name, ID string }{b.Author, b.AuthorID()})
+		authors = append(authors, Author{b.Author, b.AuthorID()})
 		done[b.AuthorID()] = true
 	}
 	return &authors
 }
 
-func (al AuthorList) Sorted(less func(a, b struct{ Name, ID string }) bool) AuthorList {
+func (bl BookList) ByAuthor(a Author) BookList {
+	return bl.Filtered(func(b *Book) bool {
+		return b.AuthorID() == a.ID
+	})
+}
+
+func (al AuthorList) Sorted(less func(a, b Author) bool) AuthorList {
 	nal := al[:]
 	sort.SliceStable(nal, func(i, j int) bool {
 		return less(al[i], al[j])
