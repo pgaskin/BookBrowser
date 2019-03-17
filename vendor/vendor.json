@@ -125,6 +125,12 @@
 			"revisionTime": "2017-01-24T11:57:57Z"
 		},
 		{
+			"checksumSHA1": "Be8Sn48K3jT3s2v06/dUqa6mp2U=",
+			"path": "github.com/moraes/isbn",
+			"revision": "e6388fb1bfd58164792a3b8da0ccc01e7140b52c",
+			"revisionTime": "2015-10-07T10:27:46Z"
+		},
+		{
 			"checksumSHA1": "6z9MgcvNbdVGsAIvv6BHA1uALQA=",
 			"path": "github.com/nfnt/resize",
 			"revision": "83c6a9932646f83e3267f353373d47347b6036b2",
