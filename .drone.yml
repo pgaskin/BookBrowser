@@ -6,23 +6,33 @@ steps:
 - name: clean
   image: golang:1.11-stretch
   commands:
+  - export GOPATH=/drone
+  - export PATH=$GOPATH/bin:$PATH
   - make clean
 - name: deps
   image: golang:1.11-stretch
   commands:
+  - export GOPATH=/drone
+  - export PATH=$GOPATH/bin:$PATH
   - make build-deps
   - make deps
 - name: generate
   image: golang:1.11-stretch
   commands:
+  - export GOPATH=/drone
+  - export PATH=$GOPATH/bin:$PATH
   - make generate
 - name: test
   image: golang:1.11-stretch
   commands:
+  - export GOPATH=/drone
+  - export PATH=$GOPATH/bin:$PATH
   - make test
 - name: build
   image: golang:1.11-stretch
   commands:
+  - export GOPATH=/drone
+  - export PATH=$GOPATH/bin:$PATH
   - make build
 
 ---
@@ -42,6 +52,8 @@ steps:
 - name: deploy
   image: golang:1.11-stretch
   commands:
+  - export GOPATH=/drone
+  - export PATH=$GOPATH/bin:$PATH
   - sudo apt update
   - sudo apt install -y
   - bash release.sh
