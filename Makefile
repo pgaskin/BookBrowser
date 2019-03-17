@@ -9,7 +9,7 @@ clean:
 build-deps:
 	go get -v "github.com/kardianos/govendor"
 	go get -v "github.com/aktau/github-release"
-	go get -v "github.com/gobuffalo/packr/..."
+	go get -v "github.com/gobuffalo/packr/packr"
 
 .PHONY: deps
 deps:
