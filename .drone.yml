@@ -16,25 +16,31 @@ steps:
   - export PATH=$GOPATH/bin:$PATH
   - make build-deps
   - make deps
-  - ls $GOPATH/bin
+  # Hack to preserve bin
+  - mv -v $GOPATH/bin ./gobin
 - name: generate
   image: golang:1.11-stretch
   commands:
   - export GOPATH=/drone
   - export PATH=$GOPATH/bin:$PATH
+  - mv -v ./gobin $GOPATH/bin
   - make generate
+  - mv -v $GOPATH/bin ./gobin
 - name: test
   image: golang:1.11-stretch
   commands:
   - export GOPATH=/drone
   - export PATH=$GOPATH/bin:$PATH
+  - mv -v ./gobin $GOPATH/bin
   - make test
 - name: build
   image: golang:1.11-stretch
   commands:
   - export GOPATH=/drone
   - export PATH=$GOPATH/bin:$PATH
+  - mv -v ./gobin $GOPATH/bin
   - make build
+  - mv -v $GOPATH/bin ./gobin
 
 ---
 kind: pipeline
@@ -57,4 +63,5 @@ steps:
   - export PATH=$GOPATH/bin:$PATH
   - sudo apt update
   - sudo apt install -y
+  - make clean build-deps deps generate
   - bash release.sh

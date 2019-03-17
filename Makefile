@@ -9,7 +9,6 @@ clean:
 build-deps:
 	go get -v "github.com/kardianos/govendor"
 	go get -v "github.com/aktau/github-release"
-	go get -v "github.com/gobuffalo/mapgen"
 	go get -v "github.com/gobuffalo/packr/packr"
 
 .PHONY: deps
@@ -18,7 +17,7 @@ deps:
 
 .PHONY: generate
 generate:
-	go generate ./...
+	go generate ./public
 
 .PHONY: test
 test:
