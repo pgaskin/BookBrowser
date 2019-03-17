@@ -16,6 +16,7 @@ steps:
   - export PATH=$GOPATH/bin:$PATH
   - make build-deps
   - make deps
+  - ls $GOPATH/bin
 - name: generate
   image: golang:1.11-stretch
   commands:
