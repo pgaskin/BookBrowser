@@ -7,9 +7,11 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/geek1011/BookBrowser/booklist"
 	"github.com/geek1011/BookBrowser/formats"
+	"github.com/moraes/isbn"
 	"github.com/pkg/errors"
 
 	mobirdr "github.com/sblinch/mobi"
@@ -106,14 +108,12 @@ func load(filename string) (bi formats.BookInfo, ferr error) {
 	m.book.Description = r.Description()
 	m.book.Publisher = r.Publisher()
 
-	/* // uncomment and import github.com/moraes/isbn after merging ISBN/publishing date pull request :)
 	isbnStr := r.Isbn()
 	if len(isbnStr)>0 && isbn.Validate(isbnStr) {
 		m.book.ISBN = isbnStr
 	}
 
 	m.book.PublishDate = parsePublishDate(r.PublishingDate())
-	*/
 
 	if len(m.book.Title)==0 {
 		m.book.Title = filepath.Base(filename)
@@ -128,7 +128,6 @@ func init() {
 	formats.Register("azw3", load)
 }
 
-/* // uncomment after merging ISBN/publishing date pull request :)
 func parsePublishDate(s string) time.Time {
 	// handle the various dumb decisions people make when encoding dates
 	format := ""
@@ -160,4 +159,3 @@ func parsePublishDate(s string) time.Time {
 	}
 	return t
 }
-*/
