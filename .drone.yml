@@ -1,0 +1,47 @@
+---
+kind: pipeline
+name: default
+
+steps:
+- name: clean
+  image: golang:1.11-stretch
+  commands:
+  - make clean
+- name: deps
+  image: golang:1.11-stretch
+  commands:
+  - make build-deps
+  - make deps
+- name: generate
+  image: golang:1.11-stretch
+  commands:
+  - make generate
+- name: test
+  image: golang:1.11-stretch
+  commands:
+  - make test
+- name: build
+  image: golang:1.11-stretch
+  commands:
+  - make build
+
+---
+kind: pipeline
+name: deploy
+
+trigger:
+  event:
+  - tag
+  status:
+  - success
+
+depends_on:
+- default
+
+steps:
+- name: deploy
+  image: golang:1.11-stretch
+  commands:
+  - sudo apt update
+  - sudo apt install -y
+  - bash release.sh
