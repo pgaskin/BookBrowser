@@ -149,6 +149,12 @@
 			"revisionTime": "2016-01-10T10:55:54Z"
 		},
 		{
+			"checksumSHA1": "89gHvR2x7T+Zm6QB8priBdeTO9U=",
+			"path": "github.com/sblinch/mobi",
+			"revision": "02fb646e8cd89af409f0713d5bf836b70ca50c07",
+			"revisionTime": "2019-03-14T02:56:29Z"
+		},
+		{
 			"checksumSHA1": "Tg05rfWxVqlqtB8G6QDHGo5wjAQ=",
 			"path": "github.com/spf13/cobra",
 			"revision": "7c4570c3ebeb8129a1f7456d0908a8b676b6f9f1",
