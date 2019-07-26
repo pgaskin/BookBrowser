@@ -13,11 +13,9 @@
             {{if .Author}}
             <a href="/authors/{{.AuthorID}}" class="author">{{.Author}}</a>
             {{end}} {{if .Series}}
-            <div class="series">
-                <a href="/series/{{.SeriesID}}" class="name">{{.Series}}</a>
-                -
-                <span class="index">{{.SeriesIndex}}</span>
-            </div>
+            <a href="/series/{{.SeriesID}}" class="series">
+                {{.Series}} - {{.SeriesIndex}}
+            </a>
             {{end}}
         </div>
     </div>
