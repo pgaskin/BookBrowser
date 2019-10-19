@@ -4,6 +4,8 @@ set -e
 
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+export GO111MODULE=on
+
 command -v github-release >/dev/null 2>&1 || { echo >&2 "Please install github-release."; exit 1; }
 
 if [[ -z "$GITHUB_TOKEN" ]]; then
