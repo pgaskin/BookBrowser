@@ -11,15 +11,17 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/geek1011/BookBrowser/booklist"
 	"github.com/geek1011/BookBrowser/formats"
 
+	"time"
+
 	"github.com/beevik/etree"
+	"github.com/moraes/isbn"
 	"github.com/pkg/errors"
 	"golang.org/x/tools/godoc/vfs/zipfs"
-	"github.com/moraes/isbn"
-	"time"
 )
 
 type epub struct {
@@ -165,7 +167,7 @@ findISBN:
 	for _, tag := range isbnTags {
 		for _, el := range opf.FindElements(tag) {
 			val := el.Text()
-			if len(val)<10 {
+			if len(val) < 10 {
 				continue
 			}
 			if val[0:9] == "urn:isbn:" {
@@ -194,19 +196,6 @@ findISBN:
 
 	e.book.PublishDate = parsePublishDate(pubDate)
 
-	for _, el := range opf.FindElements("//meta[@name='calibre:series']") {
-		s := el.SelectAttrValue("content", "")
-		e.book.Series = s
-	}
-
-	if e.book.Series != "" {
-		for _, el := range opf.FindElements("//meta[@name='calibre:series_index']") {
-			i, _ := strconv.ParseFloat(el.SelectAttrValue("content", "0"), 64)
-			e.book.SeriesIndex = i
-			break
-		}
-	}
-
 	for _, el := range opf.FindElements("//meta[@name='cover']") {
 		coverid := el.SelectAttrValue("content", "")
 		if coverid != "" {
@@ -221,13 +210,45 @@ findISBN:
 		}
 	}
 
+	// Calibre series metadata
+	if el := opf.FindElement("//meta[@name='calibre:series']"); el != nil {
+		e.book.Series = el.SelectAttrValue("content", "")
+
+		if el := opf.FindElement("//meta[@name='calibre:series_index']"); el != nil {
+			e.book.SeriesIndex, _ = strconv.ParseFloat(el.SelectAttrValue("content", "0"), 64)
+		}
+	}
+
+	// EPUB3 series metadata
+	if e.book.Series == "" {
+		if el := opf.FindElement("//meta[@property='belongs-to-collection']"); el != nil {
+			e.book.Series = strings.TrimSpace(el.Text())
+
+			var ctype string
+			if id := el.SelectAttrValue("id", ""); id != "" {
+				for _, el := range opf.FindElements("//meta[@refines='#" + id + "']") {
+					val := strings.TrimSpace(el.Text())
+					switch el.SelectAttrValue("property", "") {
+					case "collection-type":
+						ctype = val
+					case "group-position":
+						e.book.SeriesIndex, _ = strconv.ParseFloat(val, 64)
+					}
+				}
+			}
+
+			if ctype != "" && ctype != "series" {
+				e.book.Series, e.book.SeriesIndex = "", 0
+			}
+		}
+	}
+
 	return e, nil
 }
 
 func init() {
 	formats.Register("epub", load)
 }
-
 
 func parsePublishDate(s string) time.Time {
 	// handle the various dumb decisions people make when encoding dates
@@ -254,7 +275,7 @@ func parsePublishDate(s string) time.Time {
 		return time.Time{}
 	}
 
-	t, err := time.Parse(format,s)
+	t, err := time.Parse(format, s)
 	if err != nil {
 		t = time.Time{}
 	}
