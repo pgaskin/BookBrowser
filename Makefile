@@ -1,5 +1,5 @@
 .PHONY: default
-default: clean build-deps deps generate test build
+default: clean build-deps deps test build
 
 .PHONY: clean
 clean:
@@ -7,27 +7,26 @@ clean:
 
 .PHONY: build-deps
 build-deps:
-	go get -v "github.com/kardianos/govendor"
-	go get -v "github.com/aktau/github-release"
-	go get -v "github.com/gobuffalo/packr/..."
+	GO111MODULE=off go get -v "github.com/aktau/github-release"
+	GO111MODULE=off go get -v "github.com/gobuffalo/packr/..."
 
 .PHONY: deps
 deps:
-	govendor sync
+	GO111MODULE=on go mod download
 
 .PHONY: generate
 generate:
-	go generate ./...
+	GO111MODULE=on go generate ./...
 
 .PHONY: test
 test:
-	go test ./...
+	GO111MODULE=on go test ./...
 
 .PHONY: build
 build:
 	mkdir -p build
-	go build -ldflags "-X main.curversion=dev" -o "build/BookBrowser"
+	GO111MODULE=on go build -ldflags "-X main.curversion=dev" -o "build/BookBrowser"
 
 .PHONY: install
 install:
-	go install
+	GO111MODULE=on go install
