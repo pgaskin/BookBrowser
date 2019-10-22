@@ -1,12 +1,13 @@
 # BookBrowser
 [![Build Status](https://travis-ci.org/geek1011/BookBrowser.svg?branch=master)](https://travis-ci.org/geek1011/BookBrowser)
 
-A easy-to-use tool to generate a web-based ePub and PDF ebook browser. All you need to do is [download it](https://github.com/geek1011/BookBrowser/releases/latest) into the folder with your ebooks, and run it. There is also a [demo](https://bookbrowser-demo.geek1011.net/books/).
+An easy-to-use tool to generate a web-based ePub and PDF ebook browser. All you need to do is [download it](https://github.com/geek1011/BookBrowser/releases/latest) into the folder with your ebooks, and run it. There is also a [demo](https://bookbrowser-demo.geek1011.net/books/).
 
 ## Features
 - Multiple book formats
     - epub
     - pdf
+    - mobi (basic support)
 - Search
 - Advanced Search
     - Search any combination of fields
@@ -58,15 +59,15 @@ The web interface works on IE 9+, Edge, Firefox 3+, Chrome, Safari 5.1+, Opera 1
 The web-based reader works on IE 10+, Edge, Firefox 28+, Chrome 21+, Safari 9+, Opera 17+, and Android browser 4.4+.
 
 ## Usage
-Run BookBrowser from the directory with the epub books. By default, you can access the web interface at [http://localhost:8090](http://localhost:8090).
 
-You can also use the command line arguments below:
+```
+Usage: BookBrowser [OPTIONS]
 
-````
-  -addr string
-    	The address to bind to. (default ":8090")
-  -bookdir string
-    	The directory to get books from. This directory must exist. (default ".")
-  -tempdir string
-    	The directory to use for storing temporary files such as book cover thumbnails. This directory is create on start and deleted on exit. (default is a subdirectory in your system's temp directory)
-````
+Options:
+  -a, --addr string      the address to bind the server to ([IP]:PORT) (default ":8090")
+  -b, --bookdir string   the directory to load books from (must exist) (default "/home/patrick/src/BookBrowser")
+  -h, --help             Show this help text
+  -n, --nocovers         do not index covers
+  -t, --tempdir string   the directory to store temp files such as cover thumbnails (created on start, deleted on exit unless already exists) (default "/tmp/bookbrowser946254949")
+      --version          Show the version
+```
