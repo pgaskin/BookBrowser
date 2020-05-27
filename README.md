@@ -1,6 +1,8 @@
 # BookBrowser
 [![Build Status](https://travis-ci.org/geek1011/BookBrowser.svg?branch=master)](https://travis-ci.org/geek1011/BookBrowser)
 
+**Note:** This project is no longer maintained, as I haven't had the time or motivation to continue working on it. BookBrowser will still work as-is (I still use it myself occasionally), but is unlikely to receive any new features or bugfixes.
+
 An easy-to-use tool to generate a web-based ePub and PDF ebook browser. All you need to do is [download it](https://github.com/geek1011/BookBrowser/releases/latest) into the folder with your ebooks, and run it. There is also a [demo](https://bookbrowser-demo.geek1011.net/books/).
 
 ## Features
