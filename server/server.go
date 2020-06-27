@@ -305,7 +305,7 @@ func (s *Server) handleAuthors(w http.ResponseWriter, r *http.Request, _ httprou
 		"ShowSearch":       false,
 		"ShowViewSelector": true,
 		"Title":            "Authors",
-		"Authors": s.Indexer.BookList().Authors().Sorted(func(a, b struct{ Name, ID string }) bool {
+		"Authors": s.Indexer.BookList().Authors().Sorted(func(a, b booklist.Author) bool {
 			return a.Name < b.Name
 		}),
 	})
@@ -357,7 +357,7 @@ func (s *Server) handleSeriess(w http.ResponseWriter, r *http.Request, _ httprou
 		"ShowSearch":       false,
 		"ShowViewSelector": true,
 		"Title":            "Series",
-		"Series": s.Indexer.BookList().Series().Sorted(func(a, b struct{ Name, ID string }) bool {
+		"Series": s.Indexer.BookList().Series().Sorted(func(a, b booklist.Series) bool {
 			return a.Name < b.Name
 		}),
 	})

@@ -1,5 +1,5 @@
 @import url('https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css');
-@import url('https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i');
+@import url('https://fonts.googleapis.com/css?family=PT+Sans:200,200i,300,300i,400,400i,600,600i,700,700i');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
 
 * {
@@ -7,7 +7,7 @@
 }
 
 html {
-    font-family: Nunito, Lato, 'Open Sans', sans-serif;
+    font-family: PT Sans, Lato, 'Open Sans', sans-serif;
     background: #eee;
 }
 
@@ -144,201 +144,101 @@ h1.title {
     font-weight: 300;
 }
 
-.books.cards {
+.books {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    align-items: stretch;
-    margin: 10px auto;
     justify-content: center;
-    padding: 5px;
+    padding: 8px;
 }
 
-.books.cards .book {
+.books .book {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    align-items: stretch;
     flex: 0 0 150px;
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
     overflow: hidden;
-    margin: 20px 15px;
-    border: 1px solid #d3d3d3;
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
-    border-radius: 2px;
+    margin: 8px;
 }
 
-.books.cards .book:hover {
-    border: 1px solid #b0b0b0;
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.09);
-}
-
-.books.cards .book .cover {
+.books .book .cover {
     display: block;
     flex: 0 0 auto;
-    max-width: 100%;
+    background: #ddd;
 }
 
-.books.cards .book .cover img {
-    max-width: 100%;
-}
-
-.books.cards .book .meta {
+.books .book .cover img {
     display: block;
-    padding: 2px 5px;
+    margin: 0 auto;
+    max-width: 100%;
+    max-height: 100%;
 }
 
-.books.cards .book .meta .title {
+.books .book:hover .cover {
+    filter: brightness(80%);
+}
+
+.books .book .meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    flex: 1;
+    padding: 4px 8px;
+    background: #eaeaea;
+    min-width: 0px;
+}
+
+.books .book:hover .meta {
+    background: #e1e1e1;
+}
+
+.books .book .meta .title,
+.books .book .meta .author,
+.books .book .meta .series,
+.books .book .meta .title:link,
+.books .book .meta .author:link,
+.books .book .meta .series:link,
+.books .book .meta .title:visited,
+.books .book .meta .author:visited,
+.books .book .meta .series:visited {
     display: block;
+    flex: 0 0 auto;
+    color: inherit;
+    text-decoration: none;
+    min-width: 0px;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.books .book .meta .title {
     font-weight: bold;
     font-size: 14px;
-    color: inherit;
-    text-decoration: none;
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -o-text-overflow: ellipsis;
-    -webkit-text-overflow: ellipsis;
-    margin-bottom: 2px;
 }
 
-.books.cards .book .meta .author {
-    display: block;
-    color: inherit;
+.books .book .meta .author,
+.books .book .meta .series {
     font-size: 12px;
-    text-decoration: none;
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -o-text-overflow: ellipsis;
-    -webkit-text-overflow: ellipsis;
-    margin-bottom: 3px;
-}
-
-.books.cards .book .meta .series {
-    display: block;
-    font-size: 12px;
-    color: inherit;
-    text-decoration: none;
-    width: 100%;
-    white-space: nowrap;
-    /*overflow: hidden;*/
-    text-overflow: ellipsis;
-    -o-text-overflow: ellipsis;
-    -webkit-text-overflow: ellipsis;
-    text-transform: uppercase;
-}
-
-.books.cards .book .meta .series .name {
-    display: inline-block;
-    color: inherit;
-    text-decoration: none;
-}
-
-.books.cards .book .meta .series .index {
-    display: inline-block;
-    color: inherit;
-    text-decoration: none;
-}
-
-.books.list {
-    display: block;
-    margin: 10px 5px;
 }
 
 .books.list .book {
-    display: flex;
     flex-direction: row;
-    justify-content: flex-start;
-    border-bottom: 1px solid rgba(0, 0, 0, .15);
-    margin: 0 5px;
-    padding: 10px 5px;
-    padding-bottom: 5px;
-    /**/
-    margin: 10px 5px;
-    border: 1px solid #d3d3d3;
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
-    border-radius: 2px;
-}
-
-.books.list .book:hover {
-    /*background: rgba(0,0,0,.05);*/
-    border: 1px solid #b0b0b0;
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.09);
-}
-
-.books.list .book .cover {
-    flex: 0 0 45px;
-}
-
-.books.list .book .cover img {
+    flex: 1;
+    height: 80px;
+    min-height: 80px;
+    max-height: 80px;
+    width: auto;
+    min-width: 250px;
     max-width: 100%;
 }
 
-.books.list .book .meta {
-    flex: 1;
-    padding: 4px 10px;
-}
-
-.books.list .book .meta .title {
-    display: block;
-    font-weight: bold;
-    font-size: 14px;
-    color: inherit;
-    text-decoration: none;
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -o-text-overflow: ellipsis;
-    -webkit-text-overflow: ellipsis;
-    margin-bottom: 2px;
-}
-
-.books.list .book .meta .author {
-    display: block;
-    color: inherit;
-    font-size: 12px;
-    text-decoration: none;
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -o-text-overflow: ellipsis;
-    -webkit-text-overflow: ellipsis;
-    margin-bottom: 3px;
-}
-
-.books.list .book .meta .series {
-    display: block;
-    font-size: 12px;
-    color: inherit;
-    text-decoration: none;
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -o-text-overflow: ellipsis;
-    -webkit-text-overflow: ellipsis;
-    text-transform: uppercase;
-}
-
-.books.list .book .meta .series .name {
-    display: inline-block;
-    color: inherit;
-    text-decoration: none;
-}
-
-.books.list .book .meta .series .index {
-    display: inline-block;
-    color: inherit;
-    text-decoration: none;
-}
-
-@media only screen and (max-width: 600px) {
-    .books.cards .book {
-        margin: 7px;
-    }
+.books.list .book .cover {
+    flex: 0 0 60px;
 }
 
 .items.cards {
