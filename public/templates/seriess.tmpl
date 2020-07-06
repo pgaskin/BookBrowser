@@ -3,3 +3,7 @@
 <a href="/series/{{.ID}}" class="item">{{.Name}}</a>
 {{end}}
 </div>
+
+{{if .Series}}
+{{template "pagination" .Pagination}}
+{{end}}

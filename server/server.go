@@ -298,6 +298,14 @@ func (s *Server) handleDownload(w http.ResponseWriter, r *http.Request, p httpro
 }
 
 func (s *Server) handleAuthors(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+
+	al := s.Indexer.BookList().Authors().Sorted(func(a, b struct{ Name, ID string }) bool {
+		return a.Name < b.Name
+	})
+
+	pagination := NewPagination(r.URL.Query(),len(al))
+	al = al.Skip(pagination.ItemOffset).Take(pagination.ItemLimit)
+
 	s.render.HTML(w, http.StatusOK, "authors", map[string]interface{}{
 		"CurVersion":       s.version,
 		"PageTitle":        "Authors",
@@ -305,9 +313,8 @@ func (s *Server) handleAuthors(w http.ResponseWriter, r *http.Request, _ httprou
 		"ShowSearch":       false,
 		"ShowViewSelector": true,
 		"Title":            "Authors",
-		"Authors": s.Indexer.BookList().Authors().Sorted(func(a, b struct{ Name, ID string }) bool {
-			return a.Name < b.Name
-		}),
+		"Authors":			al,
+		"Pagination":		pagination,
 	})
 }
 
@@ -326,6 +333,9 @@ func (s *Server) handleAuthor(w http.ResponseWriter, r *http.Request, p httprout
 		bl, _ = bl.SortBy("title-asc")
 		bl, _ = bl.SortBy(r.URL.Query().Get("sort"))
 
+		pagination := NewPagination(r.URL.Query(),len(bl))
+		bl = bl.Skip(pagination.ItemOffset).Take(pagination.ItemLimit)
+
 		s.render.HTML(w, http.StatusOK, "author", map[string]interface{}{
 			"CurVersion":       s.version,
 			"PageTitle":        aname,
@@ -334,6 +344,7 @@ func (s *Server) handleAuthor(w http.ResponseWriter, r *http.Request, p httprout
 			"ShowViewSelector": true,
 			"Title":            aname,
 			"Books":            bl,
+			"Pagination":		pagination,
 		})
 		return
 	}
@@ -350,6 +361,14 @@ func (s *Server) handleAuthor(w http.ResponseWriter, r *http.Request, p httprout
 }
 
 func (s *Server) handleSeriess(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+
+	seriess := s.Indexer.BookList().Series().Sorted(func(a, b struct{ Name, ID string }) bool {
+		return a.Name < b.Name
+	})
+
+	pagination := NewPagination(r.URL.Query(),len(seriess))
+	seriess = seriess.Skip(pagination.ItemOffset).Take(pagination.ItemLimit)
+
 	s.render.HTML(w, http.StatusOK, "seriess", map[string]interface{}{
 		"CurVersion":       s.version,
 		"PageTitle":        "Series",
@@ -357,9 +376,8 @@ func (s *Server) handleSeriess(w http.ResponseWriter, r *http.Request, _ httprou
 		"ShowSearch":       false,
 		"ShowViewSelector": true,
 		"Title":            "Series",
-		"Series": s.Indexer.BookList().Series().Sorted(func(a, b struct{ Name, ID string }) bool {
-			return a.Name < b.Name
-		}),
+		"Series":			seriess,
+		"Pagination":		pagination,
 	})
 }
 
@@ -372,11 +390,25 @@ func (s *Server) handleSeries(w http.ResponseWriter, r *http.Request, p httprout
 	}
 
 	if sname != "" {
+		/* the bl variable created here was unused by the original s.render.HTML() call below and seems to be
+			dead code... @geek1011, safe to remove this?
+
 		bl := s.Indexer.BookList().Filtered(func(book *booklist.Book) bool {
 			return book.Series != "" && book.SeriesID() == p.ByName("id")
 		})
 		bl, _ = bl.SortBy("seriesindex-asc")
 		bl, _ = bl.SortBy(r.URL.Query().Get("sort"))
+		*/
+
+
+		bl := s.Indexer.BookList().Filtered(func(book *booklist.Book) bool {
+			return book.Series != "" && book.SeriesID() == p.ByName("id")
+		}).Sorted(func(a, b *booklist.Book) bool {
+			return a.SeriesIndex < b.SeriesIndex
+		})
+
+		pagination := NewPagination(r.URL.Query(),len(bl))
+		bl = bl.Skip(pagination.ItemOffset).Take(pagination.ItemLimit)
 
 		s.render.HTML(w, http.StatusOK, "series", map[string]interface{}{
 			"CurVersion":       s.version,
@@ -385,11 +417,8 @@ func (s *Server) handleSeries(w http.ResponseWriter, r *http.Request, p httprout
 			"ShowSearch":       false,
 			"ShowViewSelector": true,
 			"Title":            sname,
-			"Books": s.Indexer.BookList().Filtered(func(book *booklist.Book) bool {
-				return book.Series != "" && book.SeriesID() == p.ByName("id")
-			}).Sorted(func(a, b *booklist.Book) bool {
-				return a.SeriesIndex < b.SeriesIndex
-			}),
+			"Books":			bl,
+			"Pagination":		pagination,
 		})
 		return
 	}
@@ -409,6 +438,9 @@ func (s *Server) handleBooks(w http.ResponseWriter, r *http.Request, _ httproute
 	bl, _ := s.Indexer.BookList().SortBy("modified-desc")
 	bl, _ = bl.SortBy(r.URL.Query().Get("sort"))
 
+	pagination := NewPagination(r.URL.Query(),len(bl))
+	bl = bl.Skip(pagination.ItemOffset).Take(pagination.ItemLimit)
+
 	s.render.HTML(w, http.StatusOK, "books", map[string]interface{}{
 		"CurVersion":       s.version,
 		"PageTitle":        "Books",
@@ -417,6 +449,7 @@ func (s *Server) handleBooks(w http.ResponseWriter, r *http.Request, _ httproute
 		"ShowViewSelector": true,
 		"Title":            "",
 		"Books":            bl,
+		"Pagination":		pagination,
 	})
 }
 
@@ -462,6 +495,9 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request, _ httprout
 		bl, _ = bl.SortBy("title-asc")
 		bl, _ = bl.SortBy(r.URL.Query().Get("sort"))
 
+		pagination := NewPagination(r.URL.Query(),len(bl))
+		bl = bl.Skip(pagination.ItemOffset).Take(pagination.ItemLimit)
+
 		s.render.HTML(w, http.StatusOK, "search", map[string]interface{}{
 			"CurVersion":       s.version,
 			"PageTitle":        "Search Results",
@@ -471,6 +507,7 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request, _ httprout
 			"Title":            "Search Results",
 			"Query":            q,
 			"Books":            bl,
+			"Pagination":		pagination,
 		})
 		return
 	}

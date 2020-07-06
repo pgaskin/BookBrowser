@@ -24,4 +24,8 @@
     {{end}}
 </div>
 
-{{if not .Books}} Not found (or still indexing){{end}}
+{{if .Books}}
+{{template "pagination" .Pagination}}
+{{else}}
+Not found (or still indexing)
+{{end}}

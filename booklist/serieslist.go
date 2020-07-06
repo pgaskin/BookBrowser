@@ -28,3 +28,17 @@ func (sl SeriesList) Sorted(less func(a, b struct{ Name, ID string }) bool) Seri
 	})
 	return nsl
 }
+
+func (sl SeriesList) Skip(n int) SeriesList {
+	if n >= len(sl) {
+		return SeriesList{}
+	}
+	return sl[n:]
+}
+
+func (sl SeriesList) Take(n int) SeriesList {
+	if n > len(sl) {
+		return sl
+	}
+	return sl[:n]
+}
