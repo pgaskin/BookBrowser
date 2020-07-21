@@ -75,6 +75,13 @@ func (s *Server) printLog(format string, v ...interface{}) {
 	}
 }
 
+func (s *Server) LoadBookIndex() error {
+	return s.Indexer.Load()
+}
+func (s *Server) SaveBookIndex() error {
+	return s.Indexer.Save()
+}
+
 // RefreshBookIndex refreshes the book index
 func (s *Server) RefreshBookIndex() error {
 	errs, err := s.Indexer.Refresh()
@@ -91,6 +98,13 @@ func (s *Server) RefreshBookIndex() error {
 	}
 
 	debug.FreeOSMemory()
+
+	err = s.Indexer.Save()
+	if err != nil {
+		log.Printf("Error saving index: %s",err)
+		return err
+	}
+
 	return nil
 }
 
